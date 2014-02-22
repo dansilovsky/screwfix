@@ -1,0 +1,78 @@
+{**
+ * My Application layout template.
+ *
+ * @param string   $basePath web base path
+ * @param string   $robots   tell robots how to index the content of a page (optional)
+ * @param array    $flashes  flash messages
+ *}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="description" content="">
+	<meta name="robots" content="{$robots}" n:ifset="$robots">
+
+	<title>{block title|stripTags|strip}Úkolníček{/block}</title>
+        
+        <link rel="stylesheet" href="{$basePath}/css/screen.css" type="text/css">	
+	<link rel="stylesheet" media="print" href="{$basePath}/css/print.css">
+        
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+        <script type="text/javascript" src="{$basePath}/js/netteForms.js"></script>
+        <script type="text/javascript" src="{$basePath}/js/ajax.js"></script>
+        
+	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
+	{block head}{/block}
+</head>
+
+<body>
+        <div id="header">
+            <div id="header-inner">
+                <div class="title"><a n:href="Homepage:">Úkolníček</a></div>
+
+                {if $user->isLoggedIn()}
+                <div class="user">
+                    <span class="icon user">{$user->getIdentity()->name}</span> |
+                    <a n:href="User:password">Změna hesla</a> |
+                    <a n:href="signOut!">Odhlásit se</a>
+                </div>
+                {/if}
+            </div>
+        </div>
+        <div id="container">
+            <div id="sidebar">
+                {if $user->isLoggedIn()}
+                <div class="title">Seznamy úkolů</div>
+                <div class="task-lists">
+                    <ul>
+                        <li n:foreach="$lists as $list"><a n:href="Task: $list->id">{$list->title}</a></li>
+                    </ul>
+                </div>
+
+                <fieldset>
+                    <legend>Nový seznam</legend>
+                    {form newListForm}
+                    <div class="new-list-form">
+                        {input title}
+                        {input create}
+                    </div>
+                    {/form}
+                </fieldset>
+                {/if}
+            </div>
+
+            <div id="content">
+                {snippet flashMessages}
+                <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+                {/snippet}
+
+                {include #content}
+            </div>
+
+            <div id="footer">
+
+            </div>
+        </div>
+</body>
+</html>

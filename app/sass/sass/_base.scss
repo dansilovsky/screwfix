@@ -1,0 +1,43 @@
+/* text colors */
+$text-color: rgb(102, 102, 102); /* basic color of text */
+$text-color-header: rgb(0, 0, 0);
+$text-color-highlight: rgb(255, 255, 255); /* color of text on hightligt */
+
+/* fonts */
+
+/* line height */
+$line-height: 10px;
+$line-height-normal: $line-height * 2;
+$line-height-h1: $line-height * 4;
+$line-height-h2: $line-height * 3;
+$line-height-h3: $line-height * 2;
+$line-height-bar: $line-height * 4;
+
+/* heights - should multiplies of $line-height */
+$bar-height: $line-height * 4;
+
+/* background colors */
+$color: rgb(255, 255, 255);
+/*$color-highlight: rgb(0, 114, 198);  skydrive color */
+$color-highlight: rgb(48, 116, 182); /* screwfix color */
+$color-highlight-active: rgba(0, 0, 0, 0.12);
+$color-table: rgb(240, 240, 240);
+$color-table-edge: rgb(226, 226, 226);
+$color-table-today: rgb(117, 117, 117);
+
+/* padding */
+$padding-main: 15px;
+$padding-button: 4px;
+$padding-calendar-table: 10px;
+
+/* my mixins */
+@mixin highlight-button {
+	
+	background-color: rgba(0, 0, 0, 0.075);
+}
+
+@import "compass/reset";
+@import "compass/css3";
+@import "partials/_common";
+@import "partials/_main_bar";
+@import "partials/_footer"

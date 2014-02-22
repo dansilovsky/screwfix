@@ -1,0 +1,45 @@
+{block #content}
+<style>
+	ol {
+		width: 500px;
+		margin: 0 auto;
+		 -moz-user-select: none;
+		-khtml-user-select: none;
+		-webkit-user-select: none;
+		/*
+		  Introduced in IE 10.
+		  See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+		*/
+		-ms-user-select: none;
+		user-select: none;
+	}
+	
+	li.test {
+		width: 500px;
+		height: 50px;
+		border: 1px solid black;
+		margin: 10px;
+	}
+	
+
+</style>
+<ol>
+  <li class="test">Item 1</li>
+  <li class="test">Item 2</li>
+  <li class="test">Item 3</li>
+  <li class="test">Item 4</li>
+  <li class="test">Item 5</li>
+  <li class="test">Item 6</li>
+  <li class="test">Item 7</li>
+</ol>
+{/block}
+
+{define #cssPath}
+/css/sign.css
+{/define}
+
+{define #javascritpBottom}
+<script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
+<script type="text/javascript" src="{$basePath}/js/test.js"></script>
+{/define}
+

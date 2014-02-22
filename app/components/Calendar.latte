@@ -1,0 +1,5 @@
+{foreach $control->getComponents() as $component}
+	<div class="month{if !$iterator->first} hide{/if}">
+		{control $component}
+	</div>
+{/foreach}

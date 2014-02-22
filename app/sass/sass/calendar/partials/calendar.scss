@@ -1,0 +1,49 @@
+@import "compass/css3/opacity";
+
+#calendarBar {
+	height: $bar-height;
+	padding: 0 $padding-main;
+	#calendarNavigator {
+		float: left;
+	}
+	#calendarTools {
+		float: right;
+		height: inherit;
+		
+		li {
+			display: inline-block;
+			height: inherit;
+		}
+		a {
+			line-height: $line-height-bar;
+			padding: $padding-button;
+		}
+		a.selected {
+			background-color: $color-highlight;
+			color: $text-color-highlight;
+		}
+		a:hover {
+			@include highlight-button;
+		}
+		a.selected:hover {
+			background-color: $color-highlight;
+		}
+	}
+}
+/*#calendar .hide {
+	display: none;
+}*/
+#calendarTableContainer {
+	overflow-y: scroll;
+}
+#calendarSelectionInfo {
+	overflow: hidden;
+	width: 100px;
+	height: 100px;
+}
+.popupBox {
+	background-color: white;
+	border: 2px solid black;
+	display: none;
+	position: absolute;	
+}

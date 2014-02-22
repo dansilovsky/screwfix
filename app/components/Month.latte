@@ -1,0 +1,39 @@
+<div id="calendarBar"><h1>{$data->keyM()|monthToStr} {$data->keyY()} < ></h1></div>
+<table>	
+	<tr>
+		<th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th>
+	</tr>
+	{foreach $data as $day}
+		{if $day->isFirstDayOfWeek()}<tr>{/if}
+			<td>
+				<div class="cell">
+					<div class="day">{$day->day()}</div>
+					{if $day->isNote()}
+					{foreach $day->note() as $note}
+					<div class="note highlight">
+						{$note}
+					</div>
+					{/foreach}
+					{/if}
+					{if $day->isSysNote()}
+					{foreach $day->sysNote() as $note}
+					<div class="note highlight sys">
+						{$note}
+					</div>
+					{/foreach}
+					{/if}
+					<div class="work">
+					{if $day->isBankHoliday()}
+						{$day->bankHoliday()}
+					{elseif $day->isHoliday()}
+						{$day->holiday()}
+					{elseif $day->isShift()}
+						{$day->shiftStart()} - {$day->shiftEnd()}
+					{/if}
+					</div>
+				</div>
+			</td>
+		{if $day->isLastDayOfWeek()}</tr>{/if}
+	{/foreach}		
+</table>
+

@@ -1,0 +1,95 @@
+#
+# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
+#
+# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
+# http://nette.org/security-warning
+#
+common:
+	parameters:
+		cookies:
+			time: + 100 days
+		sign:
+			username: [30, 4]
+			firstName: 50
+			secondName: 50
+
+	php:
+		date.timezone: Europe/London
+		# zlib.output_compression: yes
+
+	nette:
+		application:
+			errorPresenter: Error
+
+		database:
+			dsn: 'mysql:host=localhost;dbname=screwfix'
+			user: 'root'
+			password: 'winona'
+
+		session:
+			gc_maxlifetime: 1209600
+			expiration: 14 days
+
+
+	services:
+		authenticator: Screwfix\Authenticator
+
+		cache: Nette\Caching\Cache
+
+		cookies: Dan\Cookies(%cookies%)
+
+		calendarDateTime: Screwfix\CalendarDateTime
+
+		patternRepository: Screwfix\PatternRepository
+		patternFacade: Screwfix\PatternFacade(@patternRepository)
+
+		sysPatternRepository: Screwfix\SysPatternRepository
+		sysPatternFacade: Screwfix\SysPatternFacade(@sysPatternRepository)
+	
+		userRepository: Screwfix\UserRepository
+		userFacade: Screwfix\UserFacade
+
+		noteRepository: Screwfix\NoteRepository
+		noteFacade: Screwfix\NoteFacade
+
+		sysNoteRepository: Screwfix\SysNoteRepository
+		sysNoteFacade: Screwfix\SysNoteFacade
+
+		holidayRepository: Screwfix\HolidayRepository
+		holidayFacade: Screwfix\HolidayFacade
+
+		bankHolidayRepository: Screwfix\BankHolidayRepository
+		bankHolidayFacade: Screwfix\BankHolidayFacade
+
+		shiftPatternDate: Screwfix\ShiftPatternDate
+
+		shiftPattern:
+			parameters: [pattern]
+			class: Screwfix\ShiftPatternFilter(%pattern%)
+			autowired: no
+
+		authorizator:
+			class: Nette\Security\Permission
+			setup:
+				- addRole('guest')
+				- addRole('member', 'guest')
+				- addRole('editor', 'member')
+				- addRole('admin')
+				- addResource('Front:Home')
+				- addResource('Front:Signin')
+				- addResource('Front:Signup')
+				- addResource('Front:User')
+				- addResource('Front:Test')
+				- addResource('Admin:Admin')
+				- addResource('Api:Days')
+				- allow('guest', [Front:Home, Front:Signin, Front:Signup, Front:Test, Api:Days])
+				- allow('member', 'Front:User')
+				- allow('editor', 'Admin:Admin')
+				- allow('admin')
+
+production < common:
+
+development < common:
+	nette:
+		container:
+			debugger: TRUE

@@ -1,0 +1,15 @@
+#mainBar {
+	height: $bar-height;
+	line-height: $line-height * 4;
+	padding: 0 $padding-main;
+	
+	ul li {
+		float: left;
+		margin-right: 10px;
+	}
+		
+	.authentication {
+		float: right;
+	}
+		
+}

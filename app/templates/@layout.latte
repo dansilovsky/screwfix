@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-GB" >
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="description" content="">
+		<title>Screwfix calendar{block title|striptags|upper}{/block}</title>
+		<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}{include #cssPath}">
+		<link rel="shortcut icon" href="{$basePath}/common/favicon.ico">
+	</head>
+
+	<body>
+		<div id="root">
+			<div id="mainBar" class="highlight">
+				<nav>
+					<ul>
+						<li class="logo"><a n:href=":Front:Home:">SCREWFIX CALENDAR</a></li>
+						<li n:if="$user->isInRole('editor') || $user->isInRole('admin')"><a n:href=":Admin:Admin:">Administration</a></li>
+					</ul>
+				</nav>
+				{block authentication}
+				<div class="authentication">
+					{if $user->isLoggedIn()}
+					<a n:href="signOut!">Sign out</a>
+					<b>{$user->getIdentity()->username}</b>
+					{else}
+					<span><a n:href=":Front:Signin:">Sign in</a> | <a n:href=":Front:Signup:">Sign Up</a></span>
+					{/if}
+				</div>
+				{/block}
+			</div>
+			<div id="mainContent">
+			{include #content}
+			</div>
+			<div id="rootFooter"></div>
+		</div>		
+		<div id="footer">
+			&copy; 2013 Daniel Silovsky
+		</div>
+		<script type="text/javascript" src="{$basePath}/js/netteForms.js"></script>
+		<script type="text/javascript" src="{$basePath}/js/jquery.js"></script>
+		{ifset #javascritpBottom}{include #javascritpBottom}{/ifset}		
+	</body>
+</html>	
