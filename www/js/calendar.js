@@ -477,6 +477,8 @@
 		mode: null,
 
 		initialize: function() {
+			this.holidays = {total: screwfix.holidays.total, used: screwfix.holidays.used};
+			
 			// collection of day models
 			this.calendarDayCollection = new CalendarDayCollection(screwfix.calendarDaysData, {comparator: false});
 			
@@ -564,13 +566,24 @@
 			return this;
 		},		
 		
-		holidayInfo: function(selection) {
-			var count = selection.length;
+		holidaysInfo: function(selection) {
+			console.log(selection.length)
+			var total = this.holidays.total;
+			var used = this.holidays.used;
+			var selected = 0;
 			
-			return '<div>'+ count + '/30</div>';
+			for (var i=0; i<selection.length; i++) {
+				if (!selection[i].isDayOff()) {
+					selected++;
 				}
+			}
 			
+			var left = total - used - selected;
 			
+			return '<div>selected: '+selected+' left: '+left+'</div>';
+		}
+		
+		
 	});
 
 	// Navigator view
