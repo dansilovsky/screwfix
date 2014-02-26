@@ -491,6 +491,7 @@
 			// view navigator
 			this.navigatorView = new NavigatorView({model: this.navigatorModel, master: this});
 			
+			// view tools
 			this.toolsView = new ToolsView({master: this});
 			
 			// view month
