@@ -516,7 +516,12 @@
 			this.$calendarBar = this.$el.find('#calendarBar');
 			
 			this.renderNavigator();
-			this.renderTools();
+			
+			if (screwfix.user.isLoggedIn) {
+				// render only if user is logged in
+				this.renderTools();
+			}
+			
 			this.renderMonth();
 			
 			return this;
