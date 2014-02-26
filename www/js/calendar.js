@@ -130,8 +130,8 @@
 //		var that = this;
 		var defaults = {
 			showInfo: false,
-			// callback
-			info: null
+			// {callback: function, context: anObject} like backbones events
+			info: {callback: null, context: null}
 		}
 		
 		var S = {
@@ -227,7 +227,7 @@
 				.css('display', 'block');
 			
 			// append result of info callback function
-			if (S.settings.info) {
+			if (S.settings.info.callback) {
 				S.that.appendInfo(S.selection);
 				S.that.on('added', S.that.appendInfo, S.that.settings);				
 			}
@@ -300,7 +300,17 @@
 		
 		this.appendInfo = function() {
 			S.$selectionInfo.empty();
-			S.$selectionInfo.append(S.settings.info(S.selection));
+			
+			var callback = S.settings.info.callback;
+			var context = S.settings.info.context;
+			if (context) {
+				// use given context
+				S.$selectionInfo.append(callback.call(context, S.selection));
+			}
+			else {
+				// use current context(Selector)
+				S.$selectionInfo.append(callback(S.selection));
+			}
 		}
 	}	
 	
@@ -558,9 +568,9 @@
 			var count = selection.length;
 			
 			return '<div>'+ count + '/30</div>';
-		}
-		
-		
+				}
+			
+			
 	});
 
 	// Navigator view
@@ -736,7 +746,7 @@
 				$tr.append(dayView.render().el);
 			});
 			
-			var selector = new Selector(this.$el, this.dayViews, {info: this.master.holidayInfo});
+			var selector = new Selector(this.$el, this.dayViews, {info: {callback: this.master.holidaysInfo, context: this.master}});
 			selector.on('started', function() {
 				if (that.master.mode === 'holidays') {
 					this.setShowInfo(true);
@@ -747,6 +757,7 @@
 			});
 			selector.on('selected', function(selection){
 				// pridej akci
+				var test = selection;
 			});
 			
 			return this;
@@ -850,7 +861,7 @@
 			
 			return viewMonth !== this.currDisplayMonth;
 		},
-
+		
 		height: function() {
 			return this.$el.height();
 		},
@@ -867,9 +878,6 @@
 
 	//create instance of master view
 	var app = new AppView();
-
-//	//create instance of master view
-//	var calendar = new CalendarView();
 
 }(jQuery));
 
