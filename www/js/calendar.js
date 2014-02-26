@@ -862,6 +862,14 @@
 			return viewMonth !== this.currDisplayMonth;
 		},
 		
+		isDayOff: function() {			
+			if (this.model.get('shiftStart') !== null) {
+				return false;
+			}
+			
+			return true;
+		},
+
 		height: function() {
 			return this.$el.height();
 		},
