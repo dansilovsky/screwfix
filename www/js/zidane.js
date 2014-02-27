@@ -305,6 +305,12 @@
 
 	}
 	
+	/**
+	 * Object representing a user
+	 * 
+	 * @param {object}     user
+	 * @param {Zidane.Acl} acl
+	 */
 	var User = Zidane.User = function(user, acl) {
 		var user = user;
 		var acl = acl;
@@ -317,8 +323,12 @@
 			}
 		}
 	}
-	
-	
+
+	/**
+	 * Lightweight permissions
+	 * 
+	 * @param {array} rolesArray 
+	 */
 	var Acl = Zidane.Acl = function(rolesArray) {		
 		var roles = {};
 		
@@ -327,6 +337,12 @@
 		}
 		
 		return {
+			/**
+			 * 
+			 * @param {string} roleDemanded
+			 * @param {string} usersRole
+			 * @returns {Boolean} true if allowed otherwis false
+			 */
 			isAllowed: function(roleDemanded, usersRole) {
 				if (_.isUndefined(roles[roleDemande])) {
 					throw 'Demanded role is undefined';
@@ -335,7 +351,7 @@
 					throw "User's role is undefined";
 				}
 				
-				return (roles[roleDemanded] <= role[usersRole]);				
+				return (roles[roleDemanded] <= roles[usersRole]);				
 			}
 		}
 	}
