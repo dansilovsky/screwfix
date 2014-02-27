@@ -76,13 +76,19 @@
 <script type="text/javascript" src="{$basePath}/js/backbone-dev-1.0.0.js"></script>
 <script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
 <script type="text/javascript">
-	var screwfix = {		
-		
+	var screwfix = {
 		today: {
 			year: {$calendarToday['year']},
 			month: {$calendarToday['month']},
 			monthName: {$calendarToday['monthName']},
 			day: {$calendarToday['day']}
+		},
+		acl: {
+			roles: {$acl->getRoles()}
+		},		
+		user: {
+			{var roles = $user->getRoles()}
+			role: {$roles[0]}
 		},
 		// TODO: zajisti aby se tato informace tahala z db ne pouze staticky z sablony
 		holidays: {

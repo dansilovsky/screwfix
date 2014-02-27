@@ -479,6 +479,8 @@
 		initialize: function() {
 			this.holidays = {total: screwfix.holidays.total, used: screwfix.holidays.used};
 			
+			this.user = new Zidane.User(screwfix.user, new Zidane.Acl(screwfix.acl.roles));
+			
 			// collection of day models
 			this.calendarDayCollection = new CalendarDayCollection(screwfix.calendarDaysData, {comparator: false});
 			
@@ -517,8 +519,8 @@
 			
 			this.renderNavigator();
 			
-			if (screwfix.user.isLoggedIn) {
-				// render only if user is logged in
+			if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
+				// render only if user role is member or higher
 				this.renderTools();
 			}
 			

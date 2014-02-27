@@ -308,7 +308,7 @@
 	/**
 	 * Object representing a user
 	 * 
-	 * @param {object}     user
+	 * @param {object}     user	eg.{role: member}
 	 * @param {Zidane.Acl} acl
 	 */
 	var User = Zidane.User = function(user, acl) {
@@ -316,8 +316,16 @@
 		var acl = acl;
 		
 		return {
-			id: user.id,
+			getRole: function() {
+				return user.role;
+			},
 			
+			/**
+			 * Is allowed only if users role matches or is higher privelage than demanded role
+			 * 
+			 * @param {string} demandedRole
+			 * @returns {bool}
+			 */
 			isAllowed: function(demandedRole) {
 				return acl.isAllowed(demandedRole, user.role);
 			}
@@ -332,19 +340,27 @@
 	var Acl = Zidane.Acl = function(rolesArray) {		
 		var roles = {};
 		
+		var constants = {
+			GUEST: 'guest',
+			MEMBER: 'member',
+			EDITOR: 'editor',
+			ADMIN: 'admin'
+		}
+		
 		for (var i=0; i<rolesArray.length; i++) {
 			roles[rolesArray[i]] = i;
 		}
 		
 		return {
 			/**
+			 * Is allowed only if given usersRole matches or is higher privalege than role demanded.
 			 * 
 			 * @param {string} roleDemanded
 			 * @param {string} usersRole
-			 * @returns {Boolean} true if allowed otherwis false
+			 * @returns {bool} true if allowed otherwis false
 			 */
 			isAllowed: function(roleDemanded, usersRole) {
-				if (_.isUndefined(roles[roleDemande])) {
+				if (_.isUndefined(roles[roleDemanded])) {
 					throw 'Demanded role is undefined';
 				}
 				if (_.isUndefined(roles[usersRole])) {
@@ -355,6 +371,12 @@
 			}
 		}
 	}
+	
+	// acl constants
+	Acl.GUEST = 'guest';
+	Acl.MEMBER = 'member';
+	Acl.EDITOR = 'editor';
+	Acl.ADMIN = 'admin';
 	
 	// Utilities
 	Zidane.capitalize = function(str) {
