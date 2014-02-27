@@ -76,7 +76,7 @@
 <script type="text/javascript" src="{$basePath}/js/backbone-dev-1.0.0.js"></script>
 <script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
 <script type="text/javascript">
-	var screwfix = {
+	var screwfix = {		
 		
 		today: {
 			year: {$calendarToday['year']},
@@ -86,8 +86,9 @@
 		},
 		// TODO: zajisti aby se tato informace tahala z db ne pouze staticky z sablony
 		holidays: {
-			amount: 33
-		},
+			total: 33,
+			used: 15,
+		},		
 		calendarDaysData: [
 		{foreach $calendarData as $day}
 			{$day->toJSON()}{sep},{/sep}
