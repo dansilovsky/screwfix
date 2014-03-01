@@ -786,7 +786,6 @@
 			});
 			selector.on('selected', function(selection){
 				// pridej akci
-				var test = selection;
 			});
 			
 			return this;
