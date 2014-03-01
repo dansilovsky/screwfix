@@ -466,7 +466,9 @@
 		el: $('#body'),
 		
 		initialize: function() {
-			this.calendar = new CalendarView();
+			this.user = new Zidane.User(screwfix.user, new Zidane.Acl(screwfix.acl.roles));
+			
+			this.calendar = new CalendarView({master: this});
 		}
 	})
 	
@@ -476,10 +478,13 @@
 		$calendarBar: null,
 		mode: null,
 
-		initialize: function() {
+		initialize: function(options) {
+			// master is AppView
+			this.master = options.master;
+			
 			this.holidays = {total: screwfix.holidays.total, used: screwfix.holidays.used};
 			
-			this.user = new Zidane.User(screwfix.user, new Zidane.Acl(screwfix.acl.roles));
+			this.user = this.master.user;
 			
 			// collection of day models
 			this.calendarDayCollection = new CalendarDayCollection(screwfix.calendarDaysData, {comparator: false});
