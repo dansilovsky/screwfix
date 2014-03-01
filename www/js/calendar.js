@@ -7,7 +7,8 @@
 			navigatorView: _.template($('#calendarNavigatorTemplate').html(), null, {variable: 'mo'}),
 			toolsView: _.template($('#calendarToolsTemplate').html(), null, {variable: 'mo'}),
 			monthView: _.template($('#monthTemplate').html(), null, {variable: 'mo'}),
-			calendarView: $('#calendarTemplate')
+			calendarView: $('#calendarTemplate'),
+			holidaysInfo:_.template($('#holidaysInfoTemplate').html(), null, {variable: 'hi'})
 		}
 	}
 	
@@ -580,10 +581,10 @@
 		},		
 		
 		holidaysInfo: function(selection) {
-			console.log(selection.length)
 			var total = this.holidays.total;
 			var used = this.holidays.used;
 			var selected = 0;
+			var template = appGlobal.templates.holidaysInfo;
 			
 			for (var i=0; i<selection.length; i++) {
 				if (!selection[i].isDayOff()) {
@@ -593,7 +594,9 @@
 			
 			var left = total - used - selected;
 			
-			return '<div>selected: '+selected+' left: '+left+'</div>';
+			var hi = {selected: selected, left: left};
+			
+			return template(hi);
 		}
 		
 		
