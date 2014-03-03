@@ -20,7 +20,7 @@
 		// number of first day of week
 		var FWD = 0;		
 		var MONTH_STRINGS = {1: 'january', 2: 'february', 3: 'march', 4: 'april', 5: 'may', 6: 'june', 7: 'july', 8: 'august', 9: 'september', 10: 'october', 11: 'november', 12: 'december'}
-
+		
 		var format = format || function(year, month, day) {
 			var y = year;
 			var m = month < 10 ? '0' + month : month;
@@ -29,7 +29,7 @@
 			return y + '-' + m + '-' + d;
 		};
 
-		var y = year;
+		var y = year || 1970;
 		var m = month || 1;
 		var d = day || 1;
 		
