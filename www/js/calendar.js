@@ -24,13 +24,6 @@
 		var d = initial.day || 1;
 		
 		var now = new Zidane.Calendar(y, m, d);
-		now.setFormat(function(year, month, day) {
-			var y = year;
-			var m = month < 10 ? '0' + month : month;
-			var d = day < 10 ? '0' + day : day;
-			
-			return y + '-' + m + '-' + d;
-		});
 		
 		var current = now.clone();
 		current.startMonth();
@@ -786,6 +779,9 @@
 			});
 			selector.on('selected', function(selection){
 				// pridej akci
+				if (selection.length == 1) {
+					selection[0].addNote();
+				}
 			});
 			
 			return this;
@@ -866,12 +862,12 @@
 			
 			return this;
 		},
-
+		
 		resize: function(height) {
 			this.$el.children().height(height);
 			this.height = height;
 		},
-
+		
 		isFirstDayOfWeek: function() {
 			return this.model.get('isFirstDayOfWeek');
 		},
