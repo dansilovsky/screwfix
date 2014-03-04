@@ -20,6 +20,7 @@
 		// number of first day of week
 		var FWD = 0;		
 		var MONTH_STRINGS = {1: 'january', 2: 'february', 3: 'march', 4: 'april', 5: 'may', 6: 'june', 7: 'july', 8: 'august', 9: 'september', 10: 'october', 11: 'november', 12: 'december'}
+		var WEEK_DAY_STRINGS = {0: 'monday', 1: 'tuesday', 2: 'wednesday', 3: 'thursday', 4: 'friday', 5: 'saturday', 6: 'sunday'};
 		
 		var format = format || function(year, month, day) {
 			var y = year;
@@ -264,6 +265,10 @@
 				return MONTH_STRINGS[this.getMonth()];
 			},
 			
+			getWeekDayString: function() {
+				return WEEK_DAY_STRINGS[this.getDay()];
+			},
+
 			getDate: function() {
 				return date.getDate();
 			},
