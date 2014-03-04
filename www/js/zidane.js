@@ -242,7 +242,7 @@
 			toString: function() {
 				
 				if (format) {
-					return format(this.getYear(), this.getMonth(), this.getDate(), this);
+					return format.call(this, this.getYear(), this.getMonth(), this.getDate());
 				}
 				
 				return date.toDateString();
@@ -263,7 +263,7 @@
 			getMonthString: function() {
 				return MONTH_STRINGS[this.getMonth()];
 			},
-
+			
 			getDate: function() {
 				return date.getDate();
 			},
