@@ -7,8 +7,9 @@ class RestRoute extends \Nette\Application\Routers\Route {
 	const METHOD_POST = 4;
 	const METHOD_GET = 8;
 	const METHOD_PUT = 16;
-	const METHOD_DELETE = 32;
-	const RESTFUL = 64;
+	const METHOD_PATCH = 32;
+	const METHOD_DELETE = 64;
+	const RESTFUL = 128;
 
 	public function match(\Nette\Http\IRequest $httpRequest)
 	{
@@ -30,6 +31,9 @@ class RestRoute extends \Nette\Application\Routers\Route {
 						$action = 'create';
 						break;
 					case 'PUT':
+						$action = 'update';
+						break;
+					case 'PATCH':
 						$action = 'update';
 						break;
 					case 'DELETE':
@@ -61,6 +65,11 @@ class RestRoute extends \Nette\Application\Routers\Route {
 		}
 
 		if (($flags & self::METHOD_PUT) == self::METHOD_PUT && $httpMethod != 'PUT')
+		{
+			return NULL;
+		}
+
+		if (($flags & self::METHOD_PATCH) == self::METHOD_PATCH && $httpMethod != 'PATCH')
 		{
 			return NULL;
 		}
