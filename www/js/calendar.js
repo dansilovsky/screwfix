@@ -8,9 +8,11 @@
 			toolsView: _.template($('#calendarToolsTemplate').html(), null, {variable: 'mo'}),
 			monthView: _.template($('#monthTemplate').html(), null, {variable: 'mo'}),
 			calendarView: $('#calendarTemplate'),
-			holidaysInfo:_.template($('#holidaysInfoTemplate').html(), null, {variable: 'hi'})
+			holidaysInfo: _.template($('#holidaysInfoTemplate').html(), null, {variable: 'data'}),
+			addNote: _.template($('#addNoteTemplate').html(), null, {variable: 'data'}),
+			editNote: _.template($('#editNoteTemplate').html(), null, {variable: 'data'})
 		}
-	}
+	};
 	
 	/**
 	 * Manages 
@@ -126,7 +128,7 @@
 			showInfo: false,
 			// {callback: function, context: anObject} like backbones events
 			info: {callback: null, context: null}
-		}
+		};
 		
 		var S = {
 			that: this,
@@ -139,11 +141,12 @@
 			selection: [],
 			$selectionInfo: null,
 			settings: $.extend({}, defaults, options),
-		}
+			enabled: false
+		};
 		
 		S.$document.mouseup(function(event) {
 			// only for left mouse button
-			if (event.which === 1) {
+			if (S.isSelecting && event.which === 1) {				
 				S.isSelecting = false;
 				
 				// selection ended deactivate info box
@@ -155,22 +158,26 @@
 			}
 		});
 		
-		for (var i=0; i<S.cells.length; i++) {
-			
+		
+		
+		for (var i=0; i<S.cells.length; i++) {			
 			S.cells[i].on('leftmousedown', function(cell, event) {
-				S.that.trigger('started')
-				
-				S.isSelecting = true;
-				
-				S.startCell = cell.order;
-				S.endCell = cell.order
-				
-				S.select();
-				
-				// show selection info
-				if (S.settings.showInfo) {					
-					S.activateInfo(event);
-				}				
+				if (S.enabled) {					
+					// start selection procedures only if selection is enabled
+					S.that.trigger('started');
+
+					S.isSelecting = true;
+
+					S.startCell = cell.order;
+					S.endCell = cell.order;
+
+					S.select();
+
+					// show selection info
+					if (S.settings.showInfo) {					
+						S.activateInfo(event);
+					}
+				}
 			});
 			
 			S.cells[i].on('mouseover', function(cell) {
@@ -187,9 +194,7 @@
 			S.selection = [];
 			
 			// unselect all cells
-			for (var i=0; i<S.cells.length; i++) {
-				S.cells[i].unselect();
-			}
+			S.that.unselect();
 			
 			if (check === 0) {
 				S.cells[S.startCell].select();
@@ -232,13 +237,13 @@
 			var infoArgs = {
 				document: {
 					height: S.$document.height(),
-					width: S.$document.width(),
+					width: S.$document.width()
 				},
 				box: {
 					height: S.$selectionInfo.outerHeight(),
 					width: S.$selectionInfo.outerWidth()
 				}
-			}
+			};
 			
 			S.positionInfoBox(infoArgs, event.pageX, event.pageY);
 
@@ -248,13 +253,13 @@
 				
 				S.positionInfoBox(infoArgs, event.pageX, event.pageY);
 			});
-		}
+		};
 		
 		S.deactivateInfo = function() {
 			S.$selectionInfo.remove();
 			S.$selector.unbind('mousemove');
 			S.that.off('added', S.that.appendInfo, S.that.settings);
-		}
+		};
 		
 		/**
 		 * Helper function to position selection Info box
@@ -280,7 +285,7 @@
 			}
 			
 			S.$selectionInfo.css({top: newY, left: newX});
-		}
+		};
 		
 		/**
 		 * Sets settings.showInfo to given argument.
@@ -290,7 +295,7 @@
 		 */
 		this.setShowInfo = function(show) {
 			S.settings.showInfo = show;
-		}
+		};
 		
 		this.appendInfo = function() {
 			S.$selectionInfo.empty();
@@ -305,8 +310,31 @@
 				// use current context(Selector)
 				S.$selectionInfo.append(callback(S.selection));
 			}
-		}
-	}	
+		};
+		
+		/**
+		 * Unselects all cells
+		 * 
+		 * @return {Selector} this
+		 */
+		this.unselect = function() {
+			for (var i=0; i<S.cells.length; i++) {
+				S.cells[i].unselect();
+			}
+			
+			return this;
+		};
+		
+		this.enable =  function() {
+			S.enabled = true;
+			return this;
+		};
+		
+		this.disable = function() {
+			S.enabled = false;
+			return this;
+		};
+	};	
 	
 	_.extend(Selector.prototype, Backbone.Events);	
 	
@@ -403,15 +431,15 @@
 				days.push({
 					"id": dateRunner.toString(),
 					"day": dateRunner.getDate(),
-					"note":null,
-					"sysNote":null,
-					"holiday":null,
-					"bankHoliday":null,
-					"shiftStart":null,
-					"shiftEnd":null,
+					"note": null,
+					"sysNote": null,
+					"holiday": null,
+					"bankHoliday": null,
+					"shiftStart": null,
+					"shiftEnd": null,
 					"year": dateRunner.getYear(),
 					"isFirstDayOfWeek": dateRunner.isFirstDayOfWeek(),
-					"isLastDayOfWeek": dateRunner.isLastDayOfWeek(),
+					"isLastDayOfWeek": dateRunner.isLastDayOfWeek()
 				});
 				
 				loop++;
@@ -449,7 +477,7 @@
 			})
 			.fail(function() {
 				
-			})
+			});
 //			.always(function() {
 //				alert("complete");
 //			});
@@ -457,20 +485,40 @@
 	});
 	
 	var AppView = Backbone.View.extend({
-		el: $('#body'),
+		el: $('body'),
+		mode:'default',
 		
 		initialize: function() {
 			this.user = new Zidane.User(screwfix.user, new Zidane.Acl(screwfix.acl.roles));
 			
 			this.calendar = new CalendarView({master: this});
+			
+			this.calendarPlacer = new Zidane.Placer();
+		},
+		
+		layover: function() {
+			$layover = Zidane.create('div', 'layover')
+			// you need to stop native "mouseup" event used in Selector to fire Selector's "selected" event
+			.mouseup(function(event) {
+				event.stopPropagation();
+			})
+			// also "mousewheel" event neeeds to be stopped
+//			.mousewheel(function(event) {
+//				event.stopPropagation();
+//			});			
+			.appendTo(this.el);
+			
+			return $layover;
 		}
-	})
+	});
+	
+	AppView.MODE_DEFAULT = 'default';
+	AppView.MODE_HOLIDAYS = 'holidays';
 	
 	// Calendar view
 	var CalendarView = Backbone.View.extend({
 		el: $('#calendar'),
 		$calendarBar: null,
-		mode: null,
 
 		initialize: function(options) {
 			// master is AppView
@@ -490,13 +538,13 @@
 			this.navigatorModel = new NavigatorModel(screwfix.today);			
 			
 			// view navigator
-			this.navigatorView = new NavigatorView({model: this.navigatorModel, master: this});
+			this.navigatorView = new NavigatorView({model: this.navigatorModel, master: this.master, parent: this});
 			
 			// view tools
-			this.toolsView = new ToolsView({master: this});
+			this.toolsView = new ToolsView({master: this.master, parent: this});
 			
 			// view month
-			this.monthView = new MonthView({collection: this.calendarDayCollection, master: this});
+			this.monthView = new MonthView({collection: this.calendarDayCollection, master: this.master, parent: this});
 			
 			this.on('change:month:prev', this.dateNavigator.prevMonth, this.dateNavigator);
 			this.on('change:month:next', this.dateNavigator.nextMonth, this.dateNavigator);
@@ -508,10 +556,27 @@
 			this.on('change:week', this.navigatorView.changeWeekDate, this.navigatorView);
 			this.on('change:week', this.monthView.changeMonth, this.monthView);
 			
-			this.renderCalendar();
+			this.toolsView.on(
+				'holidayson', 
+				function() {
+					this.master.mode = AppView.MODE_HOLIDAYS; 
+					this.monthView.selector.enable();
+				}, 
+				this
+			);
+			this.toolsView.on(
+				'holidaysoff', 
+				function() {
+					this.master.mode = AppView.MODE_DEFAULT; 
+					this.monthView.selector.disable();
+				}, 
+				this
+			);
+			
+			this.render();
 		},
 			
-		renderCalendar: function() {
+		render: function() {
 			this.$el.append(appGlobal.templates.calendarView.html());
 			
 			this.$calendarBar = this.$el.find('#calendarBar');
@@ -602,8 +667,8 @@
 		template: appGlobal.templates.navigatorView,
 		
 		initialize: function(options) {
-			// master view is CalendarView
-			this.master = options.master;
+			// parent view is CalendarView
+			this.parent = options.parent;
 			
 			this.render();
 			
@@ -618,17 +683,17 @@
 		
 		events: {
 			"click #prevMonth": "prevMonth",
-			"click #nextMonth": "nextMonth",
+			"click #nextMonth": "nextMonth"
 		},
 		
 		prevMonth: function() {
-			this.master.prevMonth();
+			this.parent.prevMonth();
 			
 			return this;
 		},
 			
 		nextMonth: function() {
-			this.master.nextMonth();
+			this.parent.nextMonth();
 			
 			return this;
 		},
@@ -666,8 +731,8 @@
 		template: appGlobal.templates.toolsView,
 		
 		initialize: function(options) {
-			// master is CalendarView
-			this.master = options.master;
+			// parent is CalendarView
+			this.parent = options.parent;
 			
 			this.render();
 		},
@@ -688,14 +753,13 @@
 			
 			if ($el.hasClass('selected')) {
 				$el.removeClass('selected');
-				this.master.mode = null;
+				this.trigger('holidaysoff');
 				
 			}
 			else {
 				$el.addClass('selected');
-				this.master.mode = 'holidays';
-			}
-			
+				this.trigger('holidayson');
+			}		
 			
 		}
 	});
@@ -706,23 +770,27 @@
 		template: appGlobal.templates.monthView,
 		
 		initialize: function(options) {
-			// master view is CalendarView
+			// parent view is CalendarView
+			this.parent = options.parent;
+			// master is AppView
 			this.master = options.master;
 			
 			this.$el.mousewheel(function(event, delta){
 				if (delta > 0) {
-					options.master.prevWeek();
+					options.parent.prevWeek();
 				}
 				else {
-					options.master.nextWeek();
+					options.parent.nextWeek();
 				}
 			});
 			
 			this.selectionMode = false;
 			
-			this.dateNavigator = options.master.dateNavigator;
+			this.dateNavigator = this.parent.dateNavigator;
 			
 			this.dayViews = [];
+			
+			this.selector = null;
 			
 			this.render(this.dateNavigator);
 		},
@@ -736,7 +804,7 @@
 			
 			this.$el.html(this.template({}));
 			
-			this.$tableHeader = this.$el.find('table#calendarHeaderTable')
+			this.$tableHeader = this.$el.find('table#calendarHeaderTable');
 			this.$tableMain = this.$el.find('table#calendarMainTable');
 
 			var that = this;
@@ -754,6 +822,7 @@
 					model: item,
 					now: now,
 					currDisplayMonth: current,
+					master: that.parent.master,
 					parent: that,
 					order: order++
 				});
@@ -768,20 +837,36 @@
 				$tr.append(dayView.render().el);
 			});
 			
-			var selector = new Selector(this.$el, this.dayViews, {info: {callback: this.master.holidaysInfo, context: this.master}});
-			selector.on('started', function() {
-				if (that.master.mode === 'holidays') {
+			this.selector = new Selector(this.$el, this.dayViews, {info: {callback: this.parent.holidaysInfo, context: this.parent}});
+			
+			if (this.master.mode === AppView.MODE_HOLIDAYS) {
+				this.selector.enable();
+			}
+
+			this.selector.on('started', function() {
+				if (that.master.mode === AppView.MODE_HOLIDAYS) {
 					this.setShowInfo(true);
 				}
 				else {
 					this.setShowInfo(false);
 				}
 			});
-			selector.on('selected', function(selection){
-				// pridej akci
-				if (selection.length == 1) {
-					selection[0].addNote();
-				}
+			
+			this.selector.on('selected', function(selection) {
+//				if (that.parent.mode === 'default') {
+//					// no mode selected
+//					if (selection.length == 1) {
+//						selection[0].addNote(this);
+//					}
+//					else {
+//						// add some code
+//					}
+//				}
+//				
+//				if (that.parent.mode === 'holidays') {
+//					// holidays mode selected
+//					// add some code
+//				}
 			});
 			
 			return this;
@@ -804,7 +889,18 @@
 		},
 		
 		clear: function() {
+			for (var i=0; i<this.dayViews.length; i++) {
+				this.dayViews[i].off();
+			}
+			
 			this.dayViews = [];
+			
+			if (this.selector !== null) {
+				// remove old events
+				this.selector.off();
+				this.selector = null;
+			}
+			
 			this.$el.children().remove();
 		},
 			
@@ -819,6 +915,7 @@
 	var DayView = Backbone.View.extend({
 		tagName: 'td',
 		template: appGlobal.templates.dayView,
+		templateAddNote: appGlobal.templates.addNote,
 		selection: {
 			isSelected: true
 		},
@@ -829,9 +926,12 @@
 			this.$cell = null;
 			
 			this.now = options.now;
-			this.currDisplayMonth = options.currDisplayMonth;
+			this.currDisplayMonth = options.currDisplayMonth;			
+			// master is AppView
+			this.master = options.master;
 			// parent is MonthView
 			this.parent = options.parent;
+			this.user = options.master.user;
 			// order number in display month 
 			this.order = options.order;
 			
@@ -850,6 +950,13 @@
 				that.trigger('mouseover', that);
 			});
 		},
+		
+		events: {
+			"click": "addNote",
+			"click .note": "editNote",
+			"click .sysNote": "editNote",
+			"render": "afterRender"
+		},
 
 		render: function() {
 			this.$el.html(this.template({data: this.model.attributes, view: this}));
@@ -858,9 +965,49 @@
 				this.resize(this.height);
 			}
 			
-			this.$cell = this.$el.find('div.selected')
+			this.$cell = this.$el.find('div.selected');
+			
+			this.$el.trigger('render');
 			
 			return this;
+		},
+		
+		/**
+		 * Called after view is rendered
+		 */
+		afterRender: function() {
+			var notes = this.model.get('note');
+			var sysNotes = this.model.get('sysNote');
+			
+			if (notes !== null) {
+				this.$el.find('.note').each(function(i){
+					$(this).data('note', {i: i, type: 'personal', val: notes[i]});
+				});
+			}
+			
+			if (sysNotes !== null) {
+				this.$el.find('.sysNote').each(function(i){
+					$(this).data('note', {i: i, type: 'system', val: sysNotes[i]});
+				});
+			}
+		},
+		
+		/**
+		 * Returns string representation of this DayView. (eg. Wednesday, 26 April)
+		 * 
+		 * @returns {string}
+		 */
+		toString: function() {
+			var format = function() {
+				var test = this;
+				test;
+				return Zidane.capitalize(this.getWeekDayString())+', '+this.getDate()+' '+Zidane.capitalize(this.getMonthString());
+			};
+			
+			var calendar = new Zidane.Calendar(null, null, null, format);
+			calendar.setFromStr(this.model.id);
+			
+			return calendar.toString();
 		},
 		
 		resize: function(height) {
@@ -868,6 +1015,95 @@
 			this.height = height;
 		},
 		
+		/**
+		 * Event handler. 
+		 * Displays form for adding note and saves it.
+		 * @param {jQuery event} e
+		 */
+		addNote: function(e) {
+			var note = {
+				when: this.toString(),
+				i: null,
+				val: null,
+				type: 'personal',
+				action: 'add'
+			};
+
+			this.noteForm(note);			
+		},
+		
+		/**
+		 * Event handler
+		 * @param {jQuery event} e
+		 */
+		editNote: function(e) {
+			e.stopPropagation();
+			
+			var defaults = {
+				when: this.toString(),
+				i: null,
+				val: null,
+				type: null,
+				action: 'edit'
+			};				
+
+			var note = $(e.target).data('note');
+
+			note = $.extend({}, defaults, note);				
+
+			this.noteForm(note);
+						
+		},
+		
+		noteForm: function(note) {
+			if (this.master.mode === AppView.MODE_DEFAULT && this.user.isAllowed(Zidane.Acl.MEMBER)) {
+				if (note.type === 'system' && !this.user.isAllowed(Zidane.Acl.EDITOR)) {
+					return;
+				}
+				new NoteFormView({
+					note: note, 
+					master: this.master, 
+					parent: this, 
+					user: this.user
+				});
+			}
+		},
+		
+		/**
+		 * Save note to model
+		 * @param {object} note
+		 */
+		saveNote: function(note) {
+			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
+			var newNote = [];
+			
+			if (oldNote !== null) {
+				newNote = oldNote.slice();
+				
+				if (note.action === 'add') {
+					newNote.push(note.val);
+				}
+				else {
+					newNote[note.i] = note.val;
+				}
+			}
+			else {
+				newNote.push(note.val);
+			}
+			
+			if (note.type === 'personal')
+			{
+				if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
+					this.model.set({note: newNote}).save();
+				}
+			}
+			else {
+				if (this.user.isAllowed(Zidane.Acl.EDITOR)) {
+					this.model.set({sysNote: newNote}).save();
+				}
+			}
+		},
+
 		isFirstDayOfWeek: function() {
 			return this.model.get('isFirstDayOfWeek');
 		},
@@ -905,7 +1141,143 @@
 		
 		unselect: function() {
 			this.$cell.css('display', 'none');
+		},
+		
+		placePopup: function($popup) {
+			var popupH = $box.height();
+			var popupW = $box.width();
+			
+			var cellH = this.$el.outerHeight();
+			var cellW = this.$el.outerWidth();
+			
+			
+			
 		}
+	});
+	
+	var NoteFormView = Backbone.View.extend({
+		tagName: 'td',
+		className: 'popupBox form',		
+		templateAdd: appGlobal.templates.addNote,
+		templateEdit: appGlobal.templates.editNote,
+		
+		initialize: function(options) {
+			this.master = options.master;
+			this.parent = options.parent;
+			this.user = options.user;
+			this.note = options.note;
+			
+			this.$layover = null;
+			
+			this.render();
+		},
+		
+		events: {
+			"click button[name|='save']": "save",
+			"click button[name|='delete']": "delete",
+			"click #personal": "switchToPersonal",
+			"click #system": "switchToSystem"
+		},
+		
+		render: function() {			
+			var that = this;
+			
+			if (this.note.action === 'add') {
+				this.renderAdd();
+			}
+			else {
+				this.renderEdit();
+			}
+			
+			this.$layover = this.master.layover()
+			.one('click', function(event) {
+				event.stopPropagation();
+
+				that.parent.unselect();
+
+				that.clear();
+
+				$(this).remove();
+			});
+			
+			this.$el.css('display', 'block')
+			.appendTo(this.master.el);
+			
+			this.master.calendarPlacer.place(this.$el, this.parent.$el);			
+		},
+		
+		renderAdd: function() {
+			$.extend( 
+				this.note, 
+				{showSwitcher: this.user.isAllowed(Zidane.Acl.EDITOR)}
+			);
+			
+			this.$el.html(this.templateAdd(this.note));
+						
+		},
+		
+		renderEdit: function() {
+			if (this.note.type === 'system' && !this.user.isAllowed(Zidane.Acl.EDITOR)) {
+				this.remove();
+				return;
+			}
+			
+			this.$el.html(this.templateEdit(this.note));
+		},
+		
+		switchToPersonal: function(e) {
+			this.switch('personal', e);
+		},
+		
+		switchToSystem: function(e) {			
+			this.switch('system', e);
+		},
+		
+		switch: function(type, e) {
+			this.note.type = type;
+			
+			$(e.target)
+			.closest('div.switcher')
+			.find('a')
+			.each(function(){
+				var $el = $(this);
+			
+				$el.removeClass();
+				
+				if ($el.attr('id') === type) {
+					$el.addClass('selected');
+				}
+			});
+		},
+		
+		save: function() {
+			var val = this.$el.find('textarea').val().trim();
+			
+			if (val === '' || val === this.note.val) {
+				this.clear();
+				return;
+			}
+			
+			this.note.val = val;
+			
+			this.parent.saveNote(this.note);
+			
+			this.clear();			
+		},
+		
+		delete: function() {
+			
+		},
+		
+		clear: function() {
+			if (this.$layover) {
+				this.$layover.remove();
+			}
+			
+			this.remove();
+		}
+		
+		
 	});
 
 	//create instance of master view

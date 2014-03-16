@@ -31,7 +31,7 @@
 		<% } %>
 		<% if (mo.data.sysNote !== null) { %>				
 			<% _.each(mo.data.sysNote, function(item) { %> 
-				<div class="note highlight">	
+				<div class="sysNote highlight">	
 					<%- item %>
 				</div>
 			<% }); %>	
@@ -68,9 +68,40 @@
 
 <script type="text/template" id="holidaysInfoTemplate">
 	<div>
-		<div>Selected: <%= hi.selected %></div>
-		<div>Holidays left: <%= hi.left %></div>
+		<div>Selected: <%= data.selected %></div>
+		<div>Holidays left: <%= data.left %></div>
 	</div>
+</script>
+
+<script type="text/template" id="addNoteTemplate">
+	<form action="#">
+		<% if (data.showSwitcher) { %>
+		<div class="switcher">
+			<a href="#" id="personal" class="selected">Personal</a> | <a href="#" id="system">System</a>
+		</div>
+		<% } %>
+		<div>When: <%= data.when%></div>
+		<div>
+			<textarea name="note" maxlength="500" />				
+		</div>
+		<div>
+			<button name="save" type="button">Save</button>
+		</div>
+	</form>
+</script>
+
+<script type="text/template" id="editNoteTemplate">
+	<form action="#">
+		<div>When: <%= data.when%></div>
+		<div>
+			<textarea name="note" maxlength="500"><%- data.val %></textarea>				
+		</div>
+		<div>
+			<button name="save" type="button">Save</button>
+			<button name="delete" type="button">Delete</button>
+
+		</div>
+	</form>
 </script>
 
 <script type="text/javascript" src="{$basePath}/js/jquery.mousewheel.js"></script>

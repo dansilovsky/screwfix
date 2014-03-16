@@ -23,3 +23,20 @@ h1 {
 	background-color: $color-highlight;
 	color: $text-color-highlight;
 }
+.layover {
+	@include opacity(0.5);
+	background-color: black;
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+.popupBox {
+	background-color: #fff;
+	border: 2px solid #000;
+	display: none;
+	line-height: $line-height-normal;
+	padding: $padding-main;
+	position: fixed;	
+}

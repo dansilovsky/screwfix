@@ -383,10 +383,175 @@
 	Acl.EDITOR = 'editor';
 	Acl.ADMIN = 'admin';
 	
+	/**
+	 * Placer places a popup boxes to positions calculated 
+	 * from positions of given parent cells in a grid.
+	 */
+	var Placer = Zidane.Placer = function() {
+		var 
+		boxH, boxW, boxHHalf, boxWHalf,
+		cellH, cellW, cellHHalf, cellWHalf, 
+		cellT, cellL, cellTCenter, cellLCenter, 
+		docH, docW;
+	
+		var offset = 5;
+		
+		var P = {
+			$doc: $(document)
+		}
+		
+		var setup = function($box, $cell) {
+			boxH = $box.outerHeight();
+			boxW = $box.outerWidth();
+
+			boxHHalf = Math.floor(boxH/2);
+			boxWHalf = Math.floor(boxW/2);
+
+			cellH = $cell.outerHeight();
+			cellW = $cell.outerWidth();
+
+			cellHHalf = Math.floor(cellH/2);
+			cellWHalf = Math.floor(cellW/2);
+
+			docH =  P.$doc.height();
+			docW = P.$doc.width();
+
+			var cellOffset = $cell.offset();
+
+			cellT = cellOffset.top;
+			cellL = cellOffset.left;
+
+			cellTCenter = cellT + cellHHalf;
+			cellLCenter = cellL + cellWHalf;
+		}
+		
+		var checkTop = function() {
+			return (cellT - offset - boxH - offset > 0);
+		}
+		
+		var checkBottom = function() {
+			return (cellT + cellH + offset + boxH + offset < docH);
+		}
+		
+		var checkLeft = function() {
+			return (boxWHalf + offset < cellLCenter);
+		}
+		
+		var checkRight = function() {
+			return (cellLCenter + boxWHalf + offset < docW);
+		}
+		
+		var checkSideTop = function() {
+			return (cellTCenter - boxHHalf > 0);
+		}
+		
+		var checkSideBottom = function() {
+			return (cellTCenter + boxHHalf < docH);
+		}
+		
+		var placeTop = function() {
+			var top = cellT - offset - boxH;
+			
+			if (!checkTop()) {
+				top = offset;
+			}
+			
+			return {
+				top: top,
+				left: cellLCenter - boxWHalf
+			}
+		}
+		
+		var placeBottom = function() {
+			var top = cellT + cellH + offset;
+			
+			if (!checkBottom()) {
+				top = docH - offset;
+			}
+			
+			return {
+				top: top,
+				left: cellLCenter - boxWHalf
+			}
+		}
+		
+		var placeLeft = function() {
+			var top = cellTCenter - boxHHalf;
+			
+			if (!checkSideBottom()) {
+				top = docH - offset - boxH;
+			}
+			
+			if (!checkSideTop()) {
+				top = offset;
+			}
+			
+			return {
+				top: top,
+				left: cellL - offset - boxW
+			}
+		}
+		
+		var placeRight = function() {
+			var top = cellTCenter - boxHHalf;
+			
+			if (!checkSideBottom()) {
+				top = docH - offset - boxH;
+			}
+			
+			if (!checkSideTop()) {
+				top = offset;
+			}
+			
+			return {
+				top: top,
+				left: cellL + cellW + offset
+			}
+		}
+		
+		return {
+			/**
+			 * Returns new offset position of given $box calculeted from $cell position
+			 * @param {type} $box
+			 * @param {type} $cell
+			 * @returns {object} eg. {top: 100, left: 50}
+			 */
+			offset: function($box, $cell) {
+				if (checkLeft() && checkRight()) {
+					return checkBottom() ? placeBottom() : placeTop();
+				}
+				
+				if (checkLeft()) {
+					return placeLeft();
+				}
+				else {
+					return placeRight();
+				}
+				
+				var smaz = 0;
+				
+				return placeTop();
+			},
+			
+			/**
+			 * Places a $box to new position calculated from a $cell position
+			 * @param {jQuery} $box
+			 * @param {jQuery} $cell
+			 */
+			place: function($box, $cell) {
+				setup($box, $cell);
+				
+				var offset = this.offset();
+				
+				$box.css({top: offset.top, left: offset.left})				
+			}
+		}
+	}	
+	
 	// Utilities
 	Zidane.capitalize = function(str) {
 		return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
-	}
+	};
 	
 	/*
 	* Function creates new element and wraps it in jQuery object
