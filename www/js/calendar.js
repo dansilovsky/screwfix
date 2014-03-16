@@ -346,7 +346,7 @@
 		 * @returns {bool}
 		 */
 		isToday: function(today) {
-			return todday === this.id ? true : false;				
+			return today === this.id ? true : false;				
 		}
 	});
 
