@@ -231,9 +231,6 @@
 				S.that.on('added', S.that.appendInfo, S.that.settings);				
 			}
 			
-			var boxWidth = S.$selectionInfo.outerWidth();
-			var boxHeight = S.$selectionInfo.outerHeight();
-			
 			var infoArgs = {
 				document: {
 					height: S.$document.height(),
