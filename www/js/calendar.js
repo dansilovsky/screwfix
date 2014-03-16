@@ -501,11 +501,7 @@
 			// you need to stop native "mouseup" event used in Selector to fire Selector's "selected" event
 			.mouseup(function(event) {
 				event.stopPropagation();
-			})
-			// also "mousewheel" event neeeds to be stopped
-//			.mousewheel(function(event) {
-//				event.stopPropagation();
-//			});			
+			})			
 			.appendTo(this.el);
 			
 			return $layover;
