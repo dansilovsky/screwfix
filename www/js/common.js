@@ -1,3 +1,4 @@
+// common views
 (function($){
 	var common = {};
 	
@@ -79,9 +80,6 @@
 			
 			this.$el.html(this.template(this.data))
 			.appendTo(appGlobal.$body);
-			
-//			var h = Math.floor(this.$el.outerHeight()/2);
-//			var documentH = Math.floor($(document).height()/2);
 
 			var top = Math.floor($(document).height()/2) - Math.floor(this.$el.outerHeight()/2);
 			
