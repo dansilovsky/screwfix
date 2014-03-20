@@ -1186,17 +1186,6 @@
 				this.renderEdit();
 			}
 			
-//			this.$layover = this.master.layover()
-//			.one('click', function(event) {
-//				event.stopPropagation();
-//
-//				that.parent.unselect();
-//
-//				that.clear();
-//
-//				$(this).remove();
-//			});
-			
 			this.layover = new Screwfix.common.LayoverView();
 			this.layover.on(
 				'click', 
