@@ -1,4 +1,4 @@
-(function(){
+(function($){
 
 	var root = this;
 
@@ -567,4 +567,4 @@
 		return $el;
 	}
 
-}).call(this);
+}).call(this, jQuery);
