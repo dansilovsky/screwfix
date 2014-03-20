@@ -1208,7 +1208,8 @@
 			);
 			
 			this.$el.css('display', 'block')
-			.appendTo(this.master.el);
+			.appendTo(this.master.el)
+			.find('textarea').setCursorPosition();
 			
 			this.master.calendarPlacer.place(this.$el, this.parent.$el);			
 		},

@@ -38,6 +38,11 @@
 		</div>
 		<script type="text/javascript" src="{$basePath}/js/netteForms.js"></script>
 		<script type="text/javascript" src="{$basePath}/js/jquery.js"></script>
+		<script type="text/template" id="commonAlert">
+			<div><%= data.title%></div>
+			<div><%= data.message%></div>
+			<button>Ok</button>
+		</script>
 		{ifset #javascritpBottom}{include #javascritpBottom}{/ifset}		
 	</body>
 </html>	
