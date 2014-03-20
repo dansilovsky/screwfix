@@ -1,3 +1,40 @@
+// screwfix jQuery plugins
+(function($){
+	/**
+	 * Sets cursor to given position.
+	 * 
+	 * @param {int} pos position where to set cursor. If not provided position is set at the end of text.
+	 * @returns {jQuery} this
+	 */
+	$.fn.setCursorPosition = function(pos) {
+		if (_.isUndefined(pos)) {
+			pos = false;
+		}
+		
+		this.each(function(i, el) {
+			if (pos === false) {
+				var $el = $(el);
+				
+				pos = $el.val().length;
+			}
+			
+			if (el.setSelectionRange) {
+				el.setSelectionRange(pos, pos);
+			} 
+			else if (el.createTextRange) {
+				var range = el.createTextRange();
+				range.collapse(true);
+				range.moveEnd('character', pos);
+				range.moveStart('character', pos);
+				range.select();
+			}
+		});
+		
+		return this;
+	};
+
+})(jQuery);
+
 // common views
 (function($){
 	var common = {};
