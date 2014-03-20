@@ -1,4 +1,4 @@
-(function($) {	
+(function($) {
 	
 	var appGlobal = {
 		// stores compiled tamplates
@@ -339,7 +339,9 @@
 	var NavigatorModel = Backbone.Model.extend({});
 	
 	// Day model
-	var DayModel = Backbone.Model.extend({
+	var DayModel = Backbone.Model.extend({		
+		urlRoot: window.document.URL + 'api/days/',
+		
 		/**
 		 * 
 		 * @param {string} today  date in format yyyy-mm-dd
@@ -484,9 +486,10 @@
 	var AppView = Backbone.View.extend({
 		el: $('body'),
 		mode:'default',
+		urlRoot: window.document.URL,
 		
-		initialize: function() {
-			this.user = new Zidane.User(screwfix.user, new Zidane.Acl(screwfix.acl.roles));
+		initialize: function() {			
+			this.user = new Zidane.User(Screwfix.user, new Zidane.Acl(Screwfix.acl.roles));
 			
 			this.calendar = new CalendarView({master: this});
 			
@@ -494,7 +497,7 @@
 		},
 		
 		layover: function() {
-			$layover = Zidane.create('div', 'layover')
+			var $layover = Zidane.create('div', 'layover')
 			// you need to stop native "mouseup" event used in Selector to fire Selector's "selected" event
 			.mouseup(function(event) {
 				event.stopPropagation();
@@ -517,18 +520,18 @@
 			// master is AppView
 			this.master = options.master;
 			
-			this.holidays = {total: screwfix.holidays.total, used: screwfix.holidays.used};
+			this.holidays = {total: Screwfix.holidays.total, used: Screwfix.holidays.used};
 			
 			this.user = this.master.user;
 			
 			// collection of day models
-			this.calendarDayCollection = new CalendarDayCollection(screwfix.calendarDaysData, {comparator: false});
+			this.calendarDayCollection = new CalendarDayCollection(Screwfix.calendarDaysData, {comparator: false});
 			
 			// date navigator
-			this.dateNavigator = new DateNavigator(screwfix.today);
+			this.dateNavigator = new DateNavigator(Screwfix.today);
 			
 			// model navigator
-			this.navigatorModel = new NavigatorModel(screwfix.today);			
+			this.navigatorModel = new NavigatorModel(Screwfix.today);			
 			
 			// view navigator
 			this.navigatorView = new NavigatorView({model: this.navigatorModel, master: this.master, parent: this});
@@ -1067,6 +1070,7 @@
 		 * @param {object} note
 		 */
 		saveNote: function(note) {
+			var that = this;
 			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
 			var newNote = [];
 			
@@ -1087,12 +1091,12 @@
 			if (note.type === 'personal')
 			{
 				if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
-					this.model.set({note: newNote}).save();
+					this.model.save({note: newNote}, {patch: true, wait: true});
 				}
 			}
 			else {
 				if (this.user.isAllowed(Zidane.Acl.EDITOR)) {
-					this.model.set({sysNote: newNote}).save();
+					this.model.save({sysNote: newNote}, {patch: true, wait: true});
 				}
 			}
 		},
@@ -1160,7 +1164,7 @@
 			this.user = options.user;
 			this.note = options.note;
 			
-			this.$layover = null;
+			this.layover = null;
 			
 			this.render();
 		},
@@ -1182,16 +1186,26 @@
 				this.renderEdit();
 			}
 			
-			this.$layover = this.master.layover()
-			.one('click', function(event) {
-				event.stopPropagation();
-
-				that.parent.unselect();
-
-				that.clear();
-
-				$(this).remove();
-			});
+//			this.$layover = this.master.layover()
+//			.one('click', function(event) {
+//				event.stopPropagation();
+//
+//				that.parent.unselect();
+//
+//				that.clear();
+//
+//				$(this).remove();
+//			});
+			
+			this.layover = new Screwfix.common.LayoverView();
+			this.layover.on(
+				'click', 
+				function() {
+					this.parent.unselect();
+					this.clear();
+				},
+				this			
+			);
 			
 			this.$el.css('display', 'block')
 			.appendTo(this.master.el);
@@ -1263,8 +1277,8 @@
 		},
 		
 		clear: function() {
-			if (this.$layover) {
-				this.$layover.remove();
+			if (this.layover) {
+				this.layover.remove();
 			}
 			
 			this.remove();
@@ -1272,6 +1286,8 @@
 		
 		
 	});
+	
+	
 
 	//create instance of master view
 	var app = new AppView();
