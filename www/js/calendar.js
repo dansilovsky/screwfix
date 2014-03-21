@@ -355,9 +355,14 @@
 	// Calendar day collection
 	var CalendarDayCollection = Backbone.Collection.extend({
 		model: DayModel,
+		loadRange: {start: null, end: null},
 			
 		initialize: function(options) {
 			this.comparator = 'id';
+		},
+		
+		url: function() {
+			return window.document.URL + 'api/days';
 		},
 		
 		filterByDateRange: function(range) {
@@ -400,19 +405,20 @@
 			if (missingDays.length > 0) {
 				var loadRange = {};
 				// first item of array missingDays is actually first day of load range
-				loadRange.start = missingDays[0];
+				this.loadRange.start = missingDays[0];
 				// last item of array missingDays is actually last day of load range
-				loadRange.end = missingDays[missingDays.length-1];
+				this.loadRange.end = missingDays[missingDays.length-1];
 				
 				// build missing days
-				var days = this.buildDays(loadRange);
+				var days = this.buildDays(this.loadRange);
 				
 				this.add(days);
 				
-				this.load(loadRange);
-			}
-			
-			
+				this.fetch({
+					remove: false,
+					data: {from: this.loadRange.start, to: this.loadRange.end}
+				});
+			}	
 			
 		},
 		
@@ -450,36 +456,6 @@
 			}
 			
 			return days;
-		},
-		
-		getNextMonth: function() {
-		
-		},
-		
-		/**
-		 * Loads new days into collection given by argument loadRange.
-		 * Informs buffer controller about result of operation.
-		 * 
-		 * @param   {object} loadRange    eg. {start: '2000-01-01', end: '2000-02-28'}
-		 * @returns {bool} if loaded is succesfully true otherwise false
-		 */	
-		load: function(loadRange) {
-			var that = this;
-			
-			var xhr = $.ajax({
-				url: "api/days?from=" + loadRange.start + '&to=' + loadRange.end,
-				type: 'GET',
-				context: this
-			})
-			.done(function(data) {
-				this.add(data, {merge: true});
-			})
-			.fail(function() {
-				
-			});
-//			.always(function() {
-//				alert("complete");
-//			});
 		}
 	});
 	
@@ -682,13 +658,17 @@
 			"click #nextMonth": "nextMonth"
 		},
 		
-		prevMonth: function() {
+		prevMonth: function(e) {
+			e.preventDefault();
+			
 			this.parent.prevMonth();
 			
 			return this;
 		},
 			
-		nextMonth: function() {
+		nextMonth: function(e) {
+			e.preventDefault();
+			
 			this.parent.nextMonth();
 			
 			return this;
@@ -809,8 +789,9 @@
 			var current = dateNavigator.getCurrentMonth().toString().substr(0, 7);
 			// order number of cell in display month
 			var order = 0;
-			var $tr;		
-			
+			var $tr;			
+			// use fragment to avoid unnecessary browser DOM reflows viz. http://ozkatz.github.io/avoiding-common-backbonejs-pitfalls.html
+			var fragment = document.createDocumentFragment();
 			var models = this.collection.filterByDateRange(dateNavigator.currentRange());
 
 			_.each(models, function(item) {
@@ -827,11 +808,13 @@
 
 				if (dayView.isFirstDayOfWeek()) {
 					$tr = Zidane.create('tr');
-					that.$tableMain.append($tr);
+					fragment.appendChild($tr[0]);
 				}
 
 				$tr.append(dayView.render().el);
 			});
+			
+			this.$tableMain.append(fragment);
 			
 			this.selector = new Selector(this.$el, this.dayViews, {info: {callback: this.parent.holidaysInfo, context: this.parent}});
 			
@@ -886,7 +869,7 @@
 		
 		clear: function() {
 			for (var i=0; i<this.dayViews.length; i++) {
-				this.dayViews[i].off();
+				this.dayViews[i].remove();
 			}
 			
 			this.dayViews = [];
@@ -896,8 +879,6 @@
 				this.selector.off();
 				this.selector = null;
 			}
-			
-			this.$el.children().remove();
 		},
 			
 		changeMonth: function(options) {
@@ -931,7 +912,7 @@
 			// order number in display month 
 			this.order = options.order;
 			
-			this.model.on('change', this.render, this);
+			this.listenTo(this.model, 'change', this.render);
 			
 			// height of cell
 			this.height = null;
