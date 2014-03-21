@@ -955,6 +955,7 @@
 		},
 
 		render: function() {
+			console.log('DayView.render()');
 			this.$el.html(this.template({data: this.model.attributes, view: this}));
 			
 			if (this.height !== null){
@@ -1070,7 +1071,6 @@
 		 * @param {object} note
 		 */
 		saveNote: function(note) {
-			var that = this;
 			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
 			var newNote = [];
 			
@@ -1086,6 +1086,29 @@
 			}
 			else {
 				newNote.push(note.val);
+			}
+			
+			if (note.type === 'personal')
+			{
+				if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
+					this.model.save({note: newNote}, {patch: true, wait: true});
+				}
+			}
+			else {
+				if (this.user.isAllowed(Zidane.Acl.EDITOR)) {
+					this.model.save({sysNote: newNote}, {patch: true, wait: true});
+				}
+			}
+		},
+		
+		deleteNote: function(note) {
+			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
+			
+			var newNote = oldNote.slice();
+			newNote.splice(note.i, 1);
+			
+			if (newNote.length === 0) {
+				newNote = null;
 			}
 			
 			if (note.type === 'personal')
@@ -1263,7 +1286,9 @@
 		},
 		
 		delete: function() {
+			this.parent.deleteNote(this.note);
 			
+			this.clear();
 		},
 		
 		clear: function() {
