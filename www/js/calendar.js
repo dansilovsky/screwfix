@@ -912,7 +912,7 @@
 			// order number in display month 
 			this.order = options.order;
 			
-			this.listenTo(this.model, 'change', this.render);
+			this.listenTo(this.model, 'change', this.renderOnChange);
 			
 			// height of cell
 			this.height = null;
@@ -936,7 +936,6 @@
 		},
 
 		render: function() {
-			console.log('DayView.render()');
 			this.$el.html(this.template({data: this.model.attributes, view: this}));
 			
 			if (this.height !== null){
@@ -948,6 +947,12 @@
 			this.$el.trigger('render');
 			
 			return this;
+		},
+		
+		renderOnChange: function(model, options) {			
+			if (this.model.id === model.id) {
+				this.render();
+			}
 		},
 		
 		/**
