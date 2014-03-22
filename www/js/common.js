@@ -102,7 +102,7 @@
 		initialize: function(options) {			
 			this.data = {
 				title: options.title,
-				message: options.message
+				text: options.text
 			};
 			
 			this.render();			
@@ -132,6 +132,55 @@
 		}
 	});
 	
+	var ConfirmView = common.ConfirmView = Backbone.View.extend({
+		id: 'confirm',
+		className: 'confirm',
+		template: appGlobal.templates.confirm,
+		
+		initialize: function(options) {			
+			this.data = {
+				title: options.title,
+				text: options.text
+			};
+			
+			this.render();			
+		},
+		
+		render: function() {
+			this.layoverView = new LayoverView({autoRemove: false});
+			
+			this.$el.html(this.template(this.data))
+			.appendTo(appGlobal.$body);
+
+			var top = Math.floor($(document).height()/2) - Math.floor(this.$el.outerHeight()/2);
+			
+			this.$el.css({top: top, left: 0});
+		},
+		
+		events: {
+			"click button[name|='ok']": "ok",
+			"click button[name|='cancel']": "cancel"
+		},
+		
+		ok: function() {
+			this.trigger('ok');
+			this.clear();
+		},
+		
+		cancel: function() {
+			this.trigger('cancel');
+			this.clear();
+		},
+		
+		clear: function() {
+			if (this.layoverView) {
+				this.layoverView.remove();
+			}
+			
+			this.remove();			
+		}
+	});
+	
 	Screwfix = $.extend({}, Screwfix, {common: common});
 	
 }).call(this, jQuery);
@@ -145,7 +194,7 @@ Backbone.screwfixQueues  = {
 Backbone.Model.prototype.connectionErrorAlert = function() {
 	new Screwfix.common.AlertView({
 		title: 'Connection error', 
-		message: "There's a problem connecting to Calendar at the moment. Please make sure that you're connected to the Internet and try again."
+		text: "There's a problem connecting to Calendar at the moment. Please make sure that you're connected to the Internet and try again."
 	});
 }
 
