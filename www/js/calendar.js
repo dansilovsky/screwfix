@@ -158,11 +158,9 @@
 			}
 		});
 		
-		
-		
 		for (var i=0; i<S.cells.length; i++) {			
 			S.cells[i].on('leftmousedown', function(cell, event) {
-				if (S.enabled) {					
+				if (S.enabled) {
 					// start selection procedures only if selection is enabled
 					S.that.trigger('started');
 
@@ -330,6 +328,13 @@
 		this.disable = function() {
 			S.enabled = false;
 			return this;
+		};
+		
+		this.clear = function() {
+			for (var i=0; i<S.cells.length; i++) {
+				S.cells[i].off();
+			}
+			this.off();
 		};
 	};	
 	
