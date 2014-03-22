@@ -11,6 +11,7 @@ html {
 
 body {
 	font-size: 0.875em; /* 14/16 */
+	min-width: 987px;
 }
 
 h1 {
@@ -35,8 +36,14 @@ h1 {
 .popupBox {
 	background-color: #fff;
 	border: 2px solid #000;
-	display: none;
 	line-height: $line-height-normal;
 	padding: $padding-main;
 	position: fixed;	
+}
+.alert {	
+	background-color: #fff;
+	border: 2px solid #000;
+	line-height: $line-height-normal;
+	padding: $padding-main;
+	position: fixed;
 }

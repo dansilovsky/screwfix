@@ -89,22 +89,23 @@ html {
 body {
   font-size: 0.875em;
   /* 14/16 */
+  min-width: 987px;
 }
 
-/* line 16, ../../app/sass/sass/partials/_common.scss */
+/* line 17, ../../app/sass/sass/partials/_common.scss */
 h1 {
   font-size: 1.42857em;
   line-height: 40px;
   height: 40px;
 }
 
-/* line 22, ../../app/sass/sass/partials/_common.scss */
+/* line 23, ../../app/sass/sass/partials/_common.scss */
 .highlight {
   background-color: #3074b6;
   color: white;
 }
 
-/* line 26, ../../app/sass/sass/partials/_common.scss */
+/* line 27, ../../app/sass/sass/partials/_common.scss */
 .layover {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
   opacity: 0.5;
@@ -116,11 +117,19 @@ h1 {
   width: 100%;
 }
 
-/* line 35, ../../app/sass/sass/partials/_common.scss */
+/* line 36, ../../app/sass/sass/partials/_common.scss */
 .popupBox {
   background-color: #fff;
   border: 2px solid #000;
-  display: none;
+  line-height: 20px;
+  padding: 15px;
+  position: fixed;
+}
+
+/* line 43, ../../app/sass/sass/partials/_common.scss */
+.alert {
+  background-color: #fff;
+  border: 2px solid #000;
   line-height: 20px;
   padding: 15px;
   position: fixed;

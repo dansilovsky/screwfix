@@ -756,6 +756,12 @@
 			// master is AppView
 			this.master = options.master;
 			
+			this.$document = $(document);
+			
+			this.$window = $(window);
+			
+			this.$window.on('resize', {context: this},this.resizeOn);
+			
 			this.$el.mousewheel(function(event, delta){
 				if (delta > 0) {
 					options.parent.prevWeek();
@@ -857,19 +863,34 @@
 		},
 
 		resize: function() {
-			var documentHeight = $(document).height();
-			var substract = $('#mainBar').height() + $('#calendarBar').height() + this.$tableHeader.height() + $('#footer').height();
+			var documentHeight = this.$document.height();
+			
+			if (!this.$mainBar) {
+				this.$mainBar = $('#mainBar');
+				this.$calendarBar = $('#calendarBar');
+				this.$footer = $('#footer');
+			}
+			
+			var substract = this.$mainBar.height() + this.$calendarBar.height() + this.$tableHeader.height() + this.$footer.height();
 
 			this.$tableMain.height(documentHeight-substract);			
 			
 			if (this.dayViews[0]) {
 				// get height of first day view and use it to resize all dayViews div cell elements
 				var dayViewHeight = this.dayViews[0].$el.height();
-
+				
 				_.each(this.dayViews, function(dayView){
 					dayView.resize(dayViewHeight);
 				});
 			}
+		},
+		
+		/**
+		 * Handler for resize event
+		 * @param {object} data
+		 */
+		resizeOn: function(e){
+			e.data.context.resize();
 		},
 		
 		clear: function() {
