@@ -338,7 +338,96 @@
 		};
 	};	
 	
-	_.extend(Selector.prototype, Backbone.Events);	
+	_.extend(Selector.prototype, Backbone.Events);
+	
+	/**
+	 * Resizer for MonthView
+	 * @param {MonthView} view
+	 */
+	var Resizer = function(view) {
+		var R = {
+			that: this,
+			view: view,
+			dayViews: view.dayViews,
+			$window: $(window),
+			docH: $(document).height(),
+			tableH: null,
+			previousTableH: -1,
+			winH: null
+		};
+		
+		R.previousWinH = R.$window.height();
+		
+		R.weeksCount = R.dayViews.length/7;		
+		
+		function resizeCallback(e) {
+			e.data.context.resize();
+		}
+		
+		R.$window.on(
+			'resize', 
+			{context: R.that}, 
+			resizeCallback
+		);
+	
+		this.resize = function() {
+			console.log('1. document height: ', $(document).height());
+			var cellH, cellHExcess, diff;
+
+			if (R.tableH === null) {			
+				R.tableH = R.docH - $('#mainBar').outerHeight() - $('#calendarBar').outerHeight() - view.$el.find('table#calendarHeaderTable').outerHeight() - $('#footer').outerHeight();
+			}
+
+			R.winH = R.$window.height();
+
+			diff = R.winH - R.previousWinH;
+
+			R.tableH += diff;
+
+			cellH = Math.floor(R.tableH/R.weeksCount);
+			
+			cellHExcess = R.tableH%R.weeksCount;
+
+			if (R.tableH !== R.previousTableH) {
+				// resize day views only if height really changed
+				for (var i=0, x=1, xMod, innerCellH, cellBorderH=0; i<R.dayViews.length; i++, x++) {
+					xMod = x%7;
+					
+					// distribute the excess					
+					innerCellH = cellHExcess > 0 ? cellH + 1 : cellH;
+					
+					if (xMod === 1) {
+						cellBorderH = R.dayViews[i].$el.outerHeight() - R.dayViews[i].$el.height();
+					}
+					// remove cell (td) borders if any
+					innerCellH -= cellBorderH;
+					
+					R.dayViews[i].resize(innerCellH);
+					
+					if (xMod === 0) {
+						cellHExcess--;
+					}
+				}
+			}
+
+			R.previousWinH = R.winH;
+			R.previousTableH = R.tableH;
+			console.log('table height + others: ', R.tableH + $('#mainBar').outerHeight() + $('#calendarBar').outerHeight() + view.$el.find('table#calendarHeaderTable').outerHeight() + $('#footer').outerHeight());
+			console.log('2. document height: ', $(document).height());
+		}
+
+		this.resizeCellUp = function() {
+
+		}
+
+		this.resizeCellDown = function() {
+
+		}
+
+		this.clear = function() {
+			R.$window.off('resize', null, resizeCallback);
+		}	
+	};
 	
 	// Navigator model
 	var NavigatorModel = Backbone.Model.extend({});
@@ -581,7 +670,7 @@
 		},
 
 		renderMonth: function() {
-			this.$el.append(this.monthView.el);
+			this.$el.append(this.monthView.el);			
 			this.monthView.resize();
 			
 			return this;
@@ -756,11 +845,7 @@
 			// master is AppView
 			this.master = options.master;
 			
-			this.$document = $(document);
-			
 			this.$window = $(window);
-			
-			this.$window.on('resize', {context: this},this.resizeOn);
 			
 			this.$el.mousewheel(function(event, delta){
 				if (delta > 0) {
@@ -777,6 +862,8 @@
 			
 			this.dayViews = [];
 			
+			this.resizer = null;
+			
 			this.selector = null;
 			
 			this.render(this.dateNavigator);
@@ -791,7 +878,6 @@
 			
 			this.$el.html(this.template({}));
 			
-			this.$tableHeader = this.$el.find('table#calendarHeaderTable');
 			this.$tableMain = this.$el.find('table#calendarMainTable');
 
 			var that = this;
@@ -812,6 +898,7 @@
 					currDisplayMonth: current,
 					master: that.parent.master,
 					parent: that,
+					resizer: that.resizer,
 					order: order++
 				});
 
@@ -859,38 +946,22 @@
 //				}
 			});
 			
+			this.afterRender();
+			
 			return this;
-		},
-
-		resize: function() {
-			var documentHeight = this.$document.height();
-			
-			if (!this.$mainBar) {
-				this.$mainBar = $('#mainBar');
-				this.$calendarBar = $('#calendarBar');
-				this.$footer = $('#footer');
-			}
-			
-			var substract = this.$mainBar.height() + this.$calendarBar.height() + this.$tableHeader.height() + this.$footer.height();
-
-			this.$tableMain.height(documentHeight-substract);			
-			
-			if (this.dayViews[0]) {
-				// get height of first day view and use it to resize all dayViews div cell elements
-				var dayViewHeight = this.dayViews[0].$el.height();
-				
-				_.each(this.dayViews, function(dayView){
-					dayView.resize(dayViewHeight);
-				});
-			}
 		},
 		
 		/**
-		 * Handler for resize event
-		 * @param {object} data
+		 * Called after view is rendered
 		 */
-		resizeOn: function(e){
-			e.data.context.resize();
+		afterRender: function() {
+			this.resizer = new Resizer(this);
+		},
+
+		resize: function() {
+			this.resizer.resize();
+			
+			return this;
 		},
 		
 		clear: function() {
@@ -900,10 +971,14 @@
 			
 			this.dayViews = [];
 			
-			if (this.selector !== null) {
+			if (this.selector) {
 				// remove old events
 				this.selector.off();
 				this.selector = null;
+			}
+			
+			if (this.resizer) {
+				this.resizer.clear()
 			}
 		},
 			
@@ -934,6 +1009,9 @@
 			this.master = options.master;
 			// parent is MonthView
 			this.parent = options.parent;
+			
+			this.resizer = options.resizer;
+			
 			this.user = options.master.user;
 			// order number in display month 
 			this.order = options.order;
