@@ -353,7 +353,8 @@
 			docH: $(document).height(),
 			tableH: null,
 			previousTableH: -1,
-			winH: null
+			winH: null,
+			cellBorderHs: []
 		};
 		
 		R.previousWinH = R.$window.height();
@@ -389,17 +390,22 @@
 
 			if (R.tableH !== R.previousTableH) {
 				// resize day views only if height really changed
-				for (var i=0, x=1, xMod, innerCellH, cellBorderH=0; i<R.dayViews.length; i++, x++) {
+				for (var i=0, x=1, xMod, rowI=0, innerCellH, cellBorderH=0; i<R.dayViews.length; i++, x++) {
 					xMod = x%7;
 					
 					// distribute the excess					
 					innerCellH = cellHExcess > 0 ? cellH + 1 : cellH;
 					
 					if (xMod === 1) {
-						cellBorderH = R.dayViews[i].$el.outerHeight() - R.dayViews[i].$el.height();
+						rowI = i/7;
+						
+						if (_.isUndefined(R.cellBorderHs[rowI])) {
+							R.cellBorderHs[rowI] = R.dayViews[i].$el.outerHeight() - R.dayViews[i].$el.height();
+						}
 					}
+					
 					// remove cell (td) borders if any
-					innerCellH -= cellBorderH;
+					innerCellH -= R.cellBorderHs[rowI];
 					
 					R.dayViews[i].resize(innerCellH);
 					
@@ -414,7 +420,7 @@
 		}
 
 		this.resizeCellUp = function() {
-
+			
 		}
 
 		this.resizeCellDown = function() {
