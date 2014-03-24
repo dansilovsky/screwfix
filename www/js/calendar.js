@@ -371,7 +371,6 @@
 		);
 	
 		this.resize = function() {
-			console.log('1. document height: ', $(document).height());
 			var cellH, cellHExcess, diff;
 
 			if (R.tableH === null) {			
@@ -412,8 +411,6 @@
 
 			R.previousWinH = R.winH;
 			R.previousTableH = R.tableH;
-			console.log('table height + others: ', R.tableH + $('#mainBar').outerHeight() + $('#calendarBar').outerHeight() + view.$el.find('table#calendarHeaderTable').outerHeight() + $('#footer').outerHeight());
-			console.log('2. document height: ', $(document).height());
 		}
 
 		this.resizeCellUp = function() {
@@ -812,9 +809,9 @@
 			
 			this.$el.html(this.template);
 			
-			this.$el.find('li a').click(function() {
-				that.select(this);
-				
+			this.$el.find('li a').click(function(e) {
+				e.preventDefault();
+				that.select(this);				
 			});
 		},
 		
