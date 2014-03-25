@@ -354,7 +354,9 @@
 			tableH: null,
 			previousTableH: -1,
 			winH: null,
-			cellBorderHs: []
+			cellBorderHs: [],
+			// matrix of 
+			compulsoryCellHs: [],
 		};
 		
 		R.previousWinH = R.$window.height();
@@ -418,8 +420,13 @@
 			R.previousWinH = R.winH;
 			R.previousTableH = R.tableH;
 		}
-
-		this.resizeCellUp = function() {
+		
+		/**
+		 * Resizes all cells in the same row to the height of the given one in argument.
+		 * Only if the required height is greater than heigt of other cells in the same row.
+		 * @param {object} cell  eg. {i = 23, height: 210}
+		 */
+		this.requireResizeCellUp = function(cell) {
 			
 		}
 
@@ -1004,7 +1011,9 @@
 		initialize: function(options) {
 			var that = this;
 			
-			this.$cell = null;
+			this.$divSelected = null;
+			
+			this.$cellWrapper = null;
 			
 			this.now = options.now;
 			this.currDisplayMonth = options.currDisplayMonth;			
@@ -1049,7 +1058,9 @@
 				this.resize(this.height);
 			}
 			
-			this.$cell = this.$el.find('div.selected');
+			this.$divSelected = this.$el.find('div.selected');
+			
+			this.$cellWrapper = this.$el.children();
 			
 			this.$el.trigger('render');
 			
@@ -1101,8 +1112,13 @@
 		},
 		
 		resize: function(height) {
-			this.$el.children().height(height);
+			this.$cellWrapper.height(height);
+			
 			this.height = height;
+		},
+		
+		requireResize: function() {
+			this.resizer.requireResizeCellUp();
 		},
 		
 		/**
@@ -1249,11 +1265,11 @@
 		
 		select: function() {
 			//this.$cell.css('background-color', 'black');
-			this.$cell.css('display', 'block');
+			this.$divSelected.css('display', 'block');
 		},
 		
 		unselect: function() {
-			this.$cell.css('display', 'none');
+			this.$divSelected.css('display', 'none');
 		},
 		
 		placePopup: function($popup) {
