@@ -569,7 +569,7 @@
 		urlRoot: window.document.URL,
 		
 		initialize: function() {			
-			this.user = new Zidane.User(Screwfix.user, new Zidane.Acl(Screwfix.acl.roles));
+			this.user = new Zidane.User(this.screwfix.user, new Zidane.Acl(this.screwfix.acl.roles));
 			
 			this.calendar = new CalendarView({master: this});
 			
@@ -600,18 +600,18 @@
 			// master is AppView
 			this.master = options.master;
 			
-			this.holidays = {total: Screwfix.holidays.total, used: Screwfix.holidays.used};
+			this.holidays = {total: this.screwfix.holidays.total, used: this.screwfix.holidays.used};
 			
 			this.user = this.master.user;
 			
 			// collection of day models
-			this.calendarDayCollection = new CalendarDayCollection(Screwfix.calendarDaysData, {comparator: false});
+			this.calendarDayCollection = new CalendarDayCollection(this.screwfix.calendarDaysData, {comparator: false});
 			
 			// date navigator
-			this.dateNavigator = new DateNavigator(Screwfix.today);
+			this.dateNavigator = new DateNavigator(this.screwfix.today);
 			
 			// model navigator
-			this.navigatorModel = new NavigatorModel(Screwfix.today);			
+			this.navigatorModel = new NavigatorModel(this.screwfix.today);			
 			
 			// view navigator
 			this.navigatorView = new NavigatorView({model: this.navigatorModel, master: this.master, parent: this});
