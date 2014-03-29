@@ -343,21 +343,23 @@
 	/**
 	 * Resizer for MonthView
 	 * @param {MonthView} view
+	 * @param {integer} fixedH sum of heights of elements that never change height when window is resized
 	 */
-	var Resizer = function(view) {
+	var Resizer = function(view, fixedH) {
 		var R = {
 			that: this,
 			view: view,
 			dayViews: view.dayViews,
 			$window: $(window),
 			docH: $(document).height(),
-			tableH: null,
 			previousTableH: -1,
 			winH: null,
 			cellBorderHs: [],
-			// matrix of 
-			compulsoryCellHs: [],
+			// keeps track if rows were toggled
+			rowsToggled: []
 		};
+		
+		R.tableH = R.docH - fixedH;
 		
 		R.previousWinH = R.$window.height();
 		
@@ -375,10 +377,6 @@
 	
 		this.resize = function() {
 			var cellH, cellHExcess, diff;
-
-			if (R.tableH === null) {			
-				R.tableH = R.docH - $('#mainBar').outerHeight() - $('#calendarBar').outerHeight() - view.$el.find('table#calendarHeaderTable').outerHeight() - $('#footer').outerHeight();
-			}
 
 			R.winH = R.$window.height();
 
@@ -414,6 +412,8 @@
 					if (xMod === 0) {
 						cellHExcess--;
 					}
+					
+					R.rowsToggled[rowI] = false;
 				}
 			}
 
@@ -421,17 +421,59 @@
 			R.previousTableH = R.tableH;
 		}
 		
-		/**
+		/**		 
 		 * Resizes all cells in the same row to the height of the given one in argument.
 		 * Only if the required height is greater than heigt of other cells in the same row.
-		 * @param {object} cell  eg. {i = 23, height: 210}
+		 * @param {int} height
+		 * @param {int} orderNumber
 		 */
-		this.requireResizeCellUp = function(cell) {
+		this.resizeRowUp = function(orderNumber) {
+			var row = Math.floor(orderNumber/7);
+			var rowHs = [];
+			var maxHeight;
+			
+			for (var i=row*7, end = row*7+7; i<end; i++ ) {
+				if (R.dayViews[i].naturalHeight > R.dayViews[i].totalHeight) {
+					rowHs.push(R.dayViews[i].naturalHeight);
+				}
+				else {
+					rowHs.push(R.dayViews[i].totalHeight);
+
+				}
+			}
+			
+			maxHeight = _.max(rowHs);			
+			
+			for (var i=row*7, end = row*7+7; i<end; i++ ) {
+				R.dayViews[i].resizeUp(maxHeight);
+			}
+			
+			R.rowsToggled[row] = true;
 			
 		}
-
-		this.resizeCellDown = function() {
-
+		
+		/**
+		 * Resizes all cells in the same row to the their natural height.
+		 * @param {int} orderNumber cell's order number
+		 */
+		this.resizeRowDown = function(orderNumber) {
+			var row = Math.floor(orderNumber/7);
+			
+			for (var i=row*7, end = row*7+7; i<end; i++ ) {
+				R.dayViews[i].resizeDown();
+			}
+			
+			R.rowsToggled[row] = false;
+		}
+		
+		/**
+		 * Determine if the cell's row is toggled.
+		 * @param {int} orderNumber cell's order number
+		 */
+		this.isRowToggled = function(orderNumber) {
+			var row = Math.floor(orderNumber/7);			
+			
+			return R.rowsToggled[row];
 		}
 
 		this.clear = function() {
@@ -965,7 +1007,7 @@
 		 * Called after view is rendered
 		 */
 		afterRender: function() {
-			this.resizer = new Resizer(this);
+			this.resizer = new Resizer(this, this.screwfix.dimensions.fixedHeight);
 		},
 
 		resize: function() {
@@ -989,6 +1031,7 @@
 			
 			if (this.resizer) {
 				this.resizer.clear()
+				this.resizer = null;
 			}
 		},
 			
@@ -1027,11 +1070,22 @@
 			this.user = options.master.user;
 			// order number in display month 
 			this.order = options.order;
+			// holds all cell bars of this DayView
+			this.$cellBars = null;
+			// holds less/more link
+			this.$lessMoreLink = null;
+			// state of show less/more (0 - show nothing, 1 - show more, 2 - show less)
+			this.lessMoreState = 0;
+			// natural height of cell
+			this.naturalHeight = null;
+			// height of the whole cell when all cell bars would be displayed
+			this.totalHeight = null;
 			
-			this.listenTo(this.model, 'change', this.renderOnChange);
+			this.cellBarHeight = this.screwfix.dimensions.cellBarHeight;
 			
-			// height of cell
-			this.height = null;
+			this.hiddenBars = null;
+			
+			this.listenTo(this.model, 'change', this.onChange);
 			
 			this.$el.mousedown(function(event){
 				if (event.which === 1) {
@@ -1048,28 +1102,34 @@
 			"click": "addNote",
 			"click .note": "editNote",
 			"click .sysNote": "editNote",
+			"click a.lessMoreLink": "showLessMore",
 			"render": "afterRender"
 		},
 
 		render: function() {
 			this.$el.html(this.template({data: this.model.attributes, view: this}));
 			
-			if (this.height !== null){
-				this.resize(this.height);
-			}
-			
-			this.$divSelected = this.$el.find('div.selected');
-			
-			this.$cellWrapper = this.$el.children();
-			
 			this.$el.trigger('render');
 			
 			return this;
 		},
 		
-		renderOnChange: function(model, options) {			
+		onChange: function(model, options) {			
 			if (this.model.id === model.id) {
 				this.render();
+				
+				if (options.action) {
+					if (options.action === 'save') {
+						if (this.parent.resizer.isRowToggled(this.order)) {
+							this.parent.resizer.resizeRowUp(this.order);
+						}
+					}
+					else {
+						if (this.parent.resizer.isRowToggled(this.order)) {
+							this.parent.resizer.resizeRowUp(this.order);
+						}
+					}
+				}
 			}
 		},
 		
@@ -1079,6 +1139,20 @@
 		afterRender: function() {
 			var notes = this.model.get('note');
 			var sysNotes = this.model.get('sysNote');
+			
+			this.$divSelected = this.$el.find('div.selected');
+			
+			this.$cellWrapper = this.$el.children();
+			
+			this.$cellBars = this.$cellWrapper.children('.cellBar');
+			
+			this.$lessMoreLink = $(this.$cellBars[0]).find('a');
+			
+			this.totalHeight = this.$cellBars.length * this.screwfix.dimensions.cellBarHeight;
+			
+			if (this.naturalHeight !== null){
+				this.resize(this.naturalHeight);
+			}
 			
 			if (notes !== null) {
 				this.$el.find('.note').each(function(i){
@@ -1111,14 +1185,80 @@
 			return calendar.toString();
 		},
 		
-		resize: function(height) {
-			this.$cellWrapper.height(height);
+		resize: function(height) {			
+			this.naturalHeight = height;
 			
-			this.height = height;
+			this.$cellWrapper.height(this.naturalHeight);
+			
+			if (this.naturalHeight < this.totalHeight) {
+				this.hide(this.naturalHeight);
+				
+				this.lessMoreState = 1;
+			}
+			else {
+				this.lessMoreState = 0;
+			}
 		},
 		
-		requireResize: function() {
-			this.resizer.requireResizeCellUp();
+		resizeUp: function(height) {
+			if (this.naturalHeight < this.totalHeight) {				
+				this.unhide();
+			}
+			
+			this.$cellWrapper.height(height);
+		},
+		
+		resizeDown: function() {				
+			this.hide();
+			
+			this.$cellWrapper.height(this.naturalHeight);
+		},
+		
+		/**
+		 * Hide bars that don't fit into cell's natural height.
+		 */
+		hide: function() {
+			// always keep the last "work" bar therefore reduce by 2
+			var top = this.$cellBars.length - 2;
+			var bottom = Math.floor(this.naturalHeight/this.cellBarHeight) - 1;
+			var count = 0;
+			
+			for (var i=top; i>=bottom; i--) {
+				count++;
+				$(this.$cellBars[i]).css('display', 'none');
+			}
+			
+			if (count) {
+				this.$lessMoreLink.text(count + ' more');			
+				this.lessMoreState = 1;
+			}
+			else {				
+				this.lessMoreState = 0;
+			}
+		},
+		
+		/**
+		 * Show all cell bars.
+		 */
+		unhide: function() {
+			this.$cellBars.each(function(){
+				$(this).css('display', 'block');
+			});
+			
+			this.lessMoreState = 2;
+			
+			this.$lessMoreLink.text('Show less');
+		},
+		
+		showLessMore: function(e) {
+			e.stopPropagation();
+			
+			if (this.lessMoreState === 1) {
+				this.parent.resizer.resizeRowUp(this.order);
+			}
+			else if (this.lessMoreState === 2) {
+				this.parent.resizer.resizeRowDown(this.order);
+			}			
 		},
 		
 		/**
@@ -1180,6 +1320,8 @@
 		 * @param {object} note
 		 */
 		saveNote: function(note) {
+			var saveOptions = {patch: true, wait: true, action: 'save'};
+			
 			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
 			var newNote = [];
 			
@@ -1200,17 +1342,19 @@
 			if (note.type === 'personal')
 			{
 				if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
-					this.model.save({note: newNote}, {patch: true, wait: true});
+					this.model.save({note: newNote}, saveOptions);
 				}
 			}
 			else {
 				if (this.user.isAllowed(Zidane.Acl.EDITOR)) {
-					this.model.save({sysNote: newNote}, {patch: true, wait: true});
+					this.model.save({sysNote: newNote}, saveOptions);
 				}
 			}
 		},
 		
 		deleteNote: function(note) {
+			var deleteOptions = {patch: true, wait: true, action: 'delete'};
+			
 			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
 			
 			var newNote = oldNote.slice();
@@ -1223,12 +1367,12 @@
 			if (note.type === 'personal')
 			{
 				if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
-					this.model.save({note: newNote}, {patch: true, wait: true});
+					this.model.save({note: newNote}, deleteOptions);
 				}
 			}
 			else {
 				if (this.user.isAllowed(Zidane.Acl.EDITOR)) {
-					this.model.save({sysNote: newNote}, {patch: true, wait: true});
+					this.model.save({sysNote: newNote}, deleteOptions);
 				}
 			}
 		},
@@ -1259,7 +1403,7 @@
 			return true;
 		},
 
-		height: function() {
+		naturalHeight: function() {
 			return this.$el.height();
 		},
 		
