@@ -178,7 +178,7 @@
 				}
 			});
 			
-			S.cells[i].on('mouseover', function(cell) {
+			S.cells[i].on('mouseenter', function(cell) {
 				if (S.isSelecting) {
 					S.endCell = cell.order;
 					S.select();
@@ -215,16 +215,14 @@
 			S.that.trigger('added', S.selection);
 		};
 		
-		S.activateInfo = function(event) {			
+		S.activateInfo = function(event) {
 			S.$selectionInfo = Zidane.create('div')
 				.attr('id','calendarSelectionInfo')
 				.addClass('popupBox')
-//				.text('Info box')
-				.appendTo(S.$selector)
-				.css('display', 'block');
-			
-			// append result of info callback function
+				.appendTo(S.$selector);			
+
 			if (S.settings.info.callback) {
+				// append result of info callback function
 				S.that.appendInfo(S.selection);
 				S.that.on('added', S.that.appendInfo, S.that.settings);				
 			}
@@ -252,6 +250,7 @@
 		
 		S.deactivateInfo = function() {
 			S.$selectionInfo.remove();
+			S.$selectionInfo = null;
 			S.$selector.unbind('mousemove');
 			S.that.off('added', S.that.appendInfo, S.that.settings);
 		};
@@ -294,7 +293,6 @@
 		
 		this.appendInfo = function() {
 			S.$selectionInfo.empty();
-			
 			var callback = S.settings.info.callback;
 			var context = S.settings.info.context;
 			if (context) {
@@ -332,9 +330,12 @@
 		
 		this.clear = function() {
 			for (var i=0; i<S.cells.length; i++) {
-				S.cells[i].off();
+				if (S.cells[i]) {
+					S.cells[i].off();
+				}
+				S.cells[i] = null;
 			}
-			this.off();
+			S.that.off();
 		};
 	};	
 	
@@ -899,6 +900,8 @@
 			
 			this.$window = $(window);
 			
+			this.$tableMain = null;
+			
 			this.$el.mousewheel(function(event, delta){
 				if (delta > 0) {
 					options.parent.prevWeek();
@@ -1018,14 +1021,21 @@
 		
 		clear: function() {
 			for (var i=0; i<this.dayViews.length; i++) {
+				this.dayViews[i].clear();
 				this.dayViews[i].remove();
+				this.dayViews[i] = null;
+			}
+			
+			if (this.$tableMain) {
+				this.$tableMain.empty();
+				this.$tableMain = null;
 			}
 			
 			this.dayViews = [];
 			
 			if (this.selector) {
 				// remove old events
-				this.selector.off();
+				this.selector.clear();
 				this.selector = null;
 			}
 			
@@ -1087,14 +1097,14 @@
 			
 			this.listenTo(this.model, 'change', this.onChange);
 			
-			this.$el.mousedown(function(event){
+			this.$el.on('mousedown', function(event){
 				if (event.which === 1) {
 					that.trigger('leftmousedown', that, event);
 				}
 			});
 			
-			this.$el.mouseover(function() {
-				that.trigger('mouseover', that);
+			this.$el.on('mouseenter', function(event) {
+				that.trigger('mouseenter', that, event);
 			});
 		},
 		
@@ -1191,18 +1201,22 @@
 			this.$cellWrapper.height(this.naturalHeight);
 			
 			if (this.naturalHeight < this.totalHeight) {
-				this.hide(this.naturalHeight);
-				
+				this.hide(this.naturalHeight);				
 				this.lessMoreState = 1;
 			}
 			else {
-				this.lessMoreState = 0;
+				if (this.$cellBars.length > 2) {
+					// only if we have any note bars to unhide
+					this.unhideNatural();
+				}
+				
+				this.lessMoreState = 0;	
 			}
 		},
 		
 		resizeUp: function(height) {
 			if (this.naturalHeight < this.totalHeight) {				
-				this.unhide();
+				this.unhideAll();
 			}
 			
 			this.$cellWrapper.height(height);
@@ -1223,9 +1237,14 @@
 			var bottom = Math.floor(this.naturalHeight/this.cellBarHeight) - 1;
 			var count = 0;
 			
-			for (var i=top; i>=bottom; i--) {
-				count++;
-				$(this.$cellBars[i]).css('display', 'none');
+			for (var i=top; i>=1; i--) {
+				if (i>=bottom) {
+					count++;
+					$(this.$cellBars[i]).css('display', 'none');
+				}
+				else {
+					$(this.$cellBars[i]).css('display', 'block');
+				}
 			}
 			
 			if (count) {
@@ -1240,7 +1259,7 @@
 		/**
 		 * Show all cell bars.
 		 */
-		unhide: function() {
+		unhideAll: function() {
 			this.$cellBars.each(function(){
 				$(this).css('display', 'block');
 			});
@@ -1248,6 +1267,18 @@
 			this.lessMoreState = 2;
 			
 			this.$lessMoreLink.text('Show less');
+		},
+		/**
+		 * Call only when all cell bars fits into natural height
+		 */
+		unhideNatural: function() {
+			this.$cellBars.each(function(){
+				$(this).css('display', 'block');
+			});
+			
+			this.lessMoreState = 0;
+			
+			this.$lessMoreLink.text('');
 		},
 		
 		showLessMore: function(e) {
@@ -1425,6 +1456,10 @@
 			
 			
 			
+		},
+		
+		clear: function() {
+			this.$el.off();
 		}
 	});
 	
