@@ -344,7 +344,7 @@
 	/**
 	 * Resizer for MonthView
 	 * @param {MonthView} view
-	 * @param {integer} fixedH sum of heights of elements that never change height when window is resized
+	 * @param {int} fixedH sum of heights of elements that never change height when window is resized
 	 */
 	var Resizer = function(view, fixedH) {
 		var R = {
@@ -1215,7 +1215,7 @@
 		},
 		
 		resizeUp: function(height) {
-			if (this.naturalHeight < this.totalHeight) {				
+			if (this.$cellBars.length > 2 && this.naturalHeight < this.totalHeight) {				
 				this.unhideAll();
 			}
 			
