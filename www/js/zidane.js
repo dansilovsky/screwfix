@@ -345,13 +345,6 @@
 	var Acl = Zidane.Acl = function(rolesArray) {		
 		var roles = {};
 		
-		var constants = {
-			GUEST: 'guest',
-			MEMBER: 'member',
-			EDITOR: 'editor',
-			ADMIN: 'admin'
-		}
-		
 		for (var i=0; i<rolesArray.length; i++) {
 			roles[rolesArray[i]] = i;
 		}
