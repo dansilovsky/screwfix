@@ -21,22 +21,22 @@
 
 <script type="text/template" id="dayTemplate">
 	<div class="cell<% if (mo.view.isToday()) { %> today<%}%><% if (mo.view.isEdge()) { %> edge<%}%>">
-		<div class="day"><%- mo.data.day %></div>
+		<div class="cellBar day"><%- mo.data.day %><a href="javascript:;" class="lessMoreLink"></a></div>
 		<% if (mo.data.note !== null) { %>				
 			<% _.each(mo.data.note, function(item) { %> 
-				<div class="note highlight">	
+				<div class="cellBar note highlight">	
 					<%- item %>
 				</div>
 			<% }); %>	
 		<% } %>
 		<% if (mo.data.sysNote !== null) { %>				
 			<% _.each(mo.data.sysNote, function(item) { %> 
-				<div class="sysNote highlight">	
+				<div class="cellBar sysNote highlight">	
 					<%- item %>
 				</div>
 			<% }); %>	
 		<% } %>
-		<div class="work">
+		<div class="cellBar work">
 			<% if (mo.data.bankHoliday !== null) { %>
 				:) <%- mo.data.bankHoliday %>	
 			<% } else if (mo.data.holiday === 0) { %>
@@ -122,6 +122,12 @@
 		user: {
 			{var roles = $user->getRoles()}
 			role: {$roles[0]}
+		},
+		dimensions: {
+			// sum of heights of elements that never change height when window is resized (main bar + calendar bar + calaendar header table bar + footer)
+			fixedHeight: 150,
+			// height of a cell bar inside a day cell (eg. note bar, work bar, ...)
+			cellBarHeight: 30,
 		},
 		// TODO: zajisti aby se tato informace tahala z db ne pouze staticky z sablony
 		holidays: {
