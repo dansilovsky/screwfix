@@ -136,7 +136,19 @@
 		},		
 		calendarDaysData: [
 		{foreach $calendarData as $day}
-			{$day->toJSON()}{sep},{/sep}
+			{
+				id: {$day->id()}, 
+				day: {$day->day()}, note: {$day->note()},
+				sysNote: {$day->sysNote()},
+				holiday: {$day->holiday()},
+				bankHoliday: {$day->bankHoliday()},
+				shiftStart: {$day->shiftStart()},
+				shiftEnd: {$day->shiftEnd()},
+				year: {$day->year()},
+				displayMonth: {$day->displayMonth()},
+				isFirstDayOfWeek: {$day->isFirstDayOfWeek()},
+				isLastDayOfWeek: {$day->isLastDayOfWeek()},
+			}{sep},{/sep}
 		{/foreach}
 		]
 
