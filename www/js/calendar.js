@@ -1524,7 +1524,6 @@
 	});
 	
 	var NoteFormView = Backbone.View.extend({
-		tagName: 'td',
 		className: 'popupBox form',		
 		templateAdd: appGlobal.templates.addNote,
 		templateEdit: appGlobal.templates.editNote,
@@ -1650,8 +1649,8 @@
 		
 	});
 	
+		
 	
-
 	//create instance of master view
 	var app = new AppView();
 
