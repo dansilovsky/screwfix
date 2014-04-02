@@ -39,9 +39,9 @@
 		<div class="cellBar work">
 			<% if (mo.data.bankHoliday !== null) { %>
 				:) <%- mo.data.bankHoliday %>	
-			<% } else if (mo.data.holiday === 0) { %>
+			<% } else if (mo.data.holiday.halfday === 0) { %>
 				:) Holiday
-			<% } else if (mo.data.holiday === 1) { %>
+			<% } else if (mo.data.holiday.halfday === 1) { %>
 				:) Halfday holiday
 			<% } else if (mo.data.shiftStart !== null) { %>
 				<%- mo.data.shiftStart + ' - ' + mo.data.shiftEnd %>
@@ -104,6 +104,20 @@
 	</form>
 </script>
 
+<script type="text/template" id="holidaysFormTemplate">
+	<form action="#">
+		<div>When: <%= data.when%></div>
+		<div>
+			<textarea name="note" maxlength="500"><%- data.val %></textarea>				
+		</div>
+		<div>
+			<button name="save" type="button">Save</button>
+			<button name="delete" type="button">Delete</button>
+
+		</div>
+	</form>
+</script>
+
 <script type="text/javascript" src="{$basePath}/js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="{$basePath}/js/underscore-dev-1.5.1.js"></script>
 <script type="text/javascript" src="{$basePath}/js/backbone-dev-1.1.2.js"></script>
@@ -136,11 +150,12 @@
 		},		
 		calendarDaysData: [
 		{foreach $calendarData as $day}
+			{var $holiday = $day->holiday()}
 			{
 				id: {$day->id()}, 
 				day: {$day->day()}, note: {$day->note()},
 				sysNote: {$day->sysNote()},
-				holiday: {$day->holiday()},
+				holiday: { confirmed: {$holiday['confirmed']}, halfday: {$holiday['halfday']} },
 				bankHoliday: {$day->bankHoliday()},
 				shiftStart: {$day->shiftStart()},
 				shiftEnd: {$day->shiftEnd()},

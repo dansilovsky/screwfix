@@ -26,8 +26,8 @@ class HolidayFilter extends CalendarFilter {
 	/**
 	 * Example of argument
 	 *     array(
-	 *         '2012-05-05' => 0, // all day
-	 *         '2012-05-06' => 1, // halfday
+	 *         '2012-05-05' => array('confirmed' => 1, 'halfaday' => 0),
+	 *         '2012-05-06' => array('confirmed' => 1, 'halfaday' => 0)
 	 *     )
 	 * 
 	 * @param array $holidays

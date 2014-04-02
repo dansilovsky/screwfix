@@ -153,7 +153,7 @@ class CalendarDay extends CalendarDateTime {
 	{
 		if ($this->isHoliday())
 		{
-			return $this->_data[self::KEY_HOLIDAY] ? 0 : 1;
+			return $this->_data[self::KEY_HOLIDAY];
 		}
 
 		return null;
