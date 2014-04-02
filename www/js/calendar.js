@@ -33,6 +33,8 @@
 		var start = current.clone().startWeek();
 		var end = current.clone().endMonth().endWeek();
 		
+		var move;
+		
 		return {
 			/**
 			 * Get clone of now
@@ -56,7 +58,8 @@
 			currentRange: function() {
 				return {
 					start: start.toString(), 
-					end: end.toString()
+					end: end.toString(),
+					move: move
 				};
 			},
 			
@@ -84,6 +87,8 @@
 				start = current.clone().startWeek();
 				end = current.clone().endMonth().endWeek();
 				
+				move = DateNavigator.BACKWARD;
+				
 				return this;
 			},
 			
@@ -93,6 +98,8 @@
 				start = current.clone().startWeek();
 				end = current.clone().endMonth().endWeek();
 				
+				move = DateNavigator.FORWARD;
+				
 				return this;
 			},
 				
@@ -100,6 +107,8 @@
 				start.prevWeek();
 				end.prevWeek();
 				current.prevWeek();
+				
+				move = DateNavigator.BACKWARD;
 				
 				return this;
 			},
@@ -109,10 +118,16 @@
 				end.nextWeek();
 				current.nextWeek();
 				
+				move = DateNavigator.FORWARD;
+				
 				return this;
 			}
 		};
 	};
+	// DateNavigator constats
+	DateNavigator.FORWARD = 'forward';
+	DateNavigator.BACKWARD = 'backward';
+	DateNavigator.JUMP = 'jump';
 	
 	/**
 	 * Manages selecting of cells
@@ -123,7 +138,7 @@
 	 * @param {array}  cells      array of all cells(jQuery objects) in a grid
 	 */
 	var Selector = function($selector, cells, options) {
-//		var that = this;
+		
 		var defaults = {
 			showInfo: false,
 			// {callback: function, context: anObject} like backbones events
@@ -503,9 +518,12 @@
 	var CalendarDayCollection = Backbone.Collection.extend({
 		model: DayModel,
 		loadRange: {start: null, end: null},
+		// number of calls to filterByDateRange(), which is actually numer of moves in calendar
+		moveCounter: 0,
 			
 		initialize: function(options) {
 			this.comparator = 'id';
+			this.dateHelper = new Zidane.Calendar();
 		},
 		
 		url: function() {
@@ -514,7 +532,9 @@
 		
 		filterByDateRange: function(range) {
 			this.check(range);
-				
+			
+			this.moveCounter++;
+			
 			return this.filter(function(model) {
 				var start = range.start;
 				var end = range.end;
@@ -531,6 +551,7 @@
 		 * @param {object} range 
 		 */	
 		check: function(range) {
+			var move = range.move;
 			var missingDays = [];
 			var dateRunner = new Zidane.Calendar();
 			dateRunner.setFromStr(range.start);
@@ -550,7 +571,6 @@
 			
 			// failed check, missing days in this collection were found
 			if (missingDays.length > 0) {
-				var loadRange = {};
 				// first item of array missingDays is actually first day of load range
 				this.loadRange.start = missingDays[0];
 				// last item of array missingDays is actually last day of load range
@@ -559,12 +579,26 @@
 				// build missing days
 				var days = this.buildDays(this.loadRange);
 				
-				this.add(days);
+				if (move === DateNavigator.FORWARD) {
+					this.push(days, {sort: false});
+				}
+				else if (move ===  DateNavigator.BACKWARD) {
+					this.unshift(days, {sort: false})
+				}
+				else {
+					throw 'Unidentified move.';
+				}
 				
 				this.fetch({
 					remove: false,
 					data: {from: this.loadRange.start, to: this.loadRange.end}
-				});
+				});				
+				
+				if (this.models.length > 366 && this.moveCounter%3 === 0) {
+					// remove excess days in collection when it reaches 366 days
+					// do it only every third time
+					this.removeExcessDays(move);
+				}
 			}	
 			
 		},
@@ -603,6 +637,32 @@
 			}
 			
 			return days;
+		},
+		
+		/**
+		 * Helper function removes excess days from collection
+		 * @param {string}  move  the last move of user in calendar forward, backward or jump
+		 */		
+		removeExcessDays: function(move) {
+			var edge, removeDays = [];
+			
+			if (move === DateNavigator.BACKWARD) {
+				edge = this.dateHelper.setFromStr(this.loadRange.start).nextMonth(12).endWeek().toString();
+				
+				removeDays = this.filter(function(model){
+					return model.id > edge;
+				});
+			}
+			else if (move === DateNavigator.FORWARD) {
+				edge = this.dateHelper.setFromStr(this.loadRange.end).prevMonth(12).startWeek().toString();
+				
+				removeDays = this.filter(function(model){
+					return model.id < edge;
+				});
+			}
+			
+			this.remove(removeDays);
+			
 		}
 	});
 	
