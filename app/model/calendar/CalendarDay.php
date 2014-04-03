@@ -156,7 +156,7 @@ class CalendarDay extends CalendarDateTime {
 			return $this->_data[self::KEY_HOLIDAY];
 		}
 
-		return null;
+		return array('confirmed' => null, 'halfday' => null);
 	}
 
 	/**
@@ -256,6 +256,6 @@ class CalendarDay extends CalendarDateTime {
 			'isLastDayOfWeek' => $this->isLastDayOfWeek(),
 		);
 		
-		return json_encode($day);
+		return Json::encode($day);
 	}
 }
