@@ -39,7 +39,7 @@ class HolidayFacade extends RepositoryFacade {
 			$date = (string) $row->date;
 			$date = substr($date, 0, 10);
 
-			$holidays[$date] = array('confirmed' => (int) $row->confirmed, 'halfday' => (int) $row->halfday);
+			$holidays[$date] = (int) $row->halfday;;
 		}
 		
 		return $holidays;

@@ -39,9 +39,9 @@
 		<div class="cellBar work">
 			<% if (mo.data.bankHoliday !== null) { %>
 				:) <%- mo.data.bankHoliday %>	
-			<% } else if (mo.data.holiday.halfday === 0) { %>
+			<% } else if (mo.data.holiday === 0) { %>
 				:) Holiday
-			<% } else if (mo.data.holiday.halfday === 1) { %>
+			<% } else if (mo.data.holiday === 1) { %>
 				:) Halfday holiday
 			<% } else if (mo.data.shiftStart !== null) { %>
 				<%- mo.data.shiftStart + ' - ' + mo.data.shiftEnd %>
@@ -145,17 +145,15 @@
 		},
 		// TODO: zajisti aby se tato informace tahala z db ne pouze staticky z sablony
 		holidays: {
-			total: 33,
-			used: 15,
+			years: []
 		},		
 		calendarDaysData: [
 		{foreach $calendarData as $day}
-			{var $holiday = $day->holiday()}
 			{
 				id: {$day->id()}, 
 				day: {$day->day()}, note: {$day->note()},
 				sysNote: {$day->sysNote()},
-				holiday: { confirmed: {$holiday['confirmed']}, halfday: {$holiday['halfday']} },
+				holiday: {$day->holiday()},
 				bankHoliday: {$day->bankHoliday()},
 				shiftStart: {$day->shiftStart()},
 				shiftEnd: {$day->shiftEnd()},
@@ -166,8 +164,10 @@
 			}{sep},{/sep}
 		{/foreach}
 		]
-
-	}
+	};	
+	Screwfix.holidays.years[2013] = { allowance: 33, used: 33};
+	Screwfix.holidays.years[2014] = { allowance: 33, used: 3};
+	Screwfix.holidays.years[2015] = { allowance: 33, used: 0};
 </script>
 <script type="text/javascript" src="{$basePath}/js/common.js"></script>
 <script type="text/javascript" src="{$basePath}/js/calendar.js"></script>

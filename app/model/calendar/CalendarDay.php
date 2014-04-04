@@ -156,7 +156,7 @@ class CalendarDay extends CalendarDateTime {
 			return $this->_data[self::KEY_HOLIDAY];
 		}
 
-		return array('confirmed' => null, 'halfday' => null);
+		return null;
 	}
 
 	/**
