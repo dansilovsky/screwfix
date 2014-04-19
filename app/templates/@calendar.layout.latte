@@ -66,10 +66,23 @@
 	<div id="calendarBar"></div>
 </script>
 
-<script type="text/template" id="holidaysInfoTemplate">
+<script type="text/template" id="holidaysSelectionInfoTemplate">
 	<div>
-		<div>Selected: <%= data.selected %></div>
-		<div>Holidays left: <%= data.left %></div>
+		<% if (data === null) { %> Can not be added <% } else { %>
+			<% if (data.isSplit && data.extra.position === 'before') { %>
+			<div>holiday year <%= data.extra.year %></div>
+			<div>Selected: <%= data.extra.add.count %></div>
+			<div>Holidays left: <%= data.extra.available %></div>
+			<% } %>		
+			<div>holiday year <%= data.main.year %></div>
+			<div>Selected: <%= data.main.add.count %></div>
+			<div>Holidays left: <%= data.main.available %></div>
+			<% if (data.isSplit && data.extra.position === 'after') { %>		
+			<div>holiday year <%= data.extra.year %></div>
+			<div>Selected: <%= data.extra.add.count %></div>
+			<div>Holidays left: <%= data.extra.available %></div>
+			<% } %>
+		<% } %>
 	</div>
 </script>
 
@@ -104,18 +117,44 @@
 	</form>
 </script>
 
-<script type="text/template" id="holidaysFormTemplate">
-	<form action="#">
-		<div>When: <%= data.when%></div>
-		<div>
-			<textarea name="note" maxlength="500"><%- data.val %></textarea>				
-		</div>
-		<div>
-			<button name="save" type="button">Save</button>
-			<button name="delete" type="button">Delete</button>
+<script type="text/template" id="addHolidaysFormTemplate">
+	<% if (data.extra && data.extra.position == 'before' && data.extra.add.count > 0) { %>
+		<div>Add holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
+		<div>When: <%= data.extra.add.first.toString() %> - <%= data.extra.add.last.toString() %></div>
+	<% } %>
 
-		</div>
-	</form>
+	<%if (data.main.add.count > 0) { %>
+		<div>Add holidays for holiday year <%- data.main.from %> - <%- data.main.to %></div>
+		<div>When: <%= data.main.add.first.toString() %> - <%= data.main.add.last.toString() %></div>
+	<% } %>
+	
+	<% if (data.extra && data.extra.position == 'after' && data.extra.add.count > 0) { %>
+		<div>Add holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
+		<div>When: <%= data.extra.add.first.toString() %> - <%= data.extra.add.last.toString() %></div>
+	<% } %>
+	<div>
+		<button name="addOrCancel" type="button">Add holidays</button>
+	</div>
+</script>
+
+<script type="text/template" id="cancelHolidaysFormTemplate">
+	<% if (data.extra && data.extra.position == 'before' && data.extra.cancel.count > 0) { %>
+		<div>Cancel holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
+		<div>When: <%= data.extra.cancel.first.toString() %> - <%= data.extra.cancel.last.toString() %></div>
+	<% } %>
+
+	<%if (data.main.cancel.count > 0) { %>
+		<div>Cancel holidays for holiday year <%- data.main.from %> - <%- data.main.to %></div>
+		<div>When: <%= data.main.cancel.first.toString() %> - <%= data.main.cancel.last.toString() %></div>
+	<% } %>
+
+	<% if (data.extra && data.extra.position == 'after' && data.extra.cancel.count > 0) { %>
+		<div>Cancel holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
+		<div>When: <%= data.extra.cancel.first.toString() %> - <%= data.extra.cancel.last.toString() %></div>
+	<% } %>
+	<div>
+		<button name="addOrCancel" type="button">Cancel holidays</button>
+	</div>
 </script>
 
 <script type="text/javascript" src="{$basePath}/js/jquery.mousewheel.js"></script>
@@ -151,7 +190,8 @@
 		{foreach $calendarData as $day}
 			{
 				id: {$day->id()}, 
-				day: {$day->day()}, note: {$day->note()},
+				day: {$day->day()}, 
+				note: {$day->note()},
 				sysNote: {$day->sysNote()},
 				holiday: {$day->holiday()},
 				bankHoliday: {$day->bankHoliday()},
@@ -165,9 +205,9 @@
 		{/foreach}
 		]
 	};	
-	Screwfix.holidays.years[2013] = { allowance: 33, used: 33};
-	Screwfix.holidays.years[2014] = { allowance: 33, used: 3};
-	Screwfix.holidays.years[2015] = { allowance: 33, used: 0};
+	Screwfix.holidays.years[2013] = { credits: 33, debits: 33, from: '2013-04-01', to: '2014-03-31'};
+	Screwfix.holidays.years[2014] = { credits: 33, debits: 4.5, from: '2014-04-01', to: '2015-03-31'};
+	Screwfix.holidays.years[2015] = { credits: 33, debits: 0, from: '2015-04-01', to: '2016-03-31'};
 </script>
 <script type="text/javascript" src="{$basePath}/js/common.js"></script>
 <script type="text/javascript" src="{$basePath}/js/calendar.js"></script>

@@ -23,20 +23,30 @@ abstract class CalendarFilter extends \Nette\Object implements ICalendarFilter {
 		return $this->_name;
 	}
 	
+//	public function filter($date, array &$result)
+//	{
+//		$data = $this->day($date);		
+//		
+//		if ($data !== null)
+//		{
+//			foreach ($this->_overwrites as $name)
+//			{
+//				if (isset($result[$name]))
+//				{
+//					unset($result[$name]);
+//				}
+//			}
+//			
+//			$result[$this->_name] = $this->day($date);
+//		}		
+//	}
+	
 	public function filter($date, array &$result)
 	{
-		$data = $this->day($date);
+		$data = $this->day($date);		
 		
 		if ($data !== null)
-		{
-			foreach ($this->_overwrites as $name)
-			{
-				if (isset($result[$name]))
-				{
-					unset($result[$name]);
-				}
-			}
-			
+		{			
 			$result[$this->_name] = $this->day($date);
 		}		
 	}

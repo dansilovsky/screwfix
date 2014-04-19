@@ -8,9 +8,11 @@
 			toolsView: _.template($('#calendarToolsTemplate').html(), null, {variable: 'mo'}),
 			monthView: _.template($('#monthTemplate').html(), null, {variable: 'mo'}),
 			calendarView: $('#calendarTemplate'),
-			holidaysInfo: _.template($('#holidaysInfoTemplate').html(), null, {variable: 'data'}),
+			holidaysSelectionInfo: _.template($('#holidaysSelectionInfoTemplate').html(), null, {variable: 'data'}),
 			addNote: _.template($('#addNoteTemplate').html(), null, {variable: 'data'}),
-			editNote: _.template($('#editNoteTemplate').html(), null, {variable: 'data'})
+			editNote: _.template($('#editNoteTemplate').html(), null, {variable: 'data'}),
+			addHolidaysForm: _.template($('#addHolidaysFormTemplate').html(), null, {variable: 'data'}),
+			cancelHolidaysForm: _.template($('#cancelHolidaysFormTemplate').html(), null, {variable: 'data'}),
 		}
 	};
 	
@@ -19,7 +21,7 @@
 	 * 
 	 * @param {object} initial object containing todays date. eg. {year: 2000, month: 1, day: 1}
 	 */
-	var DateNavigator = function(initial, settings) {
+	var DateNavigator = function(initial) {
 		
 		var y = initial.year;
 		var m = initial.month || 1;
@@ -80,8 +82,8 @@
 			getCurrentEnd: function() {
 				return end.clone();
 			},
-				
-			prevMonth: function() {
+			
+			prevMonth: function() {				
 				current.prevMonth().startMonth();
 				
 				start = current.clone().startWeek();
@@ -124,6 +126,9 @@
 			}
 		};
 	};
+	
+	_.extend(DateNavigator.prototype, Backbone.Events);
+	
 	// DateNavigator constats
 	DateNavigator.FORWARD = 'forward';
 	DateNavigator.BACKWARD = 'backward';
@@ -142,7 +147,9 @@
 		var defaults = {
 			showInfo: false,
 			// {callback: function, context: anObject} like backbones events
-			info: {callback: null, context: null}
+			info: {callback: null, context: null},
+			// callback function must return true if cell is selectable, false otherwise
+			checkIsSelectable: {callback: null, context: null}
 		};
 		
 		var S = {
@@ -161,14 +168,14 @@
 		
 		S.$document.mouseup(function(event) {
 			// only for left mouse button
-			if (S.isSelecting && event.which === 1) {				
+			if (S.isSelecting && event.which === 1) {
 				S.isSelecting = false;
 				
 				// selection ended deactivate info box
 				if (S.settings.showInfo) {
 					S.deactivateInfo();
 				}
-
+				
 				S.that.trigger('selected', S.selection);
 			}
 		});
@@ -176,7 +183,6 @@
 		for (var i=0; i<S.cells.length; i++) {			
 			S.cells[i].on('leftmousedown', function(cell, event) {
 				if (S.enabled) {
-					// start selection procedures only if selection is enabled
 					S.that.trigger('started');
 
 					S.isSelecting = true;
@@ -201,33 +207,55 @@
 			});
 		}
 		
-		S.select = function() {			
+		S.select = function() {
+			var checkIsSelectable = S.settings.checkIsSelectable.callback;
+			var context = S.settings.checkIsSelectable.context;
+			
 			var check = S.startCell - S.endCell;
 			
 			S.selection = [];
+			
+			var tempSelection = [];
 			
 			// unselect all cells
 			S.that.unselect();
 			
 			if (check === 0) {
-				S.cells[S.startCell].select();
-				S.selection.push(S.cells[S.startCell]);
+				tempSelection.push(S.cells[S.startCell]);
 			}
 			else if (check < 0) {
 				for (var i=S.startCell; i<=S.endCell; i++) {
-					S.cells[i].select();
-					S.selection.push(S.cells[i]);
+					tempSelection.push(S.cells[i]);
 				}
 			}
 			else {
-				for (var i=S.endCell; i<=S.startCell; i++) {
-					S.cells[i].select();
-					S.selection.push(S.cells[i]);
+				for (var i=S.startCell; i>=S.endCell; i--) {
+					tempSelection.push(S.cells[i]);
+				}
+			}			
+			
+			if (checkIsSelectable !== null) {
+				for (var i=0, l=tempSelection.length; i<l; i++) {
+					context = context !== null ? context : this;
+					
+					if (checkIsSelectable.call(context, i, tempSelection)) {						
+						tempSelection[i].select();
+					
+						S.selection.push(tempSelection[i]);
+					}
+				}
+			}
+			else {
+				for (var i=0, l=tempSelection.length; i<l; i++) {
+					tempSelection[i].select();
+					S.selection.push(tempSelection[i]);
 				}
 			}
 			
-			// trigger new cell added. !must be triggered afeter all selection is done
-			S.that.trigger('added', S.selection);
+			if (S.selection.length > 0) {
+				// trigger new cell added. !must be triggered afeter all selection is done
+				S.that.trigger('added', S.selection);
+			}
 		};
 		
 		S.activateInfo = function(event) {
@@ -497,6 +525,185 @@
 		}	
 	};
 	
+	/**
+	 * Manages holidays.
+	 * @param {array} holidaysYears
+	 */
+	var HolidaysManager = function(holidaysYears) {
+		
+		var H = {
+			that: this,
+			years: holidaysYears
+		};
+		
+		return {
+			/**
+			* Determines holiday year from given date
+			* @param {string} date eg. '2014-05-08'
+			* @returns {int} holiday year
+			*/
+		       determineHolidayYear: function(date) {
+			       var year = parseInt(date.substring(0, 4));
+
+			       if (H.years[year] && date >= H.years[year].from && date <= H.years[year].to) {
+				       return year;
+			       }
+			       else if (H.years[year+1] && date >= H.years[year+1].from && date <= H.years[year+1].to)
+			       {
+				       return ++year;
+			       }
+			       else if (H.years[year-1] && date >= H.years[year-1].from && date <= H.years[year-1].to) {
+				       return --year;
+			       }
+			       else {
+				       throw 'Holiday year is not defined for given date.';
+			       }
+		       },
+		       
+			/**
+			 * Buils object and returns object holidays info from selection.
+			 * @param {array} selection  array of selected DayView objects
+			 * @returns {object} selected holidays info or null if selection is empty
+			 */
+			getSelectionInfo: function(selection) {
+				if (!selection.length) {
+					return null;
+				}
+				
+				var info = {};
+				var mainHolidayYear = this.determineHolidayYear(selection[0].model.id);
+				var oldHolidayYear = 0;
+				var holidayYear = 0;
+				var addHolidays = [];
+				var cancelHolidays = [];
+				var cancelHolidaysLength = [];
+			
+				for (var i=0, key=-1, l = selection.length; i<l; i++) {
+					holidayYear = this.determineHolidayYear(selection[i].model.id);
+					
+					if (holidayYear !== oldHolidayYear) {
+						oldHolidayYear = holidayYear;
+						key++;
+						addHolidays[key] = [];
+						cancelHolidays[key] = [];
+						cancelHolidaysLength[key] = 0;
+					}					
+					
+					if (!selection[i].isDayOff()) {
+						addHolidays[key].push(selection[i]);
+					}
+					else if (selection[i].isHoliday()) {
+						cancelHolidays[key].push(selection[i]);			
+						cancelHolidaysLength[key] += selection[i].isHalfday() ? 0.5 : 1;
+					}
+				}
+				
+				info.isSplit = (addHolidays.length > 1 || cancelHolidays.length > 1);
+				// info main is for holiday year where selection started
+				info.main = {
+					add: {
+						count: addHolidays[0].length,
+						length: addHolidays[0].length,
+						selection: addHolidays[0],
+						first: addHolidays[0][0],
+						last: addHolidays[0][addHolidays[0].length-1]
+					},
+					cancel: {
+						count: cancelHolidays[0].length,
+						length: cancelHolidaysLength[0],
+						selection: cancelHolidays[0],
+						first: cancelHolidays[0][0],
+						last: cancelHolidays[0][cancelHolidays[0].length-1]
+					},				
+					credits: H.years[mainHolidayYear].credits,
+					year: mainHolidayYear,
+					from: H.years[mainHolidayYear].from,
+					to: H.years[mainHolidayYear].to
+				};
+				
+				info.main.debits = H.years[mainHolidayYear].debits + info.main.add.length;
+				info.main.available = info.main.credits - info.main.debits;				
+				
+				if (info.isSplit) {
+					// if selection ended in different holiday year than it started then set info extra
+					var position = selection[0].model.id < selection[selection.length-1].model.id ? 'after' : 'before';
+					
+					info.extra = {
+						add: {
+							count: addHolidays[1].length,
+							length: addHolidays[1].length,
+							selection: addHolidays[1],
+							first: addHolidays[1][0],
+							last: addHolidays[1][addHolidays[1].length-1]
+						},
+						cancel: {
+							count: cancelHolidays[1].length,
+							length: cancelHolidaysLength[1],
+							selection: cancelHolidays[1],
+							first: cancelHolidays[1][0],
+							last: cancelHolidays[1][cancelHolidays[1].length-1]
+						},
+						credits: H.years[holidayYear].credits,
+						year: holidayYear,
+						from: H.years[holidayYear].from,
+						to: H.years[holidayYear].to,
+						// depends on where selection ended if in holiday year before or after main one
+						position: position
+					};
+					
+					info.extra.debits = H.years[holidayYear].debits + info.extra.add.length;
+					info.extra.available = info.extra.credits - info.extra.debits;
+				}
+				else {
+					info.extra = null;
+				}
+				
+				return info;
+			},
+			
+			/**
+			 * Credits back holidays to a given holiday year
+			 * @param {int} year
+			 * @param {float} count
+			 * @returns {float} total debits
+			 */
+			credit: function(year, count) {
+				H.years[year].debits -= count;
+				
+				return H.years[year].debits;
+			},
+			
+			/**
+			 * Debits available holidays from given holiday year
+			 * @param {int} year
+			 * @param {float} count
+			 * @returns {float} total debits
+			 */
+			debit: function(year, count) {
+				H.years[year].debits += count;
+				
+				return H.years[year].debits;
+			},
+			
+			getCredits: function(year) {
+				return H.years[year].credits;
+			},
+			
+			getDebits: function(year) {
+				return H.years[year].debits;
+			},			
+			
+			/**
+			 * Days available for given holiday year
+			 * @param {int} year  holiday year
+			 * @returns {int}
+			 */
+			getAvailable: function(year) {				
+				return H.years[year].credits - H.years[year].debits;
+			}
+		}		
+	};
+	
 	// Navigator model
 	var NavigatorModel = Backbone.Model.extend({});
 	
@@ -661,8 +868,31 @@
 				});
 			}
 			
-			this.remove(removeDays);
+			this.remove(removeDays);			
+		},
+		
+		updateHolidays: function(models) {
+			var that = this;
+			this.connectingAnimation();
 			
+			var xhr = $.ajax({
+				url: that.url(), 
+				type: 'PATCH', 
+				dataType: 'json',
+				data: JSON.stringify(models),
+				contentType: 'application/json',
+				success: function() {
+					that.stopConnectingAnimation();
+					that.trigger('holidaysUpdated');
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					that.stopConnectingAnimation();
+					that.connectionErrorAlert();
+					that.trigger('holidaysUpdateError');
+				}
+			});	
+			
+			this.add(models, {merge: true});
 		}
 	});
 	
@@ -673,6 +903,8 @@
 		
 		initialize: function() {			
 			this.user = new Zidane.User(this.screwfix.user, new Zidane.Acl(this.screwfix.acl.roles));
+			
+			this.holidaysManager = new HolidaysManager(this.screwfix.holidays.years);
 			
 			this.calendar = new CalendarView({master: this});
 			
@@ -703,9 +935,9 @@
 			// master is AppView
 			this.master = options.master;
 			
-			this.holidays = {total: this.screwfix.holidays.total, used: this.screwfix.holidays.used};
-			
 			this.user = this.master.user;
+			
+			this.holidaysManager = this.master.holidaysManager;
 			
 			// collection of day models
 			this.calendarDayCollection = new CalendarDayCollection(this.screwfix.calendarDaysData, {comparator: false});
@@ -817,26 +1049,12 @@
 			return this;
 		},		
 		
-		holidaysInfo: function(selection) {
-			var total = this.holidays.total;
-			var used = this.holidays.used;
-			var selected = 0;
-			var template = appGlobal.templates.holidaysInfo;
+		holidaysSelectionInfo: function(selection) {
+			var info = this.holidaysManager.getSelectionInfo(selection);
+			var template = appGlobal.templates.holidaysSelectionInfo;
 			
-			for (var i=0; i<selection.length; i++) {
-				if (!selection[i].isDayOff()) {
-					selected++;
-				}
-			}
-			
-			var left = total - used - selected;
-			
-			var hi = {selected: selected, left: left};
-			
-			return template(hi);
+			return template(info);
 		}
-		
-		
 	});
 
 	// Navigator view
@@ -1029,7 +1247,24 @@
 			
 			this.$tableMain.append(fragment);
 			
-			this.selector = new Selector(this.$el, this.dayViews, {info: {callback: this.parent.holidaysInfo, context: this.parent}});
+			this.afterRender();
+			
+			return this;
+		},
+		
+		/**
+		 * Called after view is rendered
+		 */
+		afterRender: function() {
+			var that = this;
+			
+			this.selector = new Selector(
+				this.$el, 
+				this.dayViews, 
+				{
+					info: {callback: this.parent.holidaysSelectionInfo, context: this.parent}
+				}
+			);
 			
 			if (this.master.mode === AppView.MODE_HOLIDAYS) {
 				this.selector.enable();
@@ -1044,32 +1279,20 @@
 				}
 			});
 			
-			this.selector.on('selected', function(selection) {
-//				if (that.parent.mode === 'default') {
-//					// no mode selected
-//					if (selection.length == 1) {
-//						selection[0].addNote(this);
-//					}
-//					else {
-//						// add some code
-//					}
-//				}
-//				
-//				if (that.parent.mode === 'holidays') {
-//					// holidays mode selected
-//					// add some code
-//				}
-			});
+			this.selector.on(
+				'selected', 
+				function(selection) {				
+					if (this.master.mode === AppView.MODE_HOLIDAYS && selection.length) {
+						new HolidaysFormView({
+							master: this.master,
+							parent: this,
+							selection: selection							
+						});
+					}
+				}, 
+				this
+			);
 			
-			this.afterRender();
-			
-			return this;
-		},
-		
-		/**
-		 * Called after view is rendered
-		 */
-		afterRender: function() {
 			this.resizer = new Resizer(this, this.screwfix.dimensions.fixedHeight);
 		},
 
@@ -1108,15 +1331,18 @@
 		changeMonth: function(options) {
 			this.render(options.dateNavigator);
 			this.resize();
+		},
+		
+		unselect: function() {
+			_.each(this.dayViews, function(element){
+				element.unselect();
+			});
 		}
-		
-		
 	});
 	
 	var DayView = Backbone.View.extend({
 		tagName: 'td',
 		template: appGlobal.templates.dayView,
-		templateAddNote: appGlobal.templates.addNote,
 		selection: {
 			isSelected: true
 		},
@@ -1244,8 +1470,6 @@
 		 */
 		toString: function() {
 			var format = function() {
-				var test = this;
-				test;
 				return Zidane.capitalize(this.getWeekDayString())+', '+this.getDate()+' '+Zidane.capitalize(this.getMonthString());
 			};
 			
@@ -1467,6 +1691,20 @@
 				}
 			}
 		},
+		
+		addHoliday: function(halfday) {
+			var halfday = halfday || 0;
+			
+			if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
+				this.model.save({holiday: halfday}, {patch: true, wait: true});
+			}
+		},
+		
+		cancelHoliday: function() {
+			if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
+				this.model.save({holiday: null}, {patch: true, wait: true});
+			}
+		},
 
 		isFirstDayOfWeek: function() {
 			return this.model.get('isFirstDayOfWeek');
@@ -1487,15 +1725,21 @@
 		},
 		
 		isDayOff: function() {			
-			if (this.model.get('shiftStart') !== null) {
-				return false;
-			}
-			
-			return true;
+			return (
+				this.model.get('shiftStart') === null || 
+				this.model.get('holiday') !== null || 
+				this.model.get('bankHoliday') !== null
+			);
 		},
-
-		naturalHeight: function() {
-			return this.$el.height();
+		
+		isHoliday: function() {
+			return (this.model.get('holiday') !== null);
+		},
+		
+		isHalfday: function() {
+			var holiday = this.model.get('holiday');
+			
+			return (holiday !== null && holiday === 1);
 		},
 		
 		select: function() {
@@ -1525,8 +1769,8 @@
 	
 	var NoteFormView = Backbone.View.extend({
 		className: 'popupBox form',		
-		templateAdd: appGlobal.templates.addNote,
-		templateEdit: appGlobal.templates.editNote,
+		addTemplate: appGlobal.templates.addNote,
+		editTemplate: appGlobal.templates.editNote,
 		
 		initialize: function(options) {
 			this.master = options.master;
@@ -1547,8 +1791,6 @@
 		},
 		
 		render: function() {			
-			var that = this;
-			
 			if (this.note.action === 'add') {
 				this.renderAdd();
 			}
@@ -1566,8 +1808,7 @@
 				this			
 			);
 			
-			this.$el.css('display', 'block')
-			.appendTo(this.master.el)
+			this.$el.appendTo(this.master.el)
 			.find('textarea').setCursorPosition();
 			
 			this.master.calendarPlacer.place(this.$el, this.parent.$el);			
@@ -1579,7 +1820,7 @@
 				{showSwitcher: this.user.isAllowed(Zidane.Acl.EDITOR)}
 			);
 			
-			this.$el.html(this.templateAdd(this.note));
+			this.$el.html(this.addTemplate(this.note));
 						
 		},
 		
@@ -1589,7 +1830,7 @@
 				return;
 			}
 			
-			this.$el.html(this.templateEdit(this.note));
+			this.$el.html(this.editTemplate(this.note));
 		},
 		
 		switchToPersonal: function(e) {
@@ -1649,8 +1890,181 @@
 		
 	});
 	
+	var HolidaysFormView = Backbone.View.extend({
+		className: 'popupBox form',
+		addTemplate: appGlobal.templates.addHolidaysForm,
+		cancelTemplate: appGlobal.templates.cancelHolidaysForm,
 		
-	
+		initialize: function(options) {
+			this.master = options.master;
+			// MonthView
+			this.parent = options.parent;
+			this.selection = options.selection;
+			this.holidaysManager = this.master.holidaysManager;
+			this.user = this.master.user;
+			// CalendarDayCollection
+			this.collection = this.selection[0].model.collection;
+			this.layover = null;			
+			this.info = this.holidaysManager.getSelectionInfo(this.selection);
+			this.isAddAction = (this.info.main.add.count > 0 || (this.info.extra && this.info.extra.add.count > 0));
+			this.isCancelAction = (this.info.main.cancel.count > 0 || (this.info.extra && this.info.extra.cancel.count > 0));
+			this.isAddHalfday = false;
+			
+			this.collection.on('holidaysUpdated', this.updateHolidaysManager, this);
+			this.collection.on('holidaysUpdateError', this.updateError, this);
+			this.allowClearCollectionEvents = true;
+			
+			this.render();
+		},
+		
+		events: {
+			"click button[name|='addOrCancel']": "addOrCancel"
+		},
+		
+		render: function() {
+			if (this.isAddAction) {
+				// if there is at least one holiday to be added in a selection
+				this.$el.html(this.addTemplate(this.info));
+			}
+			else if (this.isCancelAction) {
+				this.$el.html(this.cancelTemplate(this.info));
+			}
+			else {
+				return;
+			}
+			
+			this.layover = new Screwfix.common.LayoverView();
+			this.layover.on(
+				'click', 
+				function() {
+					this.clear();
+				},
+				this			
+			);
+		
+			this.master.$el.append(this.el);
+			
+			this.master.calendarPlacer.place(this.$el, this.selection[this.selection.length-1].$el);
+		},
+		
+		addOrCancel: function() {
+			var joinSelection = [];	
+			
+			if (this.isAddAction) {
+				if (this.info.main.add.count > 0) {
+					joinSelection = this.info.main.add.selection;
+				}
+				
+				if (this.info.extra && this.info.extra.add.count > 0) {
+					joinSelection = joinSelection.concat(this.info.extra.add.selection);
+				}
+				
+				this.add(joinSelection);
+			}
+			else if (this.isCancelAction) {
+				if (this.info.main.cancel.count > 0) {
+					joinSelection = this.info.main.cancel.selection;
+				}
+				
+				if (this.info.extra && this.info.extra.cancel.count > 0) {
+					joinSelection = joinSelection.concat(this.info.extra.cancel.selection);
+				}
+				
+				this.cancel(joinSelection);
+			}
+			
+			this.allowClearCollectionEvents = false;
+			
+			this.clear();
+		},
+		
+		/**
+		 * Adds holidays for given days
+		 * @param {array} addHolidays  array of DayViews
+		 * @param {int}   halfday      1 - is halfday, 0 - is not halfday
+		 */
+		add: function(addHolidays) {
+			var halfday = this.isAddHalfday ? 1 : 0;
+			var models = [];
+			
+			for (var i=0, l=addHolidays.length; i<l; i++) {
+				models.push({id: addHolidays[i].model.id, holiday: halfday});
+			}
+			
+			this.collection.updateHolidays(models);			
+		},
+		
+		/**
+		 * Cancel holidays for given days
+		 * @param {array} addHolidays  array of DayViews
+		 */
+		cancel: function(cancelHolidays) {
+			var models = [];
+			
+			for (var i=0, l=cancelHolidays.length; i<l; i++) {
+				models.push({id: cancelHolidays[i].model.id, holiday: null});
+			}
+			
+			this.collection.updateHolidays(models);
+		},
+		
+		updateHolidaysManager: function() {
+			if (this.isAddAction) {
+				if (this.info.main.add.count > 0) {
+					if (!this.isAddHalfday) {
+						this.holidaysManager.debit(this.info.main.year, this.info.main.add.length);
+					}
+					else {
+						this.holidaysManager.debit(this.info.main.year, this.info.main.add.length/2);
+					}
+				}
+				
+				if (this.info.extra && this.info.extra.add.count > 0) {
+					if (!this.isAddHalfday) {
+						this.holidaysManager.debit(this.info.extra.year, this.info.extra.add.length);
+					}
+					else {
+						this.holidaysManager.debit(this.info.extra.year, this.info.extra.add.length/2);
+					}
+				}
+			}
+			else if (this.isCancelAction) {
+				if (this.info.main.cancel.count > 0) {
+					this.holidaysManager.credit(this.info.main.year, this.info.main.cancel.length);
+				}
+				
+				if (this.info.extra && this.info.extra.cancel.count > 0) {
+					this.holidaysManager.credit(this.info.extra.year, this.info.extra.cancel.length);
+				}
+			}
+			
+			this.allowClearCollectionEvents = true;
+			
+			this.clear();
+		},
+		
+		updateError: function() {
+			this.allowClearCollectionEvents = true;
+			
+			this.clear();
+		},
+		
+		clear: function() {
+			if (this.layover) {
+				this.layover.remove();
+			}
+			
+			this.parent.unselect();
+			
+			if(this.allowClearCollectionEvents) {
+				this.collection.off('holidaysUpdated', this.updateHolidaysManager, this);
+				this.collection.off('holidaysUpdateError', this.updateError, this);
+			}
+			
+			this.remove();
+		}
+	});
+
 	//create instance of master view
 	var app = new AppView();
 

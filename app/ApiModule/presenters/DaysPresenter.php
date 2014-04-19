@@ -9,7 +9,7 @@ namespace ApiModule;
  * @copyright (c) 2013, Daniel Silovsky
  * @license http://www.screwfix-calendar.co.uk/license
  */
-class DaysPresenter extends \Screwfix\CalendarPresenter implements ApiPresenter {
+class DaysPresenter extends BasePresenter {
 
 	public function actionDefault() 
 	{		
@@ -59,8 +59,12 @@ class DaysPresenter extends \Screwfix\CalendarPresenter implements ApiPresenter 
 	}
 	
 	public function actionUpdate()
-	{
+	{	
+//		sleep(60);
+//		$this->response->setCode(\Nette\Http\Response::S400_BAD_REQUEST);
+		$responseArr = $this->getJson();
 		
+		$this->sendResponse(new \Nette\Application\Responses\JsonResponse($responseArr));
 	}
 	
 	public function actionDelete()

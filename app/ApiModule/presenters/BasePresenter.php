@@ -28,7 +28,7 @@ abstract class BasePresenter extends \Screwfix\CalendarPresenter implements ApiP
 	
 	/**
 	 * Get decoded json
-	 * @return mixed Returns the value encoded in json in appropriate PHP array. NULL is returned if the json cannot be decoded.
+	 * @return array|null Returns the value encoded in json in appropriate PHP array. NULL is returned if the json cannot be decoded.
 	 */
 	public function getJson() {
 		return $this->_jsonData;

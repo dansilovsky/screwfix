@@ -46,6 +46,10 @@
 		}
 	};
 	
+	var queues = common.queues = {
+		'connectingAnimation': [],
+	};
+	
 	var ConnectingAnimationView = common.ConnectingAnimationView = Backbone.View.extend({
 		className: 'popupBox',
 		
@@ -181,48 +185,69 @@
 		}
 	});
 	
+	//common functions
+	var connectionErrorAlert = common.connectionErrorAlert = function() {
+		
+		new Screwfix.common.AlertView({
+			title: 'Connection error', 
+			text: "There's a problem connecting to Calendar at the moment. Please make sure that you're connected to the Internet and try again."
+		});
+	};
+	
+	var connectingAnimation = common.connectingAnimation = function() {
+		if (Screwfix.common.queues.connectingAnimation.length === 0) {
+			var animation = new Screwfix.common.ConnectingAnimationView();
+
+			Screwfix.common.queues.connectingAnimation.push(animation);
+		}
+		else {
+			Screwfix.common.queues.connectingAnimation.push(null);
+		}
+	};
+	
+	var stopConnectingAnimation = common.stopConnectingAnimation = function() {
+		if (Screwfix.common.queues.connectingAnimation.length > 1) {
+			Screwfix.common.queues.connectingAnimation.pop();
+		}
+		else if (Screwfix.common.queues.connectingAnimation.length === 1) {
+			Screwfix.common.queues.connectingAnimation.pop().remove();
+		}
+	}
+	
+	
+	
 	Screwfix = $.extend({}, Screwfix, {common: common});
 	
 }).call(this, jQuery);
 
-// Extend backbones model functionality
+// TODO: smaz to
+Screwfix.testCounter = 0;
 
-Backbone.screwfixQueues  = {
-	'connectingAnimation': [],
-};
+// extend backbones model functionality
+Backbone.Model.prototype.screwfix = Screwfix;
 
-Backbone.Model.prototype.connectionErrorAlert = function() {
-	new Screwfix.common.AlertView({
-		title: 'Connection error', 
-		text: "There's a problem connecting to Calendar at the moment. Please make sure that you're connected to the Internet and try again."
-	});
-}
+Backbone.Model.prototype.connectionErrorAlert = Screwfix.common.connectionErrorAlert;
 
-Backbone.Model.prototype.connectingAnimation = function() {
-	if (Backbone.screwfixQueues.connectingAnimation.length === 0) {
-		var animation = new Screwfix.common.ConnectingAnimationView();
-		
-		Backbone.screwfixQueues.connectingAnimation.push(animation);	
-	}
-	else {
-		Backbone.screwfixQueues.connectingAnimation.push(null);
-	}
-	
-}
+Backbone.Model.prototype.connectingAnimation = Screwfix.common.connectingAnimation;
 
-Backbone.Model.prototype.stopConnectingAnimationView = function() {
-	if (Backbone.screwfixQueues.connectingAnimation.length > 1) {
-		Backbone.screwfixQueues.connectingAnimation.pop();
-	}
-	else if(Backbone.screwfixQueues.connectingAnimation.length === 1){
-		Backbone.screwfixQueues.connectingAnimation.pop().remove();
-	}
-}
+Backbone.Model.prototype.stopConnectingAnimation = Screwfix.common.stopConnectingAnimation;
 
 Backbone.Model.prototype.on('request', Backbone.Model.prototype.connectingAnimation);
 
-Backbone.Model.prototype.on('sync', Backbone.Model.prototype.stopConnectingAnimationView);
+Backbone.Model.prototype.on('sync', Backbone.Model.prototype.stopConnectingAnimation);
 
-Backbone.Model.prototype.on('error', Backbone.Model.prototype.stopConnectingAnimationView);
+Backbone.Model.prototype.on('error', Backbone.Model.prototype.stopConnectingAnimation);
 
 Backbone.Model.prototype.on('error', Backbone.Model.prototype.connectionErrorAlert);
+
+// extend Backbone Collection prototype
+Backbone.Collection.prototype.screwfix = Screwfix;
+
+Backbone.Collection.prototype.connectionErrorAlert = Screwfix.common.connectionErrorAlert;
+
+Backbone.Collection.prototype.connectingAnimation = Screwfix.common.connectingAnimation;
+
+Backbone.Collection.prototype.stopConnectingAnimation = Screwfix.common.stopConnectingAnimation;
+
+// extend Backbone View prototype
+Backbone.View.prototype.screwfix = Screwfix;

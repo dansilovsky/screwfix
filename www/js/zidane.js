@@ -6,9 +6,9 @@
 
 	/**
 	 * 
-	 * @param {int} year
-	 * @param {int} month
-	 * @param {int} day
+	 * @param {int} year  optional
+	 * @param {int} month optional
+	 * @param {int} day   optional
 	 * @param {callback} format callback function to format date to string, function takes 3 arguments year, month and day
 	 */
 	var Calendar = Zidane.Calendar = function(year, month, day, format) {
