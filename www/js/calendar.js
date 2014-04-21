@@ -1291,7 +1291,7 @@
 				}
 			);
 			
-			if (this.master.mode === AppView.MODE_HOLIDAYS) {
+			if (this.master.mode === AppView.MODE_HOLIDAYS || this.master.mode === AppView.MODE_HALFDAY_HOLIDAYS) {
 				this.selector.enable();
 			}
 
