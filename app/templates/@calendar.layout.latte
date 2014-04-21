@@ -16,9 +16,9 @@
 </script>
 
 <script type="text/template" id="calendarToolsTemplate">
-	<li><a href="#" id="mode:notes" class="selected">Notes</a></li>
-	<li><a href="#" id="mode:holidays">Holidays</a></li>
-	<li><a href="#" id="mode:halfdayHolidays">Halfday holidays</a></li>
+	<li><a href="#" title="Add or remove notes" id="mode:notes" class="selected">Notes</a></li>
+	<li><a href="#" title="Add holidays or cancel any holidays" id="mode:holidays">Holidays</a></li>
+	<li><a href="#" title="Add halfday holidays or cancel any holidays" id="mode:halfdayHolidays">Halfday holidays</a></li>
 </script>
 
 <script type="text/template" id="dayTemplate">
@@ -120,39 +120,49 @@
 </script>
 
 <script type="text/template" id="addHolidaysFormTemplate">
-	<% if (data.extra && data.extra.position == 'before' && data.extra.add.count > 0) { %>
-		<div>Add holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
-		<div>When: <%= data.extra.add.first.toString() %> - <%= data.extra.add.last.toString() %></div>
+	<% if (data.tIsExtraAddAction && data.extra.position == 'before') { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.add.first.toString() %> To <%= data.extra.add.last.toString() %></div>
+		<div>Number of days taken: <%- data.extra.add.count %></div>
 	<% } %>
 
-	<%if (data.main.add.count > 0) { %>
-		<div>Add holidays for holiday year <%- data.main.from %> - <%- data.main.to %></div>
-		<div>When: <%= data.main.add.first.toString() %> - <%= data.main.add.last.toString() %></div>
+	<%if (data.tIsMainAddAction) { %>
+		<% if (data.isSplit) { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.main.from, data.main.to) %></div>
+		<% } %>
+		<div>From <%= data.main.add.first.toString() %> To <%= data.main.add.last.toString() %></div>
+		<div>Number of days taken: <%- data.main.add.count %></div>
 	<% } %>
 	
-	<% if (data.extra && data.extra.position == 'after' && data.extra.add.count > 0) { %>
-		<div>Add holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
-		<div>When: <%= data.extra.add.first.toString() %> - <%= data.extra.add.last.toString() %></div>
+	<% if (data.tIsExtraAddAction && data.extra.position == 'after') { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.add.first.toString() %> To <%= data.extra.add.last.toString() %></div>
+		<div>Number of days taken: <%- data.extra.add.count %></div>
 	<% } %>
 	<div>
-		<button name="addOrCancel" type="button">Add holidays</button>
+		<button name="addOrCancel" type="button">Add <% if (data.mode === 'halfdayHolidays') { %>halfday<% } %> holidays</button>
 	</div>
 </script>
 
 <script type="text/template" id="cancelHolidaysFormTemplate">
 	<% if (data.extra && data.extra.position == 'before' && data.extra.cancel.count > 0) { %>
-		<div>Cancel holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
-		<div>When: <%= data.extra.cancel.first.toString() %> - <%= data.extra.cancel.last.toString() %></div>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.cancel.first.toString() %> To <%= data.extra.cancel.last.toString() %></div>
+		<div>Number of days cancelled: <%- data.extra.cancel.count %></div>
 	<% } %>
 
 	<%if (data.main.cancel.count > 0) { %>
-		<div>Cancel holidays for holiday year <%- data.main.from %> - <%- data.main.to %></div>
-		<div>When: <%= data.main.cancel.first.toString() %> - <%= data.main.cancel.last.toString() %></div>
+		<% if (data.isSplit) { %>
+		<div>Holidays year <%- data.tHolidaysYear(data.main.from, data.main.to) %></div>
+		<% } %>
+		<div>From <%= data.main.cancel.first.toString() %> To <%= data.main.cancel.last.toString() %></div>
+		<div>Number of days cancelled: <%- data.main.cancel.count %></div>
 	<% } %>
 
 	<% if (data.extra && data.extra.position == 'after' && data.extra.cancel.count > 0) { %>
-		<div>Cancel holidays for holiday year <%- data.extra.from %> - <%- data.extra.to %></div>
-		<div>When: <%= data.extra.cancel.first.toString() %> - <%= data.extra.cancel.last.toString() %></div>
+		<div>Holidays year <%- data.tHolidaysYear(data.extra.from, data.extra.to) %></div>
+		<div>From <%= data.extra.cancel.first.toString() %> To <%= data.extra.cancel.last.toString() %></div>
+		<div>Number of days cancelled: <%- data.extra.cancel.count %></div>
 	<% } %>
 	<div>
 		<button name="addOrCancel" type="button">Cancel holidays</button>

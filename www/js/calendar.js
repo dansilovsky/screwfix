@@ -276,17 +276,14 @@
 					width: S.$document.width()
 				},
 				box: {
-					height: S.$selectionInfo.outerHeight(),
-					width: S.$selectionInfo.outerWidth()
+					height: function() {return S.$selectionInfo.outerHeight();},
+					width: function() {return S.$selectionInfo.outerWidth();}
 				}
 			};
 			
 			S.positionInfoBox(infoArgs, event.pageX, event.pageY);
 
 			S.$selector.mousemove(function(event) {
-				var x = event.pageX + 'px';
-				var y = event.pageY + 'px';
-				
 				S.positionInfoBox(infoArgs, event.pageX, event.pageY);
 			});
 		};
@@ -301,17 +298,19 @@
 		/**
 		 * Helper function to position selection Info box
 		 * @param {object} args
-		 * @param {int} x
-		 * @param {int} y
+		 * @param {int} pageX
+		 * @param {int} pageY
 		 */
 		S.positionInfoBox = function(args, pageX, pageY) {
-			var offset = 5;
+			var offset = 10;
 			var newX = pageX;
-			var newY = pageY - args.box.height - offset;
+			var newY = pageY - args.box.height() - offset;
 			
-			if (newX > args.document.width - args.box.width - offset) {
-				newX = args.document.width - args.box.width - offset;
+			if (newX > args.document.width - args.box.width() - offset) {
+				newX = args.document.width - args.box.width() - offset;
 			}
+			
+			newX += offset;
 			
 			if (newX < offset) {
 				newX = offset;
@@ -600,6 +599,7 @@
 				}
 				
 				info.isSplit = (addHolidays.length > 1 || cancelHolidays.length > 1);
+				info.mode = mode;
 				// info main is for holiday year where selection started
 				info.main = {
 					add: {
@@ -670,7 +670,7 @@
 			 */
 			credit: function(year, count) {
 				H.years[year].debits -= count;
-				
+				console.log('Credit year: ' + year + ' debits: ' + H.years[year].debits);
 				return H.years[year].debits;
 			},
 			
@@ -682,7 +682,7 @@
 			 */
 			debit: function(year, count) {
 				H.years[year].debits += count;
-				
+				console.log('Debit year: ' + year + ' debits: ' + H.years[year].debits);
 				return H.years[year].debits;
 			},
 			
@@ -1069,6 +1069,7 @@
 		
 		holidaysSelectionInfo: function(selection) {
 			var info = this.holidaysManager.getSelectionInfo(selection, this.master.mode);
+			
 			var template = appGlobal.templates.holidaysSelectionInfo;
 			
 			return template(info);
@@ -1934,15 +1935,24 @@
 			this.user = this.master.user;
 			// CalendarDayCollection
 			this.collection = this.selection[0].model.collection;
-			this.layover = null;			
+			this.layover = null;
+			
 			this.info = this.holidaysManager.getSelectionInfo(this.selection, this.mode);
-			this.isAddAction = (this.info.main.add.count > 0 || (this.info.extra && this.info.extra.add.count > 0));
-			this.isCancelAction = (this.info.main.cancel.count > 0 || (this.info.extra && this.info.extra.cancel.count > 0));
+			
+			this.isMainAddAction = (this.info.main.add.count > 0 && this.info.main.available >= 0);
+			this.isExtraAddAction = (this.info.extra && this.info.extra.add.count > 0 && this.info.extra.available >= 0) ? true : false;
+			this.isAddAction = ((this.isMainAddAction) || (this.isExtraAddAction));
+			this.isCancelAction = (this.info.main.cancel.count > 0 || (this.info.extra && this.info.extra.cancel.count > 0) && !this.isAddAction);
 			this.isAddHalfday = this.mode === AppView.MODE_HOLIDAYS ? false : true;
 			
+			this.allowClearCollectionEvents = true;	
+			
+			this.info.tHolidaysYear = function(from, to) {return from.substr(0, 4) + '-' + to.substr(2, 2)};
+			this.info.tIsMainAddAction = this.isMainAddAction;
+			this.info.tIsExtraAddAction = this.isExtraAddAction;
+			
 			this.collection.on('holidaysUpdated', this.updateHolidaysManager, this);
-			this.collection.on('holidaysUpdateError', this.updateError, this);
-			this.allowClearCollectionEvents = true;
+			this.collection.on('holidaysUpdateError', this.updateError, this);		
 			
 			this.render();
 		},
@@ -1960,6 +1970,7 @@
 				this.$el.html(this.cancelTemplate(this.info));
 			}
 			else {
+				this.clear();
 				return;
 			}
 			
@@ -1981,11 +1992,11 @@
 			var joinSelection = [];	
 			
 			if (this.isAddAction) {
-				if (this.info.main.add.count > 0) {
+				if (this.isMainAddAction) {
 					joinSelection = this.info.main.add.selection;
 				}
 				
-				if (this.info.extra && this.info.extra.add.count > 0) {
+				if (this.isExtraAddAction) {
 					joinSelection = joinSelection.concat(this.info.extra.add.selection);
 				}
 				
@@ -2040,7 +2051,7 @@
 		
 		updateHolidaysManager: function() {
 			if (this.isAddAction) {
-				if (this.info.main.add.count > 0) {
+				if (this.isMainAddAction) {
 					if (!this.isAddHalfday) {
 						this.holidaysManager.debit(this.info.main.year, this.info.main.add.length);
 					}
@@ -2049,7 +2060,7 @@
 					}
 				}
 				
-				if (this.info.extra && this.info.extra.add.count > 0) {
+				if (this.isExtraAddAction) {
 					if (!this.isAddHalfday) {
 						this.holidaysManager.debit(this.info.extra.year, this.info.extra.add.length);
 					}
