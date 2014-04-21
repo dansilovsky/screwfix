@@ -1,4 +1,5 @@
 @import "compass/css3/opacity";
+@import "compass/css3/user-interface";
 
 #calendarBar {
 	height: $bar-height;
@@ -37,7 +38,5 @@
 	overflow-y: scroll;
 }
 #calendarSelectionInfo {
-	overflow: hidden;
-	width: 100px;
-	height: 100px;
+	@include user-select("none");
 }
