@@ -898,10 +898,10 @@
 	
 	var AppView = Backbone.View.extend({
 		el: $('body'),
-		mode:'default',
 		urlRoot: window.document.URL,
 		
-		initialize: function() {			
+		initialize: function() {
+			this.mode = AppView.MODE_NOTES,
 			this.user = new Zidane.User(this.screwfix.user, new Zidane.Acl(this.screwfix.acl.roles));
 			
 			this.holidaysManager = new HolidaysManager(this.screwfix.holidays.years);
@@ -923,8 +923,9 @@
 		}
 	});
 	
-	AppView.MODE_DEFAULT = 'default';
+	AppView.MODE_NOTES = 'notes';
 	AppView.MODE_HOLIDAYS = 'holidays';
+	AppView.MODE_HALFDAY_HOLIDAYS = 'halfdayHolidays';
 	
 	// Calendar view
 	var CalendarView = Backbone.View.extend({
@@ -976,10 +977,26 @@
 				this
 			);
 			this.toolsView.on(
-				'holidaysoff', 
-				function() {
-					this.master.mode = AppView.MODE_DEFAULT; 
-					this.monthView.selector.disable();
+				'switched', 
+				function(mode) {
+					switch (mode) {
+						case AppView.MODE_NOTES:
+							this.master.mode = mode;
+							this.monthView.selector.disable();
+							break;
+						case AppView.MODE_HOLIDAYS:
+							this.master.mode = mode;
+							this.monthView.selector.enable();
+							break;
+						case AppView.MODE_HALFDAY_HOLIDAYS:
+							this.master.mode = mode;
+							this.monthView.selector.enable();
+							break;
+						default:
+							this.master.mode = AppView.MODE_NOTES;
+							this.monthView.selector.disable();
+							throw 'Unknown mode';
+					}
 				}, 
 				this
 			);
@@ -1138,30 +1155,37 @@
 			this.render();
 		},
 		
+		events: {
+			"click a": "preventDefault"
+		},
+		
 		render: function() {
 			var that = this;
 			
 			this.$el.html(this.template);
 			
-			this.$el.find('li a').click(function(e) {
-				e.preventDefault();
-				that.select(this);				
+			this.afterRender();
+		},
+		
+		afterRender: function() {
+			var that = this;
+			
+			this.$el.switcher({
+				id: 'mode',
+				select: function(el){
+					$(el).addClass('selected');
+				},
+				unselect: function(el){
+					$(el).removeClass('selected');
+				},
+				switch: function(mode, i) {
+					that.trigger('switched', mode)
+				},
 			});
 		},
 		
-		select: function(el) {
-			var $el = $(el);
-			
-			if ($el.hasClass('selected')) {
-				$el.removeClass('selected');
-				this.trigger('holidaysoff');
-				
-			}
-			else {
-				$el.addClass('selected');
-				this.trigger('holidayson');
-			}		
-			
+		preventDefault: function(e) {
+			e.preventDefault();
 		}
 	});
 	
@@ -1617,7 +1641,7 @@
 		},
 		
 		noteForm: function(note) {
-			if (this.master.mode === AppView.MODE_DEFAULT && this.user.isAllowed(Zidane.Acl.MEMBER)) {
+			if (this.master.mode === AppView.MODE_NOTES && this.user.isAllowed(Zidane.Acl.MEMBER)) {
 				if (note.type === 'system' && !this.user.isAllowed(Zidane.Acl.EDITOR)) {
 					return;
 				}

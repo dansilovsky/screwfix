@@ -34,7 +34,7 @@
 	};
 	
 	/**
-	 * Switches among given optins
+	 * Switches among given options
 	 * @param {object} options 
 	 *		            id         eg. mode (on element id="mode:choise0")
 	 *		            select     callback to be called on selectedt element. 
