@@ -565,7 +565,7 @@
 			 * @param {array} selection  array of selected DayView objects
 			 * @returns {object} selected holidays info or null if selection is empty
 			 */
-			getSelectionInfo: function(selection) {
+			getSelectionInfo: function(selection, mode) {
 				if (!selection.length) {
 					return null;
 				}
@@ -574,6 +574,7 @@
 				var mainHolidayYear = this.determineHolidayYear(selection[0].model.id);
 				var oldHolidayYear = 0;
 				var holidayYear = 0;
+				var oneHolidayLength = mode === AppView.MODE_HOLIDAYS ? 1 : 0.5;
 				var addHolidays = [];
 				var cancelHolidays = [];
 				var cancelHolidaysLength = [];
@@ -603,7 +604,7 @@
 				info.main = {
 					add: {
 						count: addHolidays[0].length,
-						length: addHolidays[0].length,
+						length: addHolidays[0].length * oneHolidayLength,
 						selection: addHolidays[0],
 						first: addHolidays[0][0],
 						last: addHolidays[0][addHolidays[0].length-1]
@@ -631,7 +632,7 @@
 					info.extra = {
 						add: {
 							count: addHolidays[1].length,
-							length: addHolidays[1].length,
+							length: addHolidays[1].length * oneHolidayLength,
 							selection: addHolidays[1],
 							first: addHolidays[1][0],
 							last: addHolidays[1][addHolidays[1].length-1]
@@ -1067,7 +1068,7 @@
 		},		
 		
 		holidaysSelectionInfo: function(selection) {
-			var info = this.holidaysManager.getSelectionInfo(selection);
+			var info = this.holidaysManager.getSelectionInfo(selection, this.master.mode);
 			var template = appGlobal.templates.holidaysSelectionInfo;
 			
 			return template(info);
@@ -1295,7 +1296,8 @@
 			}
 
 			this.selector.on('started', function() {
-				if (that.master.mode === AppView.MODE_HOLIDAYS) {
+				var mode = that.master.mode;
+				if (mode === AppView.MODE_HOLIDAYS || mode === AppView.MODE_HALFDAY_HOLIDAYS) {
 					this.setShowInfo(true);
 				}
 				else {
@@ -1305,12 +1307,15 @@
 			
 			this.selector.on(
 				'selected', 
-				function(selection) {				
-					if (this.master.mode === AppView.MODE_HOLIDAYS && selection.length) {
+				function(selection) {
+					var mode = this.master.mode;
+					
+					if (mode === AppView.MODE_HOLIDAYS || mode === AppView.MODE_HALFDAY_HOLIDAYS && selection.length) {
 						new HolidaysFormView({
 							master: this.master,
 							parent: this,
-							selection: selection							
+							selection: selection,
+							mode: mode
 						});
 					}
 				}, 
@@ -1924,15 +1929,16 @@
 			// MonthView
 			this.parent = options.parent;
 			this.selection = options.selection;
+			this.mode = options.mode;
 			this.holidaysManager = this.master.holidaysManager;
 			this.user = this.master.user;
 			// CalendarDayCollection
 			this.collection = this.selection[0].model.collection;
 			this.layover = null;			
-			this.info = this.holidaysManager.getSelectionInfo(this.selection);
+			this.info = this.holidaysManager.getSelectionInfo(this.selection, this.mode);
 			this.isAddAction = (this.info.main.add.count > 0 || (this.info.extra && this.info.extra.add.count > 0));
 			this.isCancelAction = (this.info.main.cancel.count > 0 || (this.info.extra && this.info.extra.cancel.count > 0));
-			this.isAddHalfday = false;
+			this.isAddHalfday = this.mode === AppView.MODE_HOLIDAYS ? false : true;
 			
 			this.collection.on('holidaysUpdated', this.updateHolidaysManager, this);
 			this.collection.on('holidaysUpdateError', this.updateError, this);
@@ -2039,7 +2045,7 @@
 						this.holidaysManager.debit(this.info.main.year, this.info.main.add.length);
 					}
 					else {
-						this.holidaysManager.debit(this.info.main.year, this.info.main.add.length/2);
+						this.holidaysManager.debit(this.info.main.year, this.info.main.add.length);
 					}
 				}
 				
@@ -2048,7 +2054,7 @@
 						this.holidaysManager.debit(this.info.extra.year, this.info.extra.add.length);
 					}
 					else {
-						this.holidaysManager.debit(this.info.extra.year, this.info.extra.add.length/2);
+						this.holidaysManager.debit(this.info.extra.year, this.info.extra.add.length);
 					}
 				}
 			}
