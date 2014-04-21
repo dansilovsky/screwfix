@@ -32,11 +32,79 @@
 		
 		return this;
 	};
+	
+	/**
+	 * Switches among given optins
+	 * @param {object} options 
+	 *		            id         eg. mode (on element id="mode:choise0")
+	 *		            select     callback to be called on selectedt element. 
+	 *		                       It gets element as argument eg. select(el);
+	 *		            unselect   callback called on unselected elements. 
+	 *		                       It gets element as argument eg. unselect(el);
+	 *		            switch     called when element is selected(clicked on). 
+	 *				       It gets choise and index of choise as arguments. 
+	 *				       Choise is eg. choise0 from id="mode:choise0"
+	 * @returns {undefined}
+	 */
+	$.fn.switcher = function(options) {
+		var defaults = {
+			id: null,
+			select: null,
+			unselect: null,
+			switch: null,
+		};
+		
+		var settings = $.extend({}, defaults, options);
+		
+		if (settings.id === null) {
+			throw 'Option "id" must be defined.';
+		}
+		
+		var $choises = this.find("[id^='" + settings.id + "']");
+		
+		$choises.each(function(index) {
+			var $choise = $(this);
+			
+			var idStr = $choise.attr('id');
+			
+			var data = idStr.split(':');
+			
+			if (data.length !== 2) {
+				throw 'Wrong id attribute.';
+			}
+			
+			var selectedChoise = data[1];
+			
+			$choise.on('click', function() { 
+				$choise.trigger('clickSwitcher', [selectedChoise, index, $choises]);
+			});
+			
+		});
+		
+		$choises.on('clickSwitcher', function(e, selectedChoise, index, $choises) {
+			$choises.each(function(i){
+				if (i !== index) {
+					if (settings.unselect) {
+						settings.unselect(this);
+					}
+				}
+				else {
+					if (settings.select) {
+						settings.select(this);
+					}
+				}
+			});
+			
+			if (settings.switch) {
+				settings.switch(selectedChoise, index);
+			}
+		});
+	}
 
 })(jQuery);
 
 // common views
-(function($){
+(function($){	
 	var common = {};
 	
 	var appGlobal = {
