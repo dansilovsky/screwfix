@@ -7,15 +7,6 @@ use Nette\Application\UI\Form;
  * Presenter
  */
 class SigninPresenter extends BasePresenter {
-        
-	private $userRepository;
-	
-	protected function startup()
-	{
-		parent::startup();
-		
-		$this->userRepository = $this->context->userRepository;
-	}
 	
 	protected function createComponentSignInForm()
 	{
