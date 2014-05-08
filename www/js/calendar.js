@@ -670,7 +670,7 @@
 			 */
 			credit: function(year, count) {
 				H.years[year].debits -= count;
-				console.log('Credit year: ' + year + ' debits: ' + H.years[year].debits);
+				
 				return H.years[year].debits;
 			},
 			
@@ -682,7 +682,7 @@
 			 */
 			debit: function(year, count) {
 				H.years[year].debits += count;
-				console.log('Debit year: ' + year + ' debits: ' + H.years[year].debits);
+				
 				return H.years[year].debits;
 			},
 			

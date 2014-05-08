@@ -28,4 +28,9 @@ class UserRepository extends \Screwfix\Repository {
         {
 		return $this->where('username', $username);
         }
+	
+	public function findByEmail($email) 
+	{
+		return $this->where('email', $email);
+	}
 }

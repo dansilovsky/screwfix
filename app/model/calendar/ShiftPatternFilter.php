@@ -66,4 +66,24 @@ class ShiftPatternFilter extends CalendarFilter {
 
 		return $this->_pattern[$week][$day];
 	}
+	
+	/**
+	 * Gets pattern array
+	 * 
+	 * @return array
+	 */
+	public function getArray()
+	{
+		return $this->_pattern;
+	}
+	
+	/**
+	 * Return json encoded string of pattern's array
+	 * 
+	 * @return string
+	 */
+	public function toJson()
+	{
+		return \Nette\Utils\Json::encode($this->_pattern);
+	}
 }

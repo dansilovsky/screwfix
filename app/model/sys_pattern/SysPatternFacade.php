@@ -53,4 +53,22 @@ class SysPatternFacade extends RepositoryFacade {
 		$this->repository->insert(array('name' => $name, 'pattern' => $pattern));
 	}
 	
+	/**
+	 * Gets associative array where "key = name of pattern" and "value = shift pattern array"
+	 * 
+	 * @return array
+	 */
+	public function getFormSelection()
+	{
+		$selection = array();
+		
+		foreach ($this->repository as $patternRow)
+		{
+			$patternFilter = unserialize($patternRow->pattern);
+			$selection[$patternFilter->toJson()] = $patternRow->name;
+		}
+		
+		return $selection;
+	}
+
 }

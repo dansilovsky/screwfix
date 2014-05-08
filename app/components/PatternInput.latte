@@ -1,0 +1,31 @@
+{var $i = 0}
+<table n:if="$pattern">
+	<tr n:if="$pattern"><td></td><td>Monday</td><td>Tuesday</td><td>Wednesday</td><td>Thursday</td><td>Firday</td><td>Saturday</td><td>Sunday</td></tr>
+{foreach $pattern as $weekNum => $week}
+	<tr>
+		<td>week {$weekNum}</td>
+	{foreach $week as $dayNum => $times}
+		<td>
+			{if $times}
+			<select name="fromHour">
+				<option n:for="$hour=0; $hour<24; $hour++" {!$hour|selectOption:$times[0]:'h'} value="{$hour}">{$hour|padTime}</option>
+			</select>
+			<select name="fromMinute">
+				<option n:for="$minute=0; $minute<60; $minute+=15" {!$minute|selectOption:$times[0]:'m'} value="{$minute}">{$minute|padTime}</option>
+			</select>
+			<select name="toHour">
+				<option n:for="$hour=0; $hour<24; $hour++" {!$hour|selectOption:$times[1]:'h'} value="{$hour}">{$hour|padTime}</option>
+			</select>
+			<select name="toMinute">
+				<option n:for="$minute=0; $minute<60; $minute+=15" {!$minute|selectOption:$times[1]:'m'} value="{$minute}">{$minute|padTime}</option>
+			</select>			
+			{else}
+			Off
+			<input type="hidden" name="{$name}[]" value="{$inputPattern[$i]}">
+			{/if}
+		</td>
+		{var $i++}
+	{/foreach}	
+	</tr>
+{/foreach}
+</table>

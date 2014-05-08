@@ -43,6 +43,11 @@ abstract class CalendarPresenter extends BasePresenter {
 	 */
 	abstract protected function fromTo();
 	
+	/**
+	 * Gets shift pattern filter
+	 * 
+	 * @return ShiftPatternFilter|false 
+	 */
 	protected function getShiftPatternFilter()
 	{
 		return $this->patternFacade->getPatternFilter($this->identity->id);

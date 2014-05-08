@@ -62,6 +62,13 @@ common:
 		bankHolidayFacade: Screwfix\BankHolidayFacade
 
 		shiftPatternDate: Screwfix\ShiftPatternDate
+		
+		latteEngine: Screwfix\LatteEngine
+		template: Screwfix\Template
+
+		patternInput: Screwfix\PatternInput
+		patternInputFactory:
+			implement: Screwfix\IPatternInputFactory
 
 		shiftPattern:
 			parameters: [pattern]
@@ -78,12 +85,12 @@ common:
 				- addResource('Front:Home')
 				- addResource('Front:Signin')
 				- addResource('Front:Signup')
-				- addResource('Front:User')
+				- addResource('Front:Account')
 				- addResource('Front:Test')
 				- addResource('Admin:Admin')
 				- addResource('Api:Days')
 				- allow('guest', [Front:Home, Front:Signin, Front:Signup, Front:Test, Api:Days])
-				- allow('member', 'Front:User')
+				- allow('member', 'Front:Account')
 				- allow('editor', 'Admin:Admin')
 				- allow('admin')
 

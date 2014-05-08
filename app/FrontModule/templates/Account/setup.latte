@@ -1,0 +1,22 @@
+{block #content}
+
+{define #cssPath}
+/css/sign.css
+{/define}
+
+<div class="center">
+{form setupForm}
+	{label sysPattern /} {input sysPattern}
+	<ul n:if="$form['pattern']->errors">
+		<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
+	</ul>
+	{input pattern}
+	{input send}
+{/form}
+</div>
+
+{define #javascritpBottom}
+<script type="text/template" id="accountInputPattern">
+	
+</script>
+{/define}

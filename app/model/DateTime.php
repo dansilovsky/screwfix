@@ -15,6 +15,8 @@ class DateTime extends \Nette\DateTime {
 	
 	private $_oneMonthInterval = null;
 	
+	static private $_dayNames = array(0 => 'monday', 1 => 'tuesday', 2 => 'wednesday', 3 => 'thursday', 4 => 'friday', 5 => 'saturday', 6 => 'sunday');
+	
 	public function __construct($time = 'now', $object = null)
 	{
 		parent::__construct($time, $object);
@@ -124,5 +126,15 @@ class DateTime extends \Nette\DateTime {
 	public function getDay()
 	{
 		return (int) $this->format('j');
+	}
+	
+	/**
+	 * 
+	 * @param integer $day day number 0 is monday ... 6 is sunday
+	 * @return string
+	 */
+	static public function dayName($day) 
+	{
+		return self::$_dayNames[$day];
 	}
 }

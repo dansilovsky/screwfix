@@ -26,4 +26,22 @@ class UserFacade extends RepositoryFacade {
 	{
 		return $this->repository->findByUsername($username)->fetch();
 	}
+	
+	/**
+	 * Get user by email
+	 * 
+	 * @param string $email
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function getByEmail($email) 
+	{
+		return $this->repository->findByEmail($email)->fetch();
+	}
+	
+	public function save(array $user) 
+	{
+		
+		
+		$this->repository->insert($user);
+	}
 }

@@ -1,0 +1,43 @@
+{block #content}
+
+{define #cssPath}
+/css/sign.css
+{/define}
+
+<div class="center">
+{form signUpForm}
+	<ul n:if="$form->ownErrors">
+		<li n:foreach="$form->ownErrors as $error">{$error}</li>
+	</ul>
+	<div>
+		<ul n:if="$form['username']->errors">
+			<li n:foreach="$form['username']->errors as $error">{$error}</li>
+		</ul>
+		{input username}
+	</div>
+	<div>
+		<ul n:if="$form['email']->errors">
+			<li n:foreach="$form['email']->errors as $error">{$error}</li>
+		</ul>
+		{input email}
+	</div>
+	<div>
+		<ul n:if="$form['password']->errors">
+			<li n:foreach="$form['password']->errors as $error">{$error}</li>
+		</ul>
+		{input password}
+	</div>
+	<div>
+		<ul n:if="$form['verifyPassword']->errors">
+			<li n:foreach="$form['verifyPassword']->errors as $error">{$error}</li>
+		</ul>
+		{input verifyPassword}
+	</div>	
+	<div>
+		{input remember} {label remember /}
+	</div>
+	<div>
+		{input signup}
+	</div>
+{/form}
+</div>

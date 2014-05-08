@@ -37,7 +37,7 @@
 	 * Switches among given options
 	 * @param {object} options 
 	 *		            id         eg. mode (on element id="mode:choise0")
-	 *		            select     callback to be called on selectedt element. 
+	 *		            select     callback to be called on selectedt element with choise. 
 	 *		                       It gets element as argument eg. select(el);
 	 *		            unselect   callback called on unselected elements. 
 	 *		                       It gets element as argument eg. unselect(el);
