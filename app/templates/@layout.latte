@@ -9,7 +9,9 @@
 	</head>
 
 	<body>
+		{if $isStickyFooter}
 		<div id="root">
+		{/if}
 			<div id="mainBar" class="highlight">
 				<nav>
 					<ul>
@@ -28,10 +30,13 @@
 				</div>
 				{/block}
 			</div>
-			<div id="mainContent">
+			<div id="contentMain">
 			{include #content}
 			</div>
-		</div>		
+		{if $isStickyFooter}
+			<div id="root_footer"></div>
+		</div>
+		{/if}
 		<div id="footer">
 			&copy; 2013 Daniel Silovsky
 		</div>

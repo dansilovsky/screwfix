@@ -119,7 +119,7 @@
 	};
 	
 	var ConnectingAnimationView = common.ConnectingAnimationView = Backbone.View.extend({
-		className: 'popupBox',
+		className: 'box-popup',
 		
 		initialize: function() {
 			this.render();
@@ -168,7 +168,7 @@
 	
 	var AlertView = common.AlertView = Backbone.View.extend({
 		id: 'alert',
-		className: 'alert',
+		className: 'box-alert',
 		template: appGlobal.templates.alert,
 		
 		initialize: function(options) {			

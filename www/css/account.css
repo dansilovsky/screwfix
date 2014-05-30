@@ -1,0 +1,790 @@
+/* 
+    Created on : 10-May-2014, 12:43:38
+    Author     : Daniel Silovsky
+*/
+/* imports for all mixins + global project variables */
+/* vertical rhythm */
+/* font size */
+/* heights - should be multiplies of $line-height */
+/* colors */
+/* text colors */
+/* color of text on highlight */
+/* background colors */
+/* basic background color */
+/* shades of grey */
+/*$color-highlight: rgb(0, 114, 198);  skydrive color */
+/* screwfix color */
+/* padding */
+/* widths */
+/* margin */
+/* Include to get all modules */
+/* 
+    Created on : 13-May-2014, 20:52:30
+    Author     : Daniel Silovsky
+*/
+/* 
+    Created on : 14-May-2014, 19:41:11
+    Author     : Daniel Silovsky
+*/
+/* 
+    Created on : 08-May-2014, 11:20:25
+    Author     : Daniel Silovsky
+*/
+/* 
+    Created on : 17-May-2014, 16:36:57
+    Author     : Daniel Silovsky
+*/
+/* input height + label or margin between inputs height */
+/* includes borders and paddings */
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 07-May-2014, 12:57:09
+    Author     : Daniel Silovsky
+*/
+/* 
+    Created on : 24-May-2014, 19:01:35
+    Author     : Daniel Silovsky
+*/
+/* line 17, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+}
+
+/* line 22, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+html {
+  line-height: 1;
+}
+
+/* line 24, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 26, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 28, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+/* line 30, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q, blockquote {
+  quotes: none;
+}
+/* line 103, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+
+/* line 32, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+a img {
+  border: none;
+}
+
+/* line 116, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
+  display: block;
+}
+
+/*
+    Created on : 10-May-2014, 14:29:30
+    Author     : Daniel Silovsky
+*/
+/* line 5, ../../app/sass/sass/partials/_globals.scss */
+.left {
+  float: left  !important;
+}
+
+/* line 8, ../../app/sass/sass/partials/_globals.scss */
+.right {
+  float: right !important;
+}
+
+/* line 11, ../../app/sass/sass/partials/_globals.scss */
+.clear {
+  clear: both !important;
+}
+
+/* 
+    Created on : 11-May-2014, 17:36:58
+    Author     : Daniel Silovsky
+*/
+/* line 61, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/typography/_vertical_rhythm.scss */
+* html {
+  font-size: 87.5%;
+}
+
+/* line 64, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/typography/_vertical_rhythm.scss */
+html {
+  font-size: 14px;
+  line-height: 1.42857em;
+}
+
+/* line 2, ../../app/sass/sass/partials/_common.scss */
+a, a:visited, a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+/*html {
+	font-family: "Segoe UI", "Segoe UI Web Regular", "Segoe UI Symbol", "Helvetica Neue", "BBAlpha Sans", "S60 Sans", Arial, "sans-serif";
+}*/
+/* line 12, ../../app/sass/sass/partials/_common.scss */
+body {
+  min-width: 987px;
+}
+
+/*h1.bar {
+	font-size: 1.42857em  20/14 ;
+	line-height: $line-height-h1;
+	height: $line-height * 4;
+}*/
+/*.highlight {
+	background-color: $color-highlight;
+	color: $color-text-dark-highlight;
+}*/
+/*.layover {
+	@include opacity(0.5);
+	background-color: black;
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}*/
+/* line 35, ../../app/sass/sass/partials/_common.scss */
+.popupBox {
+  background-color: #fff;
+  border: 2px solid #000;
+  padding: 15px;
+  position: fixed;
+}
+
+/*.alert {	
+	background-color: #fff;
+	border: 2px solid #000;
+	line-height: $line-height-normal;
+	padding: $padding-main;
+	position: fixed;
+}*/
+/* line 1, ../../app/sass/sass/partials/_main_bar.scss */
+#mainBar {
+  height: 40px;
+  line-height: 40px;
+  padding: 0 15px;
+}
+/* line 6, ../../app/sass/sass/partials/_main_bar.scss */
+#mainBar ul li {
+  float: left;
+  margin-right: 10px;
+}
+/* line 11, ../../app/sass/sass/partials/_main_bar.scss */
+#mainBar .authentication {
+  float: right;
+}
+
+/* line 1, ../../app/sass/sass/partials/_footer.scss */
+#footer {
+  clear: left;
+  height: 2.85714em;
+  line-height: 2.85714em;
+  padding: 0 1.07143em;
+}
+
+/* 
+    Created on : 08-May-2014, 11:17:21
+    Author     : Daniel Silovsky
+*/
+/* 
+    Created on : 08-May-2014, 11:20:25
+    Author     : Daniel Silovsky
+*/
+/* line 7, ../../app/sass/sass/partials/_typography.scss */
+html {
+  font-family: "Segoe UI", "Segoe UI Web Regular", "Segoe UI Symbol", "Helvetica Neue", "BBAlpha Sans", "S60 Sans", Arial, "sans-serif";
+  color: #282828;
+}
+
+/* 
+    Created on : 13-May-2014, 20:41:38
+    Author     : Daniel Silovsky
+*/
+/* line 27, ../../app/sass/sass/modules/_forms.scss */
+form li {
+  color: red;
+}
+
+/* line 32, ../../app/sass/sass/modules/_forms.scss */
+input, select {
+  border: 0;
+  margin: 0;
+  outline: 0;
+  padding: 0 0.57143em;
+}
+/* line 38, ../../app/sass/sass/modules/_forms.scss */
+input:focus, select:focus {
+  outline: 0;
+}
+
+/* line 43, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password], input[type=submit], button {
+  font-size: 1em;
+  margin: 0;
+}
+
+/* line 48, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password] {
+  border: 1px solid #e1e1e1;
+  height: 1.42857em;
+  line-height: 1.57143em;
+  /* +2px moves text little bit down in order to center it in inputtext */
+  padding-bottom: 0.64286em;
+  padding-top: 0.64286em;
+}
+
+/* line 56, ../../app/sass/sass/modules/_forms.scss */
+input[type=submit], button {
+  height: 2.14286em;
+  line-height: 2.14286em;
+}
+
+/* line 61, ../../app/sass/sass/modules/_forms.scss */
+input[type=checkbox] {
+  height: 1.42857em;
+  margin-right: 0.57143em;
+  vertical-align: text-top;
+  width: 1.42857em;
+}
+
+/* line 68, ../../app/sass/sass/modules/_forms.scss */
+select {
+  border: 1px solid #e1e1e1;
+  font-size: 1em;
+  padding-bottom: 0.64286em;
+  padding-top: 0.64286em;
+}
+
+/* line 75, ../../app/sass/sass/modules/_forms.scss */
+textarea {
+  display: block;
+  margin: 0;
+  padding: 0.57143em;
+}
+
+/* line 81, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel, .formRowLabelTop, .formRowNolabel, .formRowCheckbox, .formRowError, .formRowErrorTop, .formRowCommonError, .formRowButtons {
+  margin-bottom: 1.42857em;
+}
+
+/* line 85, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel, .formRowLabelTop {
+  margin-top: -1.42857em;
+}
+/* line 89, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel label, .formRowLabelTop label {
+  display: block;
+  height: 1.42857em;
+  padding-bottom: 0.28571em;
+  padding-top: 1.14286em;
+}
+
+/* line 97, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabelTop {
+  margin-top: 0;
+}
+
+/* line 110, ../../app/sass/sass/modules/_forms.scss */
+.formRowCheckbox label {
+  display: block;
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+
+/* line 116, ../../app/sass/sass/modules/_forms.scss */
+.formRowError, .formRowErrorTop {
+  margin-top: -1.42857em;
+}
+/* line 120, ../../app/sass/sass/modules/_forms.scss */
+.formRowError li, .formRowErrorTop li {
+  display: block;
+  min-height: 1.42857em;
+  padding-bottom: 0.28571em;
+}
+/* line 125, ../../app/sass/sass/modules/_forms.scss */
+.formRowError li:first-child, .formRowErrorTop li:first-child {
+  padding-top: 1.14286em;
+}
+/* line 130, ../../app/sass/sass/modules/_forms.scss */
+.formRowError label, .formRowErrorTop label {
+  display: block;
+  height: 1.42857em;
+  padding-bottom: 0.28571em;
+}
+
+/* line 137, ../../app/sass/sass/modules/_forms.scss */
+.formRowErrorTop {
+  margin-top: 0;
+}
+
+/* line 145, ../../app/sass/sass/modules/_forms.scss */
+.formRowCommonError li {
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+
+/* line 155, ../../app/sass/sass/modules/_forms.scss */
+.formRowTop {
+  margin-top: 0;
+}
+
+/* line 159, ../../app/sass/sass/modules/_forms.scss */
+.formRowBottom {
+  margin-bottom: 40px;
+}
+
+/* 
+    Created on : 10-May-2014, 20:14:51
+    Author     : Daniel Silovsky
+*/
+/* line 6, ../../app/sass/sass/partials/_buttons.scss */
+.buttonArea {
+  text-align: right;
+}
+
+/* line 10, ../../app/sass/sass/partials/_buttons.scss */
+.button {
+  background-color: #3074b6;
+  border: 0;
+  color: white;
+  min-width: 6em;
+  padding-left: 1.07143em;
+  padding-right: 1.07143em;
+  margin-left: 1.07143em;
+}
+/* line 19, ../../app/sass/sass/partials/_buttons.scss */
+.button:hover {
+  background-color: #3681ca;
+}
+
+/* line 24, ../../app/sass/sass/partials/_buttons.scss */
+.buttonNegative {
+  background-color: #d7d7d7;
+  color: #282828;
+}
+/* line 28, ../../app/sass/sass/partials/_buttons.scss */
+.buttonNegative:hover {
+  background-color: #e4e4e4;
+}
+
+/* 
+    Created on : 08-May-2014, 12:16:28
+    Author     : Daniel Silovsky
+*/
+/* line 6, ../../app/sass/sass/partials/_layover.scss */
+.layover {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  opacity: 0.5;
+  background-color: black;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+/* 
+    Created on : 08-May-2014, 12:32:16
+    Author     : Daniel Silovsky
+*/
+/* line 5, ../../app/sass/sass/partials/_boxes.scss */
+.box, .box-popup, .box-alert {
+  background-color: white;
+  line-height: 20px;
+  padding: 1.07143em;
+  position: fixed;
+}
+
+/* line 12, ../../app/sass/sass/partials/_boxes.scss */
+.box-popup {
+  border: 2px solid #000;
+}
+
+/* line 17, ../../app/sass/sass/partials/_boxes.scss */
+.box-alert {
+  border-bottom: 2px solid black;
+  border-top: 2px solid black;
+  width: 100%;
+}
+
+/* 
+    Created on : 08-May-2014, 13:09:15
+    Author     : Daniel Silovsky
+*/
+/* line 6, ../../app/sass/sass/partials/_highlight.scss */
+.highlight {
+  background-color: #3074b6;
+  color: white;
+}
+
+/* 
+    Created on : 10-May-2014, 12:29:36
+    Author     : Daniel Silovsky
+*/
+/* 
+    Created on : 17-May-2014, 15:53:38
+    Author     : Daniel Silovsky
+*/
+/* line 7, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide {
+  background: #f0f0f0;
+  padding: 1.42857em 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12.85714em;
+}
+/* line 15, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide h1 {
+  font-size: 20px;
+  padding: 0 0.75em;
+}
+/* line 20, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide li {
+  padding: 0 1.07143em;
+}
+/* line 23, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide li:hover {
+  background-color: #e3e3e3;
+}
+/* line 28, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide .current {
+  background-color: #d7d7d7;
+}
+/* line 30, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide .current:hover {
+  background-color: #e4e4e4;
+}
+/* line 35, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide a {
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+/* line 40, ../../app/sass/sass/account/partials/_bar-side.scss */
+.barSide h1 a {
+  height: 2em;
+  line-height: 2em;
+}
+
+/* 
+    Created on : 17-May-2014, 16:06:17
+    Author     : Daniel Silovsky
+*/
+/* line 10, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
+html, body {
+  height: 100%;
+}
+
+/* line 12, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
+#root {
+  clear: both;
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin-bottom: -2.85714em;
+}
+/* line 18, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
+#root #root_footer {
+  height: 2.85714em;
+}
+
+/* line 20, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
+#footer {
+  clear: both;
+  position: relative;
+  height: 2.85714em;
+}
+
+/* line 9, ../../app/sass/sass/account/partials/_content.scss */
+#contentMain {
+  bottom: 2.85714em;
+  position: absolute;
+  top: 2.85714em;
+  width: 100%;
+}
+
+/* line 16, ../../app/sass/sass/account/partials/_content.scss */
+#contentAccount {
+  padding: 1.42857em 2.14286em;
+  bottom: 0;
+  float: left;
+  left: 12.85714em;
+  overflow: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+/* line 27, ../../app/sass/sass/modules/_forms.scss */
+form li {
+  color: red;
+}
+
+/* line 32, ../../app/sass/sass/modules/_forms.scss */
+input, select {
+  border: 0;
+  margin: 0;
+  outline: 0;
+  padding: 0 0.57143em;
+}
+/* line 38, ../../app/sass/sass/modules/_forms.scss */
+input:focus, select:focus {
+  outline: 0;
+}
+
+/* line 43, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password], input[type=submit], button {
+  font-size: 1em;
+  margin: 0;
+}
+
+/* line 48, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password] {
+  border: 1px solid #e1e1e1;
+  height: 1.42857em;
+  line-height: 1.57143em;
+  /* +2px moves text little bit down in order to center it in inputtext */
+  padding-bottom: 0.64286em;
+  padding-top: 0.64286em;
+}
+
+/* line 56, ../../app/sass/sass/modules/_forms.scss */
+input[type=submit], button {
+  height: 2.14286em;
+  line-height: 2.14286em;
+}
+
+/* line 61, ../../app/sass/sass/modules/_forms.scss */
+input[type=checkbox] {
+  height: 1.42857em;
+  margin-right: 0.57143em;
+  vertical-align: text-top;
+  width: 1.42857em;
+}
+
+/* line 68, ../../app/sass/sass/modules/_forms.scss */
+select {
+  border: 1px solid #e1e1e1;
+  font-size: 1em;
+  padding-bottom: 0.64286em;
+  padding-top: 0.64286em;
+}
+
+/* line 75, ../../app/sass/sass/modules/_forms.scss */
+textarea {
+  display: block;
+  margin: 0;
+  padding: 0.57143em;
+}
+
+/* line 81, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel, .formRowLabelTop, .formRowNolabel, .formRowCheckbox, .formRowError, .formRowErrorTop, .formRowCommonError, .formRowButtons {
+  margin-bottom: 1.42857em;
+}
+
+/* line 85, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel, .formRowLabelTop {
+  margin-top: -1.42857em;
+}
+/* line 89, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel label, .formRowLabelTop label {
+  display: block;
+  height: 1.42857em;
+  padding-bottom: 0.28571em;
+  padding-top: 1.14286em;
+}
+
+/* line 97, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabelTop {
+  margin-top: 0;
+}
+
+/* line 110, ../../app/sass/sass/modules/_forms.scss */
+.formRowCheckbox label {
+  display: block;
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+
+/* line 116, ../../app/sass/sass/modules/_forms.scss */
+.formRowError, .formRowErrorTop {
+  margin-top: -1.42857em;
+}
+/* line 120, ../../app/sass/sass/modules/_forms.scss */
+.formRowError li, .formRowErrorTop li {
+  display: block;
+  min-height: 1.42857em;
+  padding-bottom: 0.28571em;
+}
+/* line 125, ../../app/sass/sass/modules/_forms.scss */
+.formRowError li:first-child, .formRowErrorTop li:first-child {
+  padding-top: 1.14286em;
+}
+/* line 130, ../../app/sass/sass/modules/_forms.scss */
+.formRowError label, .formRowErrorTop label {
+  display: block;
+  height: 1.42857em;
+  padding-bottom: 0.28571em;
+}
+
+/* line 137, ../../app/sass/sass/modules/_forms.scss */
+.formRowErrorTop {
+  margin-top: 0;
+}
+
+/* line 145, ../../app/sass/sass/modules/_forms.scss */
+.formRowCommonError li {
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+
+/* line 155, ../../app/sass/sass/modules/_forms.scss */
+.formRowTop {
+  margin-top: 0;
+}
+
+/* line 159, ../../app/sass/sass/modules/_forms.scss */
+.formRowBottom {
+  margin-bottom: 40px;
+}
+
+/* line 171, ../../app/sass/sass/modules/_forms.scss */
+form {
+  width: 22.85714em;
+}
+
+/* line 165, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password] {
+  width: 21.57143em;
+}
+
+/* line 4, ../../app/sass/sass/account/partials/_form.scss */
+.formShiftpattern {
+  width: 70.5em;
+}
+/* line 9, ../../app/sass/sass/account/partials/_form.scss */
+.formShiftpattern td div:last-child {
+  text-align: right;
+}
+
+/* line 16, ../../app/sass/sass/account/partials/_form.scss */
+.formRowInputpattern {
+  margin-bottom: 0.57143em;
+}
+/* line 19, ../../app/sass/sass/account/partials/_form.scss */
+.formRowInputpattern select {
+  padding: 0.21429em 0.42857em;
+}
+/* line 23, ../../app/sass/sass/account/partials/_form.scss */
+.formRowInputpattern label {
+  text-align: justify;
+  display: block;
+  margin-bottom: 0.28571em;
+}
+
+/* 
+    Created on : 10-May-2014, 12:30:25
+    Author     : Daniel Silovsky
+*/
+/* line 7, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern {
+  width: 100%;
+  background: #f0f0f0;
+}
+/* line 14, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern th, table.inputPattern td {
+  border-right: 1px solid white;
+  border-bottom: 1px solid white;
+  border-left-width: 0px;
+  border-top-width: 0px;
+}
+/* line 21, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern th:last-child, table.inputPattern th.last, table.inputPattern td:last-child, table.inputPattern td.last {
+  border-right-width: 0px;
+}
+/* line 29, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern tbody tr:last-child th, table.inputPattern tbody tr:last-child td, table.inputPattern tfoot tr:last-child th, table.inputPattern tfoot tr:last-child td {
+  border-bottom-width: 0px;
+}
+/* line 32, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern tbody tr.last th, table.inputPattern tbody tr.last td, table.inputPattern tfoot tr.last th, table.inputPattern tfoot tr.last td {
+  border-bottom-width: 0px;
+}
+/* line 11, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern th, table.inputPattern td {
+  width: 13.57143%;
+}
+/* line 14, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern th:first-child, table.inputPattern td:first-child {
+  width: 1%;
+}
+/* line 17, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern th {
+  font-size: 0.85714em;
+  height: 30px;
+  padding: 0 8px;
+}
+/* line 22, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern td {
+  padding: 8px;
+}
+/* line 25, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern td.dayOff {
+  vertical-align: top;
+  text-align: center;
+}
+/* line 30, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern td:first-child {
+  vertical-align: middle;
+  text-align: center;
+}
+/* line 36, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern td div:first-child {
+  text-align: right;
+}
+/* line 41, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern a {
+  color: #3074b6;
+  font-weight: bold;
+}
+/* line 47, ../../app/sass/sass/account/partials/_table.scss */
+table.inputPattern tr:nth-child(even) td {
+  background-color: #e3e3e3;
+}

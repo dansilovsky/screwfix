@@ -1,0 +1,53 @@
+/* 
+    Created on : 10-May-2014, 12:30:25
+    Author     : Daniel Silovsky
+*/
+@import "compass/utilities/tables/borders";
+
+table.inputPattern {
+	width: 100%;
+	background: $color-table;
+	@include inner-table-borders(1px, $color-background);
+	th, td {
+		width: (95%/7);
+	}
+	th:first-child, td:first-child {
+		width: 1%;
+	}
+	th {
+		font-size: px-to-em($font-size-small, $base-font-size);
+		height: $line-height-bigger;		
+		padding: 0 $padding-table;
+	}
+	td {		
+		padding: $padding-table;
+		
+		&.dayOff {
+			vertical-align: top;
+			text-align: center;
+		}
+		
+		&:first-child {
+			vertical-align: middle;
+			text-align: center;
+		}
+		
+		div {
+			&:first-child {
+				text-align: right;
+			}
+		}
+	}
+	a {
+		color: $color-highlight-dark;
+		font-weight: bold;
+	}
+	tr {
+		&:nth-child(even) {
+			td {
+				@include darken-background($color-table);
+			}
+		}
+	}
+}
+

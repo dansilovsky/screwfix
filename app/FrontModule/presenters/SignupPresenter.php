@@ -21,7 +21,7 @@ class SignupPresenter extends BasePresenter {
 		$this->userFacade = $this->context->userFacade;
 	}
 
-	protected function createComponentSignUpForm()
+	protected function createComponentCredentialsForm()
 	{
 		$form = new Form($this, 'signUpForm');
 		$form->addText('username', null, 30, 30)
@@ -44,7 +44,8 @@ class SignupPresenter extends BasePresenter {
 			->setRequired('Reenter a password please.')
 			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);
 		$form->addCheckbox('remember', 'Remember me');
-		$form->addSubmit('signup', 'Create account');
+		$form->addSubmit('signup', 'Create account')
+			->setAttribute('class', 'button');
 		// time limit is 30min. (60 * 30 = 1800)
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);
 		$form->onSuccess[] = $this->signUpFormSubmitted;
@@ -89,8 +90,8 @@ class SignupPresenter extends BasePresenter {
 				);
 				
 				
-//				try 
-//				{
+				try 
+				{
 					$this->userFacade->save($userArr);
 					
 					$user = $this->getUser();
@@ -103,15 +104,11 @@ class SignupPresenter extends BasePresenter {
 					$user->login($formValues->username, $formValues->password);
 					
 					$this->redirect('Account:setup');
-//				} 
-//				catch (\Exception $ex) 
-//				{
-//					echo "<br>------!!!------<br><pre>";
-//					var_dump($ex);
-//					exit;
-//					echo "</pre><br>------!!!------<br>";
-//					$form->addError('Sorry, something went wrong. Please try again.');
-//				}				
+				} 
+				catch (\Exception $ex) 
+				{
+					$form->addError('Sorry, something went wrong. Please try again.');
+				}				
 				
 			}
 	}

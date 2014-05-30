@@ -1,0 +1,30 @@
+/* 
+    Created on : 15-May-2014, 20:23:33
+    Author     : Daniel Silovsky
+*/
+.switcher {
+	padding: px-to-em((($bar-height - $line-height-bigger)/2), $base-font-size) 0;
+	
+	a {
+		display: inline-block;
+		float: left;
+		height: $line-height-bigger;
+		line-height: $line-height-bigger;
+		padding: 0 px-to-em($padding-text, $base-font-size);
+		
+		&:hover {
+			background-color: $color-highlight-light;
+		}
+		&.on {
+			background-color: $color-highlight-dark;
+			color: $color-text-highlight-dark;
+			&:hover {
+				background-color: $color-highlight-dark;
+			}
+		}
+		&:last-child {
+			float: none;
+		}
+	}
+}
+

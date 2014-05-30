@@ -1,43 +1,68 @@
-{block #content}
+{extends '../../../templates/@account.layout.latte'}
 
-{define #cssPath}
-/css/sign.css
-{/define}
+{block #contentAccount}
 
-<div class="center">
-{form signUpForm}
-	<ul n:if="$form->ownErrors">
-		<li n:foreach="$form->ownErrors as $error">{$error}</li>
-	</ul>
-	<div>
-		<ul n:if="$form['username']->errors">
+{form credentialsForm}
+	<div n:if="$form->ownErrors" class="formRowCommonError">
+		<ul>
+			<li n:foreach="$form->ownErrors as $error">{$error}</li>
+		</ul>
+	</div>
+	{if $form['username']->errors}
+	<div class="formRowError">
+		<ul>
 			<li n:foreach="$form['username']->errors as $error">{$error}</li>
 		</ul>
 		{input username}
+
 	</div>
-	<div>
-		<ul n:if="$form['email']->errors">
+	{else}
+	<div class="formRowNolabel">		
+		{input username}
+	</div>
+	{/if}
+	{if $form['email']->errors}
+	<div class="formRowError">
+		<ul>
 			<li n:foreach="$form['email']->errors as $error">{$error}</li>
 		</ul>
+		{label email /}
+		{input username}
+
+	</div>
+	{else}
+	<div class="formRowLabel">
+		{label email /}
 		{input email}
 	</div>
-	<div>
-		<ul n:if="$form['password']->errors">
+	{/if}
+	{if $form['password']->errors}
+	<div class="formRowError">
+		<ul>
 			<li n:foreach="$form['password']->errors as $error">{$error}</li>
 		</ul>
 		{input password}
+
 	</div>
-	<div>
-		<ul n:if="$form['verifyPassword']->errors">
+	{else}
+	<div class="formRowNolabel">		
+		{input password}
+	</div>
+	{/if}
+	{if $form['verifyPassword']->errors}
+	<div class="formRowError">
+		<ul>
 			<li n:foreach="$form['verifyPassword']->errors as $error">{$error}</li>
 		</ul>
 		{input verifyPassword}
-	</div>	
-	<div>
-		{input remember} {label remember /}
+
 	</div>
-	<div>
-		{input signup}
+	{else}
+	<div class="formRowNolabel">		
+		{input verifyPassword}
+	</div>
+	{/if}
+	<div class="formRowButtons buttonArea">
+		{input edit}
 	</div>
 {/form}
-</div>

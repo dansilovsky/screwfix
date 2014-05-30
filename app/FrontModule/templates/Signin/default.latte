@@ -4,18 +4,32 @@
 /css/sign.css
 {/define}
 
-<div class="center">
+<div class="contentSign">
 {form signInForm}
-	<div>
+	<div n:if="$form->ownErrors" class="formRowCommonError">
+		<ul>
+			<li n:foreach="$form->ownErrors as $error">{$error}</li>
+		</ul>
+	</div>		
+	{if $form['username']->errors}
+	<div class="formRowError">
+		<ul>
+			<li n:foreach="$form['username']->errors as $error">{$error}</li>
+		</ul>
 		{input username}
 	</div>
-	<div>
+	{else}
+	<div class="formRowNolabel">		
+		{input username}
+	</div>
+	{/if}
+	<div class="formRowNolabel">
 		{input password}
 	</div>
-	<div>
-		{input remember} {label remember /}
+	<div class="formRowCheckbox">
+		{input remember}{label remember /}
 	</div>
-	<div>
+	<div class="formRowButtons buttonArea">
 		{input signin}
 	</div>
 {/form}

@@ -1,0 +1,8 @@
+/* 
+    Created on : 24-May-2014, 19:01:35
+    Author     : Daniel Silovsky
+*/
+@mixin padding-content {
+	padding: px-to-em($padding-content-h, $base-font-size) px-to-em($padding-content-v, $base-font-size);
+}
+

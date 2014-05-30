@@ -18,12 +18,17 @@ class AccountPresenter extends BasePresenter {
 	protected function createComponentCredentialsForm() 
 	{
 		$form = new Form($this, 'credentialsForm');
+		
+		$form->addSelect('select', 'Select', array('option1' => 'option1', 'option2' => 'option2',));
+		$form->addCheckbox('remember', 'Remember me');
+		
 		$form->addText('username', null, 30, 30)
+			->setAttribute('placeholder', 'Username')
 			->setAttribute('value', $this->identity->username)
 			->addRule(Form::MIN_LENGTH, 'Username must contain at least %d characters.', 3)
 			->addRule(Form::MAX_LENGTH, 'Username is too long. Use maximum of %d characters.', 60)
 			->addRule(Form::PATTERN, 'Username can contain only alphabetical characters or underscore.', '\w{3,60}');
-		$form->addText('email', null, 30, 30)
+		$form->addText('email', 'Email', 30, 30)
 			->setAttribute('placeholder', 'Email')
 			->setRequired('Enter an email please.')
 			->addRule(Form::MAX_LENGTH, 'Email is too long. Use maximum of %d characters.', 255)
@@ -36,7 +41,8 @@ class AccountPresenter extends BasePresenter {
 			->setAttribute('placeholder', 'Retype password')
 			->setRequired('Reenter a password please.')
 			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);
-		$form->addSubmit('edit', 'Edit');
+		$form->addSubmit('edit', 'Edit')
+			->setAttribute('class', 'button');
 		// time limit is 30min. (60 * 30 = 1800)
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);
 		$form->onSuccess[] = $this->credentialsFormSubmitted;
@@ -61,7 +67,8 @@ class AccountPresenter extends BasePresenter {
 		$form['pattern'] = $this->patternInputFactory->create();
 		$form['pattern']->setDefaultValue($defaultPattern);
 		
-		$form->addSubmit('send', 'Send');
+		$form->addSubmit('send', 'Send')
+			->setAttribute('class', 'button');
 		
 		$form->onSuccess[] = $this->setupFormSubmitted;
 		

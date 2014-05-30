@@ -1,0 +1,30 @@
+/* 
+    Created on : 17-May-2014, 16:06:17
+    Author     : Daniel Silovsky
+*/
+@import "compass/layout/sticky-footer";
+
+@include sticky-footer(px-to-em($bar-height-footer, $base-font-size));
+
+#contentMain {
+	bottom: px-to-em($bar-height-footer, $base-font-size);
+	position: absolute;
+	top: px-to-em($bar-height-main, $base-font-size);
+	width: 100%;
+}
+
+#contentAccount {
+	@include padding-content;
+	bottom: 0;
+	float: left;
+	left: px-to-em($bar-width-side, $base-font-size);
+	overflow: auto;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+@include form-general;
+
+
+

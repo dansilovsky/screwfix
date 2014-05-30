@@ -29,4 +29,23 @@ class PatternFacade extends RepositoryFacade {
 		
 		return ($patternRow === false) ? false : unserialize($patternRow->pattern);
 	}
+	
+	public function save($userId, ShiftPatternFilter $pattern)
+	{
+		$data = array(
+			'user_id' => $userId, 
+			'patter' => $pattern
+		);
+		
+		$this->repository->insert($data);
+	}
+	
+	public function update($userId, ShiftPatternFilter $pattern)
+	{
+		$data = array(
+			'pattern' => serialize($pattern)
+		);
+		
+		$this->repository->findByUserId($userId)->update($data);
+	}
 }

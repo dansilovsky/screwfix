@@ -1,0 +1,9 @@
+/* 
+    Created on : 14-May-2014, 19:41:11
+    Author     : Daniel Silovsky
+*/
+@mixin vertical-rhythm-height($lines: 1, $font-size: $base-font-size,  $h-border-size: 0px, $h-padding-size: 0px) {
+	$height: ($base-line-height/$font-size * $lines) - $h-border-size - $h-padding-size;	
+	height: strip-unit($height) + em;
+}
+

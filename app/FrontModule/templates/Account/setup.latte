@@ -1,19 +1,28 @@
-{block #content}
+{extends '../../../templates/@account.layout.latte'}
 
-{define #cssPath}
-/css/sign.css
-{/define}
+{block #contentAccount}
 
-<div class="center">
-{form setupForm}
-	{label sysPattern /} {input sysPattern}
-	<ul n:if="$form['pattern']->errors">
-		<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
-	</ul>
-	{input pattern}
+{form setupForm class=>'formShiftpattern'}
+	<div class="formRowNolabel">
+		{label sysPattern /} {input sysPattern}
+	</div>
+	{if $form['pattern']->errors}
+	<div class="formRowError">
+		<ul>
+			<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
+		</ul>
+		{input pattern}
+
+	</div>
+	{else}
+	<div class="formRowNolabel">		
+		{input pattern}
+	</div>
+	{/if}
+	<div class="formLine buttonArea">
 	{input send}
+	</div>
 {/form}
-</div>
 
 {define #javascritpBottom}
 <script type="text/template" id="accountInputPattern">

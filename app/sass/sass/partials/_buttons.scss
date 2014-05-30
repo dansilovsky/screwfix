@@ -1,0 +1,32 @@
+/* 
+    Created on : 10-May-2014, 20:14:51
+    Author     : Daniel Silovsky
+*/
+@import "compass/utilities/color/contrast";
+.buttonArea {
+	text-align: right;
+}
+
+.button {
+	background-color: $color-highlight-dark;
+	border: 0;
+	color: $color-text-highlight-dark;
+	min-width: px-to-em(84px, $base-font-size);
+	padding-left: px-to-em(15px, $base-font-size);
+	padding-right: px-to-em(15px, $base-font-size);
+	margin-left: px-to-em($padding-main, $base-font-size);
+	
+	&:hover {
+		@include lighten-background($color-highlight-dark);
+	}
+}
+
+.buttonNegative {
+	background-color: $color-grey-darker;
+	color: $color-text-highlight-light;
+	
+	&:hover {
+		@include lighten-background($color-grey-darker);
+	}
+}
+

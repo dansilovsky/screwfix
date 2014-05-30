@@ -1146,8 +1146,9 @@
 	});
 	
 	var ToolsView = Backbone.View.extend({
-		tagName: 'ul',
+		tagName: 'div',
 		id: 'calendarTools',
+		className: "switcher",
 		template: appGlobal.templates.toolsView,
 		
 		initialize: function(options) {
@@ -1175,10 +1176,10 @@
 			this.$el.switcher({
 				id: 'mode',
 				select: function(el){
-					$(el).addClass('selected');
+					$(el).addClass('on');
 				},
 				unselect: function(el){
-					$(el).removeClass('selected');
+					$(el).removeClass('on');
 				},
 				switch: function(mode, i) {
 					that.trigger('switched', mode)
@@ -1883,7 +1884,7 @@
 				$el.removeClass();
 				
 				if ($el.attr('id') === type) {
-					$el.addClass('selected');
+					$el.addClass('on');
 				}
 			});
 		},

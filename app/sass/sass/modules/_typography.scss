@@ -1,0 +1,9 @@
+/* 
+    Created on : 08-May-2014, 11:20:25
+    Author     : Daniel Silovsky
+*/
+
+@function font-size($size) {	
+	@return $size/16 + em;
+}
+

@@ -12,13 +12,13 @@
 
 {define #javascritpBottom}
 <script type="text/template" id="calendarNavigatorTemplate">
-	<h1><a id="prevMonth" href="#"> < </a> <a id="nextMonth" href="#"> > </a> <span id="dateLabel"><%- mo.monthName %> <%- mo.year %></span></h1>
+	<a id="prevMonth" href="javascript:;"> &lt; </a> <a id="nextMonth" href="javascript:;"> &gt; </a> <span id="dateLabel"><%- mo.monthName %> <%- mo.year %></span>
 </script>
 
 <script type="text/template" id="calendarToolsTemplate">
-	<li><a href="#" title="Add or remove notes" id="mode:notes" class="selected">Notes</a></li>
-	<li><a href="#" title="Add holidays or cancel any holidays" id="mode:holidays">Holidays</a></li>
-	<li><a href="#" title="Add halfday holidays or cancel any holidays" id="mode:halfdayHolidays">Halfday holidays</a></li>
+	<a href="javascript:;" title="Add or remove notes" id="mode:notes" class="on">Notes</a>
+	<a href="javascript:;" title="Add holidays or cancel any holidays" id="mode:holidays">Holidays</a>
+	<a href="javascript:;" title="Add halfday holidays or cancel any holidays" id="mode:halfdayHolidays">Halfday holidays</a>
 </script>
 
 <script type="text/template" id="dayTemplate">
@@ -92,28 +92,28 @@
 	<form action="#">
 		<% if (data.showSwitcher) { %>
 		<div class="switcher">
-			<a href="#" id="personal" class="selected">Personal</a> | <a href="#" id="system">System</a>
+			<a href="javascript:;" id="personal" class="on">Personal</a><a href="javascript:;" id="system">System</a>
 		</div>
 		<% } %>
-		<div>When: <%= data.when%></div>
-		<div>
-			<textarea name="note" maxlength="500" />				
+		<div class="formRowLabelTop">
+			<label>When: <%= data.when%></label>
+			<textarea name="note" maxlength="500" cols="25" rows="5" />
 		</div>
-		<div>
-			<button name="save" type="button">Save</button>
+		<div class="buttonArea">
+			<button name="save" class="button" type="button">Save</button>
 		</div>
 	</form>
 </script>
 
 <script type="text/template" id="editNoteTemplate">
 	<form action="#">
-		<div>When: <%= data.when%></div>
-		<div>
-			<textarea name="note" maxlength="500"><%- data.val %></textarea>				
+		<div class="formRowLabelTop">
+			<label>When: <%= data.when%></label>		
+			<textarea name="note" maxlength="500" cols="25" rows="5"><%- data.val %></textarea>
 		</div>
-		<div>
-			<button name="save" type="button">Save</button>
-			<button name="delete" type="button">Delete</button>
+		<div class="buttonArea">
+			<button name="save" class="button" type="button">Save</button>
+			<button name="delete" class="button buttonNegative" type="button">Delete</button>
 
 		</div>
 	</form>
@@ -139,8 +139,8 @@
 		<div>From <%= data.extra.add.first.toString() %> To <%= data.extra.add.last.toString() %></div>
 		<div>Number of days taken: <%- data.extra.add.count %></div>
 	<% } %>
-	<div>
-		<button name="addOrCancel" type="button">Add <% if (data.mode === 'halfdayHolidays') { %>halfday<% } %> holidays</button>
+	<div class="buttonArea">
+		<button name="addOrCancel" class="button" type="button">Add <% if (data.mode === 'halfdayHolidays') { %>halfday<% } %> holidays</button>
 	</div>
 </script>
 
@@ -164,8 +164,8 @@
 		<div>From <%= data.extra.cancel.first.toString() %> To <%= data.extra.cancel.last.toString() %></div>
 		<div>Number of days cancelled: <%- data.extra.cancel.count %></div>
 	<% } %>
-	<div>
-		<button name="addOrCancel" type="button">Cancel holidays</button>
+	<div class="buttonArea">
+		<button name="addOrCancel" class="button" type="button">Cancel holidays</button>
 	</div>
 </script>
 

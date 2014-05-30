@@ -1,0 +1,67 @@
+/* sass/calendar/partials/_table.scss */
+@import "compass/utilities/tables/borders";
+@import "compass/css3/user-interface";
+@import "compass/css3/opacity";
+
+#calendar table {
+	width: 100%;
+	background: $color-table;
+	@include inner-table-borders(1px, $color-background);	
+	@include user-select("none");
+	th, td {
+		width: 14%;
+		line-height: $line-height-normal;
+	}
+	th {
+		height: $line-height-bigger;
+		line-heit: $line-height-bigger;
+		padding: 0 $padding-table;
+	}
+	td {
+		@include user-select("none");
+	}
+	div {
+		height: $line-height-bigger;
+		line-height: $line-height-bigger;
+		padding: 0 $padding-table;
+	}
+	.cell {
+		min-height: $line-height-bigger * 2;
+		padding: 0;
+		position: relative;
+	}
+	.edge {
+		background: $color-table-edge;
+	}
+	.today {
+		background: $color-table-today;
+		color: $color-text-highlight-dark;
+	}	
+	.selected {
+		@include highlight-dark;
+		display: none;
+		height: 100%;
+		padding: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
+	.work {
+		bottom: 0;
+		position: absolute;
+	}
+	.lessMoreLink {
+		float: right;
+	}
+}
+
+
+	
+#calendar table#calendarHeaderTable {
+	margin-bottom: 1px;
+
+	th {
+		font-size: 12px;
+		height: 29px;
+	}
+} 

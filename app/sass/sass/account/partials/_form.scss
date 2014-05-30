@@ -1,0 +1,29 @@
+@include form-general-width($width-form-general);
+@include form-textfield-width($width-form-general);
+
+.formShiftpattern {
+	width: px-to-em($width-screen-pc-min, $base-font-size);
+	
+	td {
+		div {
+			&:last-child {
+				text-align: right;
+			}
+		}
+	}
+}
+
+.formRowInputpattern {
+	margin-bottom: px-to-em($padding-table, $base-font-size);
+	
+	select {
+		padding: px-to-em(3px, $base-font-size) px-to-em(6px, $base-font-size);
+	}
+	
+	label {
+		text-align: justify;
+		display: block;
+		margin-bottom: px-to-em(($padding-table/2), $base-font-size);
+	}
+}
+

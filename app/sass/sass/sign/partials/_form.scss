@@ -1,0 +1,11 @@
+/* 
+    Created on : 21-May-2014, 10:22:17
+    Author     : Daniel Silovsky
+*/
+@include form-textfield-width($width-form-general);
+
+form {
+	margin: 0 auto;
+	width: px-to-em($width-form-general, $base-font-size);
+}
+

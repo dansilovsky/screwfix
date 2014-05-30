@@ -1,1 +1,78 @@
 /* imports for all mixins + global project variables */
+@import "compass/css3";
+
+/* vertical rhythm */
+$base-font-size: 14px;
+$base-line-height: 20px;
+$line-height-normal: $base-line-height;
+$line-height-bigger: 30px;
+$line-height-big: 40px;
+
+/* font size */
+$font-size-normal: $base-font-size;
+$font-size-small: 12px;
+$font-size-big: 20px;
+
+/* heights - should be multiplies of $line-height */
+$bar-height: $line-height-big;
+$bar-height-main: $bar-height;
+$bar-height-footer: $bar-height;
+$bar-width-side: 180px;
+
+/* colors */
+$black: rgb(0, 0, 0);
+
+/* text colors */
+$color-text-background-light: rgb(40, 40, 40);
+$color-text-background-dark: rgb(255, 255, 255);
+$color-text-highlight-light: rgb(40, 40, 40);
+$color-text-highlight-dark: rgb(255, 255, 255); /* color of text on highlight */
+
+/* background colors */
+$color-background: rgb(255, 255, 255); /* basic background color */
+
+/* shades of grey */
+$color-grey-light: rgb(240, 240, 240);
+$color-grey: rgb(225, 225, 225);
+$color-grey-darker: rgb(215, 215, 215);
+$color-grey-dark: rgb(117, 117, 117);
+
+/*$color-highlight: rgb(0, 114, 198);  skydrive color */
+$color-highlight-dark: rgb(48, 116, 182); /* screwfix color */
+$color-highlight-light: $color-grey-light;
+$color-table: $color-grey-light;
+$color-table-edge: $color-grey;
+$color-table-today: $color-grey-dark;
+$color-box-border: rgb(0, 0, 0);
+
+/* padding */
+$padding-main: 15px;
+$padding-text: 8px;
+$padding-table: 8px;
+$padding-content-h: $base-line-height;
+$padding-content-v: 30px;
+
+/* widths */
+$width-screen-pc-min: 987px;
+$width-form-general: 320px;
+
+/* margin */
+$margin-main: 30px;
+$margin-text: $padding-text;
+
+@import "modules/_all";
+@import "compass/reset";
+
+@import "partials/_globals";
+@import "partials/_vertical_rhythm";
+
+@import "partials/_common";
+@import "partials/_main_bar";
+@import "partials/_footer";
+
+@import "partials/_typography";
+@import "partials/_forms";
+@import "partials/_buttons";
+@import "partials/_layover";
+@import "partials/_boxes";
+@import "partials/_highlight";

@@ -15,12 +15,5 @@ class TestPresenter extends BasePresenter {
 	{
 		parent::beforeRender();
 		
-		
-		$res = preg_match('/^\d,\d,(null|(\d{2}:\d{2},\d{2}:\d{2}))$/', '0,0,08:00');
-		
-		echo "<br>------!!!------<br><pre>";
-		var_dump($res);
-		exit;
-		echo "</pre><br>------!!!------<br>";
 	}
 }

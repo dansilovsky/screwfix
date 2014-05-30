@@ -1,0 +1,46 @@
+/* 
+    Created on : 17-May-2014, 15:53:38
+    Author     : Daniel Silovsky
+*/
+@import "compass/layout/stretching";
+
+.barSide {
+	background: $color-grey-light;
+	padding: px-to-em($padding-content-h, $base-font-size) 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: px-to-em(180px, $base-font-size);
+	
+	h1 {
+		font-size: $font-size-big;
+		padding: 0 px-to-em($padding-main, $font-size-big);
+	}
+	
+	li {
+		padding: 0 px-to-em($padding-main, $base-font-size);
+		
+		&:hover {
+			@include darken-background($color-grey-light);
+		}
+	}
+	
+	.current {
+		background-color: $color-grey-darker;
+		&:hover {
+			@include lighten-background($color-grey-darker);
+		}
+	}
+	
+	a {
+		height: px-to-em(($base-line-height * 2), $base-font-size);
+		line-height: px-to-em(($base-line-height * 2), $base-font-size);
+	}
+	
+	h1 a {
+		height: px-to-em(($base-line-height * 2), $font-size-big);
+		line-height: px-to-em(($base-line-height * 2), $font-size-big);
+	}
+}
+
+

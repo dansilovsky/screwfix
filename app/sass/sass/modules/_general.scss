@@ -1,0 +1,29 @@
+/* 
+    Created on : 13-May-2014, 20:52:30
+    Author     : Daniel Silovsky
+*/
+
+@function strip-unit($value) {
+    @return $value / ($value * 0 + 1);
+}
+
+@function px-to-em($size, $context) {
+	$size: strip-unit($size);
+	$context: strip-unit($context);
+	
+	@return ($size/$context)+em;
+}
+
+@mixin highlight-dark() {
+	background-color: #000;
+	@include opacity(0.1);
+}
+
+@mixin lighten-background($normal-background-color) {
+	background-color: lighten($normal-background-color, 5%);
+}
+
+@mixin darken-background($normal-background-color){
+	background-color: darken($normal-background-color, 5%);
+}
+

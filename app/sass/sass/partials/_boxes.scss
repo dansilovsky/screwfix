@@ -1,0 +1,23 @@
+/* 
+    Created on : 08-May-2014, 12:32:16
+    Author     : Daniel Silovsky
+*/
+.box {
+	background-color: $color-background;
+	line-height: $line-height-normal;
+	padding: px-to-em($padding-main, $base-font-size);
+	position: fixed;
+}
+
+.box-popup {
+	@extend .box;
+	border: 2px solid #000;
+}
+
+.box-alert {
+	@extend .box;
+	border-bottom: 2px solid $color-box-border;
+	border-top: 2px solid $color-box-border;
+	width: 100%;
+}
+

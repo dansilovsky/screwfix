@@ -1,0 +1,21 @@
+/* 
+    Created on : 13-May-2014, 19:00:29
+    Author     : Daniel Silovsky
+*/
+h1 {
+	font-size: inherit;
+	line-height: inherit;
+	height: auto;
+}
+div.testContent {
+	background: url(../images/vertical-rhythm30px.gif);
+}
+
+h1, h2 {
+	font-size: 16px;
+	margin-top: 30px;
+}
+p, h1, h2 {
+	width: 33em;
+	padding-left: 5em;
+}

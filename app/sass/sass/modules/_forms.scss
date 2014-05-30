@@ -1,0 +1,175 @@
+/* 
+    Created on : 17-May-2014, 16:36:57
+    Author     : Daniel Silovsky
+*/
+$form-vr-row-height-total: 80px; /* input height + label or margin between inputs height */
+$form-vr-textfield-height-total: 40px; /* includes borders and paddings */
+$form-vr-textfield-height: $base-line-height;
+$form-vr-textfield-border: 1px;
+$form-vr-button-height: 30px;
+
+$form-vr-label-height-total: $form-vr-row-height-total - $form-vr-textfield-height-total;
+$form-vr-label-height: $base-line-height;
+$var-helper: ($form-vr-label-height-total - $form-vr-label-height) / 2;
+$form-vr-label-padding-bottom: 0.4 * $var-helper;
+$form-vr-label-padding-top: 1.6 * $var-helper;
+
+$form-vr-row-margin-bottom: ($form-vr-row-height-total - $form-vr-textfield-height-total) / 2 ;
+
+$form-vr-row-bottom-margin-bottom: $form-vr-row-height-total - $form-vr-textfield-height-total;
+
+$form-vr-textfield-padding-horizontal: ($form-vr-textfield-height-total - $form-vr-textfield-height - 2 * $form-vr-textfield-border) / 2;
+
+
+@mixin form-general($font-size-context: $base-font-size) {
+
+	form {
+		li {
+			color: red;
+		}
+	}
+
+	input, select {
+		border: 0;
+		margin: 0;
+		outline: 0;
+		padding: 0  px-to-em($padding-text, $font-size-context);
+
+		&:focus {
+			outline: 0;
+		}
+	}
+
+	input[type=text], input[type=password], input[type=submit], button {	
+		font-size: 1em;	
+		margin: 0;
+	}
+
+	input[type=text], input[type=password] {
+		border: $form-vr-textfield-border solid $color-grey;
+		height: px-to-em($form-vr-textfield-height, $font-size-context);
+		line-height: px-to-em(($form-vr-textfield-height + 2px), $font-size-context); /* +2px moves text little bit down in order to center it in inputtext */
+		padding-bottom: px-to-em($form-vr-textfield-padding-horizontal, $font-size-context);
+		padding-top: px-to-em($form-vr-textfield-padding-horizontal, $font-size-context);
+	}
+
+	input[type=submit], button {
+		height: px-to-em($form-vr-button-height, $font-size-context);
+		line-height: px-to-em($form-vr-button-height, $font-size-context);
+	}
+
+	input[type=checkbox] {
+		height: px-to-em($base-line-height, $font-size-context);
+		margin-right: px-to-em($margin-text, $font-size-context);
+		vertical-align: text-top;
+		width: px-to-em($base-line-height, $font-size-context);
+	}
+
+	select {
+		border: $form-vr-textfield-border solid $color-grey;
+		font-size: px-to-em($base-font-size, $font-size-context);
+		padding-bottom: px-to-em($form-vr-textfield-padding-horizontal, $font-size-context);
+		padding-top: px-to-em($form-vr-textfield-padding-horizontal, $font-size-context);
+	}
+
+	textarea {
+		display: block;
+		margin: 0;
+		padding: px-to-em($padding-text, $font-size-context);
+	}
+
+	%formRow {
+		margin-bottom: px-to-em($form-vr-row-margin-bottom, $font-size-context);
+	}
+
+	.formRowLabel {
+		@extend %formRow;	
+		margin-top: -(px-to-em($form-vr-row-margin-bottom, $font-size-context));
+
+		label {
+			display: block;
+			height: px-to-em($form-vr-label-height, $font-size-context);
+			padding-bottom: px-to-em($form-vr-label-padding-bottom, $font-size-context);
+			padding-top: px-to-em($form-vr-label-padding-top, $font-size-context);
+		}
+	}
+
+	.formRowLabelTop {
+		@extend .formRowLabel;
+		margin-top: 0;
+	}
+
+	.formRowNolabel {
+		@extend %formRow;
+	}
+
+	.formRowCheckbox {	
+		@extend %formRow;
+	}
+
+	.formRowCheckbox label {
+		display: block;
+		height: px-to-em($form-vr-textfield-height-total, $font-size-context);
+		line-height: px-to-em($form-vr-textfield-height-total, $font-size-context);
+	}
+
+	.formRowError {
+		@extend %formRow;	
+		margin-top: -(px-to-em($form-vr-row-margin-bottom, $font-size-context));
+
+		li {
+			display: block;
+			min-height: px-to-em($form-vr-label-height, $font-size-context);
+			padding-bottom: px-to-em($form-vr-label-padding-bottom, $font-size-context);
+
+			&:first-child {			
+				padding-top: px-to-em($form-vr-label-padding-top, $font-size-context);
+			}
+		}
+
+		label {
+			display: block;
+			height: px-to-em($form-vr-label-height, $font-size-context);
+			padding-bottom: px-to-em($form-vr-label-padding-bottom, $font-size-context);
+		}	
+	}
+
+	.formRowErrorTop {
+		@extend .formRowError;
+		margin-top: 0;
+	}
+
+	.formRowCommonError {
+		@extend %formRow;
+
+		li {
+			height: px-to-em($form-vr-textfield-height-total, $font-size-context);
+			line-height: px-to-em($form-vr-textfield-height-total, $font-size-context);
+		}
+	}
+
+	.formRowButtons {
+		@extend %formRow;
+	}
+
+	.formRowTop {
+		margin-top: 0;
+	}
+
+	.formRowBottom {
+		margin-bottom: $form-vr-row-bottom-margin-bottom;
+	}
+}
+
+@mixin form-textfield-width($width, $font-size-context: $base-font-size) {
+	input[type=text], input[type=password] {
+		width: px-to-em(($width - $padding-text * 2 - $form-vr-textfield-border * 2), $font-size-context);
+	}
+}
+
+@mixin form-general-width($width, $font-size-context: $base-font-size) {
+	form {
+		width: px-to-em($width, $font-size-context);
+	}
+}
+
