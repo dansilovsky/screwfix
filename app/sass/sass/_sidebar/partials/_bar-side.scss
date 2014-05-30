@@ -1,7 +1,3 @@
-/* 
-    Created on : 17-May-2014, 15:53:38
-    Author     : Daniel Silovsky
-*/
 @import "compass/layout/stretching";
 
 .barSide {
@@ -42,5 +38,7 @@
 		line-height: px-to-em(($base-line-height * 2), $font-size-big);
 	}
 }
+
+
 
 

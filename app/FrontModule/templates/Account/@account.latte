@@ -1,18 +1,13 @@
-{extends '@layout.latte'}
+{extends '../../../templates/@sidebar.layout.latte'}
 
-{define #cssPath}
-/css/account.css
-{/define}
+{block contentSidebar}
 
-{block content}
-<div class="barSide">
+{include #contentAccount}
+
+{define #sidebarMenu}
 	<h1><a>Account</a></h1>
 	<ul>
 		<li n:class="$presenter->isLinkCurrent('Account:Credentials') ? current"><a n:href=":Front:Account:Credentials">Credentials</a></li>
 		<li n:class="$presenter->isLinkCurrent('Account:Setup') ? current"><a n:href=":Front:Account:Setup">Shift pattern</a></li>
 	</ul>
-</div>
-<div id="contentAccount">
-	
-	{include #contentAccount}
-</div>
+{/define}

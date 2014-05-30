@@ -454,15 +454,7 @@ textarea {
   color: white;
 }
 
-/* 
-    Created on : 10-May-2014, 12:29:36
-    Author     : Daniel Silovsky
-*/
-/* 
-    Created on : 17-May-2014, 15:53:38
-    Author     : Daniel Silovsky
-*/
-/* line 7, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 3, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide {
   background: #f0f0f0;
   padding: 1.42857em 0;
@@ -471,42 +463,38 @@ textarea {
   bottom: 0;
   width: 12.85714em;
 }
-/* line 15, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 11, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide h1 {
   font-size: 20px;
   padding: 0 0.75em;
 }
-/* line 20, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 16, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide li {
   padding: 0 1.07143em;
 }
-/* line 23, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 19, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide li:hover {
   background-color: #e3e3e3;
 }
-/* line 28, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 24, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide .current {
   background-color: #d7d7d7;
 }
-/* line 30, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 26, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide .current:hover {
   background-color: #e4e4e4;
 }
-/* line 35, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 31, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide a {
   height: 2.85714em;
   line-height: 2.85714em;
 }
-/* line 40, ../../app/sass/sass/account/partials/_bar-side.scss */
+/* line 36, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide h1 a {
   height: 2em;
   line-height: 2em;
 }
 
-/* 
-    Created on : 17-May-2014, 16:06:17
-    Author     : Daniel Silovsky
-*/
 /* line 10, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
 html, body {
   height: 100%;
@@ -532,7 +520,7 @@ html, body {
   height: 2.85714em;
 }
 
-/* line 9, ../../app/sass/sass/account/partials/_content.scss */
+/* line 5, ../../app/sass/sass/_sidebar/partials/_content.scss */
 #contentMain {
   bottom: 2.85714em;
   position: absolute;
@@ -540,8 +528,8 @@ html, body {
   width: 100%;
 }
 
-/* line 16, ../../app/sass/sass/account/partials/_content.scss */
-#contentAccount {
+/* line 12, ../../app/sass/sass/_sidebar/partials/_content.scss */
+#contentSidebar {
   padding: 1.42857em 2.14286em;
   bottom: 0;
   float: left;

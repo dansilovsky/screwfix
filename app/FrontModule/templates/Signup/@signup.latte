@@ -1,0 +1,13 @@
+{extends '../../../templates/@sidebar.layout.latte'}
+
+{block contentSidebar}
+
+{include #contentSignup}
+
+{define #sidebarMenu}
+	<h1><a>Sign up</a></h1>
+	<ul>
+		<li n:class="$presenter->isLinkCurrent('Signup:Credentials') ? current"><a n:href=":Front:Signup:Credentials">Credentials</a></li>
+		<li n:class="$presenter->isLinkCurrent('Signup:Setup') ? current"><a n:href=":Front:Signup:Setup">Shift pattern</a></li>
+	</ul>
+{/define}

@@ -23,7 +23,7 @@ class SignupPresenter extends BasePresenter {
 
 	protected function createComponentCredentialsForm()
 	{
-		$form = new Form($this, 'signUpForm');
+		$form = new Form($this, 'credentialsForm');
 		$form->addText('username', null, 30, 30)
 			->setAttribute('placeholder', 'Username')
 			->setRequired('Enter an username please.')
@@ -44,7 +44,7 @@ class SignupPresenter extends BasePresenter {
 			->setRequired('Reenter a password please.')
 			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);
 		$form->addCheckbox('remember', 'Remember me');
-		$form->addSubmit('signup', 'Create account')
+		$form->addSubmit('next', 'next')
 			->setAttribute('class', 'button');
 		// time limit is 30min. (60 * 30 = 1800)
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);
