@@ -229,6 +229,14 @@ html {
   color: #282828;
 }
 
+/* line 12, ../../app/sass/sass/partials/_typography.scss */
+h1 {
+  font-size: 1.42857em;
+  height: 1em;
+  line-height: 1em;
+  margin-bottom: 1em;
+}
+
 /* 
     Created on : 13-May-2014, 20:41:38
     Author     : Daniel Silovsky

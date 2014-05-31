@@ -1,7 +1,6 @@
+@include form-general;
 @include form-textfield-width($width-form-general);
-
 form {
 	margin: 0 auto;
 	width: px-to-em($width-form-general, $base-font-size);
 }
-

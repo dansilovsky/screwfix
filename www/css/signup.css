@@ -1,7 +1,3 @@
-/* 
-    Created on : 11-May-2014, 15:48:46
-    Author     : Daniel Silovsky
-*/
 /* imports for all mixins + global project variables */
 /* vertical rhythm */
 /* font size */
@@ -462,6 +458,106 @@ textarea {
   color: white;
 }
 
+/* line 3, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern {
+  width: 100%;
+  background: #f0f0f0;
+}
+/* line 14, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern th, table.inputPattern td {
+  border-right: 1px solid white;
+  border-bottom: 1px solid white;
+  border-left-width: 0px;
+  border-top-width: 0px;
+}
+/* line 21, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern th:last-child, table.inputPattern th.last, table.inputPattern td:last-child, table.inputPattern td.last {
+  border-right-width: 0px;
+}
+/* line 29, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern tbody tr:last-child th, table.inputPattern tbody tr:last-child td, table.inputPattern tfoot tr:last-child th, table.inputPattern tfoot tr:last-child td {
+  border-bottom-width: 0px;
+}
+/* line 32, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/utilities/tables/_borders.scss */
+table.inputPattern tbody tr.last th, table.inputPattern tbody tr.last td, table.inputPattern tfoot tr.last th, table.inputPattern tfoot tr.last td {
+  border-bottom-width: 0px;
+}
+/* line 7, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern th, table.inputPattern td {
+  width: 13.57143%;
+}
+/* line 10, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern th:first-child, table.inputPattern td:first-child {
+  width: 1%;
+}
+/* line 13, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern th {
+  font-size: 0.85714em;
+  height: 30px;
+  padding: 0 8px;
+}
+/* line 18, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern td {
+  padding: 8px;
+}
+/* line 21, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern td.dayOff {
+  vertical-align: top;
+  text-align: center;
+}
+/* line 26, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern td:first-child {
+  vertical-align: middle;
+  text-align: center;
+}
+/* line 32, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern td div:first-child {
+  text-align: right;
+}
+/* line 37, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern a {
+  color: #3074b6;
+  font-weight: bold;
+}
+/* line 43, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern tr:nth-child(even) td {
+  background-color: #e3e3e3;
+}
+
+/* line 171, ../../app/sass/sass/modules/_forms.scss */
+form {
+  width: 22.85714em;
+}
+
+/* line 165, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password] {
+  width: 21.57143em;
+}
+
+/* line 4, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formShiftpattern {
+  width: 70.5em;
+}
+/* line 9, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formShiftpattern td div:last-child {
+  text-align: right;
+}
+
+/* line 16, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formRowInputpattern {
+  margin-bottom: 0.57143em;
+}
+/* line 19, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formRowInputpattern select {
+  padding: 0.21429em 0.42857em;
+}
+/* line 23, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formRowInputpattern label {
+  text-align: justify;
+  display: block;
+  margin-bottom: 0.28571em;
+}
+
 /* line 10, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
 html, body {
   height: 100%;
@@ -487,9 +583,144 @@ html, body {
   height: 2.85714em;
 }
 
-/* line 5, ../../app/sass/sass/sign/partials/_content.scss */
-.contentSign {
+/* line 5, ../../app/sass/sass/signup/partials/_content.scss */
+#contentSignup {
+  margin: 0 auto;
+  width: 22.85714em;
   padding: 1.42857em 2.14286em;
+}
+
+/* line 27, ../../app/sass/sass/modules/_forms.scss */
+form li {
+  color: red;
+}
+
+/* line 32, ../../app/sass/sass/modules/_forms.scss */
+input, select {
+  border: 0;
+  margin: 0;
+  outline: 0;
+  padding: 0 0.57143em;
+}
+/* line 38, ../../app/sass/sass/modules/_forms.scss */
+input:focus, select:focus {
+  outline: 0;
+}
+
+/* line 43, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password], input[type=submit], button {
+  font-size: 1em;
+  margin: 0;
+}
+
+/* line 48, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password] {
+  border: 1px solid #e1e1e1;
+  height: 1.42857em;
+  line-height: 1.57143em;
+  /* +2px moves text little bit down in order to center it in inputtext */
+  padding-bottom: 0.64286em;
+  padding-top: 0.64286em;
+}
+
+/* line 56, ../../app/sass/sass/modules/_forms.scss */
+input[type=submit], button {
+  height: 2.14286em;
+  line-height: 2.14286em;
+}
+
+/* line 61, ../../app/sass/sass/modules/_forms.scss */
+input[type=checkbox] {
+  height: 1.42857em;
+  margin-right: 0.57143em;
+  vertical-align: text-top;
+  width: 1.42857em;
+}
+
+/* line 68, ../../app/sass/sass/modules/_forms.scss */
+select {
+  border: 1px solid #e1e1e1;
+  font-size: 1em;
+  padding-bottom: 0.64286em;
+  padding-top: 0.64286em;
+}
+
+/* line 75, ../../app/sass/sass/modules/_forms.scss */
+textarea {
+  display: block;
+  margin: 0;
+  padding: 0.57143em;
+}
+
+/* line 81, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel, .formRowLabelTop, .formRowNolabel, .formRowCheckbox, .formRowError, .formRowErrorTop, .formRowCommonError, .formRowButtons {
+  margin-bottom: 1.42857em;
+}
+
+/* line 85, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel, .formRowLabelTop {
+  margin-top: -1.42857em;
+}
+/* line 89, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabel label, .formRowLabelTop label {
+  display: block;
+  height: 1.42857em;
+  padding-bottom: 0.28571em;
+  padding-top: 1.14286em;
+}
+
+/* line 97, ../../app/sass/sass/modules/_forms.scss */
+.formRowLabelTop {
+  margin-top: 0;
+}
+
+/* line 110, ../../app/sass/sass/modules/_forms.scss */
+.formRowCheckbox label {
+  display: block;
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+
+/* line 116, ../../app/sass/sass/modules/_forms.scss */
+.formRowError, .formRowErrorTop {
+  margin-top: -1.42857em;
+}
+/* line 120, ../../app/sass/sass/modules/_forms.scss */
+.formRowError li, .formRowErrorTop li {
+  display: block;
+  min-height: 1.42857em;
+  padding-bottom: 0.28571em;
+}
+/* line 125, ../../app/sass/sass/modules/_forms.scss */
+.formRowError li:first-child, .formRowErrorTop li:first-child {
+  padding-top: 1.14286em;
+}
+/* line 130, ../../app/sass/sass/modules/_forms.scss */
+.formRowError label, .formRowErrorTop label {
+  display: block;
+  height: 1.42857em;
+  padding-bottom: 0.28571em;
+}
+
+/* line 137, ../../app/sass/sass/modules/_forms.scss */
+.formRowErrorTop {
+  margin-top: 0;
+}
+
+/* line 145, ../../app/sass/sass/modules/_forms.scss */
+.formRowCommonError li {
+  height: 2.85714em;
+  line-height: 2.85714em;
+}
+
+/* line 155, ../../app/sass/sass/modules/_forms.scss */
+.formRowTop {
+  margin-top: 0;
+}
+
+/* line 159, ../../app/sass/sass/modules/_forms.scss */
+.formRowBottom {
+  margin-bottom: 40px;
 }
 
 /* line 165, ../../app/sass/sass/modules/_forms.scss */
@@ -497,8 +728,27 @@ input[type=text], input[type=password] {
   width: 21.57143em;
 }
 
-/* line 3, ../../app/sass/sass/sign/partials/_form.scss */
+/* line 3, ../../app/sass/sass/signup/partials/_form.scss */
 form {
   margin: 0 auto;
   width: 22.85714em;
+}
+
+/* line 1, ../../app/sass/sass/signup/partials/_bar_progress.scss */
+#progressBar {
+  color: #d7d7d7;
+  margin-bottom: 1.42857em;
+}
+/* line 5, ../../app/sass/sass/signup/partials/_bar_progress.scss */
+#progressBar ul {
+  display: inline-block;
+}
+/* line 9, ../../app/sass/sass/signup/partials/_bar_progress.scss */
+#progressBar li {
+  display: inline-block;
+  padding-right: 0.57143em;
+}
+/* line 13, ../../app/sass/sass/signup/partials/_bar_progress.scss */
+#progressBar li.current {
+  font-weight: bolder;
 }

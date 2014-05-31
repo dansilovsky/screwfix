@@ -1,7 +1,3 @@
-/* 
-    Created on : 10-May-2014, 12:43:38
-    Author     : Daniel Silovsky
-*/
 /* imports for all mixins + global project variables */
 /* vertical rhythm */
 /* font size */
@@ -231,6 +227,14 @@ body {
 html {
   font-family: "Segoe UI", "Segoe UI Web Regular", "Segoe UI Symbol", "Helvetica Neue", "BBAlpha Sans", "S60 Sans", Arial, "sans-serif";
   color: #282828;
+}
+
+/* line 12, ../../app/sass/sass/partials/_typography.scss */
+h1 {
+  font-size: 1.42857em;
+  height: 1em;
+  line-height: 1em;
+  margin-bottom: 1em;
 }
 
 /* 
@@ -466,33 +470,29 @@ textarea {
 /* line 11, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide h1 {
   font-size: 20px;
+  height: 2em;
+  line-height: 2em;
+  margin-bottom: 0;
   padding: 0 0.75em;
 }
-/* line 16, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
-.barSide li {
-  padding: 0 1.07143em;
-}
 /* line 19, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
-.barSide li:hover {
-  background-color: #e3e3e3;
-}
-/* line 24, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide .current {
   background-color: #d7d7d7;
 }
-/* line 26, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
+/* line 21, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide .current:hover {
   background-color: #e4e4e4;
 }
-/* line 31, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
+/* line 26, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
 .barSide a {
+  display: block;
   height: 2.85714em;
   line-height: 2.85714em;
+  padding: 0 1.07143em;
 }
-/* line 36, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
-.barSide h1 a {
-  height: 2em;
-  line-height: 2em;
+/* line 33, ../../app/sass/sass/_sidebar/partials/_bar-side.scss */
+.barSide a:hover {
+  background-color: #e3e3e3;
 }
 
 /* line 10, ../../../../../Ruby193/lib/ruby/gems/1.9.1/gems/compass-0.12.3/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
@@ -673,45 +673,7 @@ textarea {
   margin-bottom: 40px;
 }
 
-/* line 171, ../../app/sass/sass/modules/_forms.scss */
-form {
-  width: 22.85714em;
-}
-
-/* line 165, ../../app/sass/sass/modules/_forms.scss */
-input[type=text], input[type=password] {
-  width: 21.57143em;
-}
-
-/* line 4, ../../app/sass/sass/account/partials/_form.scss */
-.formShiftpattern {
-  width: 70.5em;
-}
-/* line 9, ../../app/sass/sass/account/partials/_form.scss */
-.formShiftpattern td div:last-child {
-  text-align: right;
-}
-
-/* line 16, ../../app/sass/sass/account/partials/_form.scss */
-.formRowInputpattern {
-  margin-bottom: 0.57143em;
-}
-/* line 19, ../../app/sass/sass/account/partials/_form.scss */
-.formRowInputpattern select {
-  padding: 0.21429em 0.42857em;
-}
-/* line 23, ../../app/sass/sass/account/partials/_form.scss */
-.formRowInputpattern label {
-  text-align: justify;
-  display: block;
-  margin-bottom: 0.28571em;
-}
-
-/* 
-    Created on : 10-May-2014, 12:30:25
-    Author     : Daniel Silovsky
-*/
-/* line 7, ../../app/sass/sass/account/partials/_table.scss */
+/* line 3, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern {
   width: 100%;
   background: #f0f0f0;
@@ -735,44 +697,78 @@ table.inputPattern tbody tr:last-child th, table.inputPattern tbody tr:last-chil
 table.inputPattern tbody tr.last th, table.inputPattern tbody tr.last td, table.inputPattern tfoot tr.last th, table.inputPattern tfoot tr.last td {
   border-bottom-width: 0px;
 }
-/* line 11, ../../app/sass/sass/account/partials/_table.scss */
+/* line 7, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern th, table.inputPattern td {
   width: 13.57143%;
 }
-/* line 14, ../../app/sass/sass/account/partials/_table.scss */
+/* line 10, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern th:first-child, table.inputPattern td:first-child {
   width: 1%;
 }
-/* line 17, ../../app/sass/sass/account/partials/_table.scss */
+/* line 13, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern th {
   font-size: 0.85714em;
   height: 30px;
   padding: 0 8px;
 }
-/* line 22, ../../app/sass/sass/account/partials/_table.scss */
+/* line 18, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern td {
   padding: 8px;
 }
-/* line 25, ../../app/sass/sass/account/partials/_table.scss */
+/* line 21, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern td.dayOff {
   vertical-align: top;
   text-align: center;
 }
-/* line 30, ../../app/sass/sass/account/partials/_table.scss */
+/* line 26, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern td:first-child {
   vertical-align: middle;
   text-align: center;
 }
-/* line 36, ../../app/sass/sass/account/partials/_table.scss */
+/* line 32, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern td div:first-child {
   text-align: right;
 }
-/* line 41, ../../app/sass/sass/account/partials/_table.scss */
+/* line 37, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern a {
   color: #3074b6;
   font-weight: bold;
 }
-/* line 47, ../../app/sass/sass/account/partials/_table.scss */
+/* line 43, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern tr:nth-child(even) td {
   background-color: #e3e3e3;
+}
+
+/* line 171, ../../app/sass/sass/modules/_forms.scss */
+form {
+  width: 22.85714em;
+}
+
+/* line 165, ../../app/sass/sass/modules/_forms.scss */
+input[type=text], input[type=password] {
+  width: 21.57143em;
+}
+
+/* line 4, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formShiftpattern {
+  width: 70.5em;
+}
+/* line 9, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formShiftpattern td div:last-child {
+  text-align: right;
+}
+
+/* line 16, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formRowInputpattern {
+  margin-bottom: 0.57143em;
+}
+/* line 19, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formRowInputpattern select {
+  padding: 0.21429em 0.42857em;
+}
+/* line 23, ../../app/sass/sass/_form_pattern/partials/_form.scss */
+.formRowInputpattern label {
+  text-align: justify;
+  display: block;
+  margin-bottom: 0.28571em;
 }

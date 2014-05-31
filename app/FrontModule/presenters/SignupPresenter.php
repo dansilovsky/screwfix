@@ -44,7 +44,7 @@ class SignupPresenter extends BasePresenter {
 			->setRequired('Reenter a password please.')
 			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);
 		$form->addCheckbox('remember', 'Remember me');
-		$form->addSubmit('next', 'next')
+		$form->addSubmit('next', 'Next')
 			->setAttribute('class', 'button');
 		// time limit is 30min. (60 * 30 = 1800)
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);

@@ -9,3 +9,10 @@ html {
 	color: $color-text-background-light;
 }
 
+h1 {
+	font-size: px-to-em($font-size-big, $base-font-size);
+	height: px-to-em($base-line-height, $font-size-big);
+	line-height: px-to-em($base-line-height, $font-size-big);
+	margin-bottom: px-to-em($base-line-height, $font-size-big);
+}
+

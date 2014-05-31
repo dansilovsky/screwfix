@@ -1,3 +1,7 @@
+@import "compass/layout/sticky-footer";
+
+@include sticky-footer(px-to-em($bar-height-footer, $base-font-size));
+
 .contentSign {
 	@include padding-content;
 }

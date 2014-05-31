@@ -10,15 +10,10 @@
 	
 	h1 {
 		font-size: $font-size-big;
+		height: px-to-em($line-height-big, $font-size-big);
+		line-height: px-to-em($line-height-big, $font-size-big);
+		margin-bottom: 0;
 		padding: 0 px-to-em($padding-main, $font-size-big);
-	}
-	
-	li {
-		padding: 0 px-to-em($padding-main, $base-font-size);
-		
-		&:hover {
-			@include darken-background($color-grey-light);
-		}
 	}
 	
 	.current {
@@ -29,13 +24,15 @@
 	}
 	
 	a {
-		height: px-to-em(($base-line-height * 2), $base-font-size);
-		line-height: px-to-em(($base-line-height * 2), $base-font-size);
-	}
-	
-	h1 a {
-		height: px-to-em(($base-line-height * 2), $font-size-big);
-		line-height: px-to-em(($base-line-height * 2), $font-size-big);
+		display: block;
+		height: px-to-em($line-height-big, $base-font-size);
+		line-height: px-to-em($line-height-big, $base-font-size);
+		
+		padding: 0 px-to-em($padding-main, $base-font-size);
+		
+		&:hover {
+			@include darken-background($color-grey-light);
+		}
 	}
 }
 
