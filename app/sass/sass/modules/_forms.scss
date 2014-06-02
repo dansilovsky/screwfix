@@ -40,7 +40,7 @@ $form-vr-textfield-padding-horizontal: ($form-vr-textfield-height-total - $form-
 		}
 	}
 
-	input[type=text], input[type=password], input[type=submit], button {	
+	input[type=text], input[type=password], input[type=submit], input[type=button], button {	
 		font-size: 1em;	
 		margin: 0;
 	}
@@ -53,7 +53,7 @@ $form-vr-textfield-padding-horizontal: ($form-vr-textfield-height-total - $form-
 		padding-top: px-to-em($form-vr-textfield-padding-horizontal, $font-size-context);
 	}
 
-	input[type=submit], button {
+	input[type=submit], input[type=button], button {
 		height: px-to-em($form-vr-button-height, $font-size-context);
 		line-height: px-to-em($form-vr-button-height, $font-size-context);
 	}
