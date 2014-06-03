@@ -18,8 +18,6 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	private $_template;
 	
 	private $_request;
-	
-	public $smaz = 'smaz';
 
 	public function __construct(Template $template, \Nette\Http\Request $request)
 	{
