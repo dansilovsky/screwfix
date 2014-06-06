@@ -131,9 +131,9 @@ abstract class PresenterComponent extends Nette\ComponentModel\Container impleme
 				if (!$reflection->convertType($params[$name], $type)) {
 					throw new Nette\Application\BadRequestException("Invalid value for persistent parameter '$name' in '{$this->getName()}', expected " . ($type === 'NULL' ? 'scalar' : $type) . ".");
 				}
-				$this->$name = & $params[$name];
+				$this->$name = $params[$name];
 			} else {
-				$params[$name] = & $this->$name;
+				$params[$name] = $this->$name;
 			}
 		}
 		$this->params = $params;
@@ -166,7 +166,7 @@ abstract class PresenterComponent extends Nette\ComponentModel\Container impleme
 
 			$type = gettype($meta['def']);
 			if (!PresenterComponentReflection::convertType($params[$name], $type)) {
-				throw new InvalidLinkException("Invalid value for persistent parameter '$name' in '{$this->getName()}', expected " . ($type === 'NULL' ? 'scalar' : $type) . ".");
+				throw new InvalidLinkException(sprintf("Invalid value for persistent parameter '%s' in '%s', expected %s.", $name, $this->getName(), $type === 'NULL' ? 'scalar' : $type));
 			}
 
 			if ($params[$name] === $meta['def'] || ($meta['def'] === NULL && is_scalar($params[$name]) && (string) $params[$name] === '')) {
@@ -182,7 +182,7 @@ abstract class PresenterComponent extends Nette\ComponentModel\Container impleme
 	 * @param  mixed  default value
 	 * @return mixed
 	 */
-	public function getParameter($name = NULL, $default = NULL)
+	public function getParameter($name, $default = NULL)
 	{
 		if (func_num_args() === 0) {
 			trigger_error('Calling ' . __METHOD__ . ' with no arguments to get all parameters is deprecated, use getParameters() instead.', E_USER_DEPRECATED);

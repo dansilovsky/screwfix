@@ -5,13 +5,12 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Latte\Macros;
+namespace Latte\Macros;
 
-use Nette,
-	Nette\Latte,
-	Nette\Latte\CompileException,
-	Nette\Latte\MacroNode,
-	Nette\Latte\PhpWriter;
+use Latte,
+	Latte\CompileException,
+	Latte\MacroNode,
+	Latte\PhpWriter;
 
 
 /**
@@ -22,18 +21,17 @@ use Nette,
  * - {for ?} ... {/for}
  * - {foreach ?} ... {/foreach}
  * - {$variable} with escaping
- * - {!$variable} without escaping
  * - {=expression} echo with escaping
- * - {!=expression} echo without escaping
  * - {?expression} evaluate PHP statement
  * - {_expression} echo translation with escaping
- * - {!_expression} echo translation without escaping
  * - {attr ?} HTML element attributes
  * - {capture ?} ... {/capture} capture block to parameter
  * - {var var => value} set template parameter
  * - {default var => value} set default template parameter
  * - {dump $var}
  * - {debugbreak}
+ * - {contentType ...} HTTP Content-Type header
+ * - {status ...} HTTP status
  * - {l} {r} to display { }
  *
  * @author     David Grudl
@@ -66,7 +64,6 @@ class CoreMacros extends MacroSet
 		$me->addMacro('sep', 'if (!$iterator->isLast(%node.args)) {', '}');
 
 		$me->addMacro('var', array($me, 'macroVar'));
-		$me->addMacro('assign', array($me, 'macroVar')); // deprecated
 		$me->addMacro('default', array($me, 'macroVar'));
 		$me->addMacro('dump', array($me, 'macroDump'));
 		$me->addMacro('debugbreak', array($me, 'macroDebugbreak'));
@@ -80,10 +77,11 @@ class CoreMacros extends MacroSet
 		$me->addMacro('capture', array($me, 'macroCapture'), array($me, 'macroCaptureEnd'));
 		$me->addMacro('include', array($me, 'macroInclude'));
 		$me->addMacro('use', array($me, 'macroUse'));
+		$me->addMacro('contentType', array($me, 'macroContentType'));
+		$me->addMacro('status', array($me, 'macroStatus'));
 
 		$me->addMacro('class', NULL, NULL, array($me, 'macroClass'));
-		$me->addMacro('attr', array($me, 'macroOldAttr'), '', array($me, 'macroAttr'));
-		$me->addMacro('href', NULL); // TODO: placeholder
+		$me->addMacro('attr', NULL, NULL, array($me, 'macroAttr'));
 	}
 
 
@@ -93,8 +91,10 @@ class CoreMacros extends MacroSet
 	 */
 	public function finalize()
 	{
-		return array('list($_l, $_g) = Nette\Latte\Macros\CoreMacros::initRuntime($template, '
-			. var_export($this->getCompiler()->getTemplateId(), TRUE) . ')');
+		return array('list($_l, $_g) = $template->initialize('
+			. var_export($this->getCompiler()->getTemplateId(), TRUE) . ', '
+			. var_export($this->getCompiler()->getContentType(), TRUE)
+		. ')');
 	}
 
 
@@ -143,7 +143,7 @@ class CoreMacros extends MacroSet
 		$ifNode = $node->parentNode;
 		if ($ifNode && $ifNode->name === 'if' && $ifNode->data->capture) {
 			if (isset($ifNode->data->else)) {
-				throw new CompileException("Macro {if} supports only one {else}.");
+				throw new CompileException('Macro {if} supports only one {else}.');
 			}
 			$ifNode->data->else = TRUE;
 			return 'ob_start()';
@@ -157,7 +157,7 @@ class CoreMacros extends MacroSet
 	 */
 	public function macroIfContent(MacroNode $node, PhpWriter $writer)
 	{
-		if (!$node->htmlNode) {
+		if (!$node->prefix) {
 			throw new CompileException("Unknown macro {{$node->name}}, use n:{$node->name} attribute.");
 		} elseif ($node->prefix !== MacroNode::PREFIX_NONE) {
 			throw new CompileException("Unknown attribute n:{$node->prefix}-{$node->name}, use n:{$node->name} attribute.");
@@ -176,9 +176,9 @@ class CoreMacros extends MacroSet
 		$node->content = $parts[1]
 			. '<?php ob_start() ?>'
 			. $parts[2]
-			. '<?php $_ifcontent = ob_get_length(); ob_end_flush() ?>'
+			. '<?php $_ifcontent = ob_get_contents(); ob_end_flush() ?>'
 			. $parts[3];
-		return '$_ifcontent ? ob_end_flush() : ob_end_clean()';
+		return 'rtrim($_ifcontent) === "" ? ob_end_clean() : ob_end_flush()';
 	}
 
 
@@ -204,13 +204,13 @@ class CoreMacros extends MacroSet
 	 */
 	public function macroInclude(MacroNode $node, PhpWriter $writer)
 	{
-		$code = $writer->write('Nette\Latte\Macros\CoreMacros::includeTemplate(%node.word, %node.array? + $template->getParameters(), $_l->templates[%var])',
+		$code = $writer->write('$_l->templates[%var]->renderChildTemplate(%node.word, %node.array? + $template->getParameters())',
 			$this->getCompiler()->getTemplateId());
 
 		if ($node->modifiers) {
-			return $writer->write('echo %modify(%raw->__toString(TRUE))', $code);
+			return $writer->write('ob_start(); %raw; echo %modify(ob_get_clean())', $code);
 		} else {
-			return $code . '->render()';
+			return $code;
 		}
 	}
 
@@ -220,7 +220,7 @@ class CoreMacros extends MacroSet
 	 */
 	public function macroUse(MacroNode $node, PhpWriter $writer)
 	{
-		Nette\Utils\Callback::invoke(array($node->tokenizer->fetchWord(), 'install'), $this->getCompiler())
+		call_user_func(Latte\Helpers::checkCallback(array($node->tokenizer->fetchWord(), 'install')), $this->getCompiler())
 			->initialize();
 	}
 
@@ -244,7 +244,7 @@ class CoreMacros extends MacroSet
 	 */
 	public function macroCaptureEnd(MacroNode $node, PhpWriter $writer)
 	{
-		return $node->data->variable . $writer->write(" = %modify(ob_get_clean())");
+		return $node->data->variable . $writer->write(' = %modify(ob_get_clean())');
 	}
 
 
@@ -254,7 +254,7 @@ class CoreMacros extends MacroSet
 	public function macroEndForeach(MacroNode $node, PhpWriter $writer)
 	{
 		if ($node->modifiers !== '|noiterator' && preg_match('#\W(\$iterator|include|require|get_defined_vars)\W#', $this->getCompiler()->expandTokens($node->content))) {
-			$node->openingCode = '<?php $iterations = 0; foreach ($iterator = $_l->its[] = new Nette\Iterators\CachingIterator('
+			$node->openingCode = '<?php $iterations = 0; foreach ($iterator = $_l->its[] = new Latte\Runtime\CachingIterator('
 			. preg_replace('#(.*)\s+as\s+#i', '$1) as ', $writer->formatArgs(), 1) . ') { ?>';
 			$node->closingCode = '<?php $iterations++; } array_pop($_l->its); $iterator = end($_l->its) ?>';
 		} else {
@@ -292,18 +292,7 @@ class CoreMacros extends MacroSet
 	 */
 	public function macroAttr(MacroNode $node, PhpWriter $writer)
 	{
-		return $writer->write('echo Nette\Utils\Html::el(NULL, %node.array)->attributes()');
-	}
-
-
-	/**
-	 * {attr ...}
-	 * @deprecated
-	 */
-	public function macroOldAttr(MacroNode $node)
-	{
-		trigger_error('Macro {attr} is deprecated; use n:attr="..." instead.', E_USER_DEPRECATED);
-		return Nette\Utils\Strings::replace($node->args . ' ', '#\)\s+#', ')->');
+		return $writer->write('echo Latte\Runtime\Filters::htmlAttributes(%node.array)');
 	}
 
 
@@ -313,8 +302,8 @@ class CoreMacros extends MacroSet
 	public function macroDump(MacroNode $node, PhpWriter $writer)
 	{
 		$args = $writer->formatArgs();
-		return 'Nette\Diagnostics\Debugger::barDump(' . ($node->args ? "array(" . $writer->write('%var', $args) . " => $args)" : 'get_defined_vars()')
-			. ', "Template " . str_replace(dirname(dirname($template->getFile())), "\xE2\x80\xA6", $template->getFile()))';
+		return 'Tracy\Debugger::barDump(' . ($node->args ? $writer->write("array(%var => $args)", $args) : 'get_defined_vars()')
+			. ', "Template " . str_replace(dirname(dirname($template->getName())), "\xE2\x80\xA6", $template->getName()))';
 	}
 
 
@@ -336,9 +325,6 @@ class CoreMacros extends MacroSet
 	{
 		if ($node->args === '' && $node->parentNode && $node->parentNode->name === 'switch') {
 			return '} else {';
-
-		} elseif ($node->name === 'assign') {
-			trigger_error('Macro {assign} is deprecated; use {var} instead.', E_USER_DEPRECATED);
 		}
 
 		$var = TRUE;
@@ -362,7 +348,7 @@ class CoreMacros extends MacroSet
 				$var = TRUE;
 
 			} elseif ($var === NULL && $node->name === 'default' && !$tokens->isCurrent(Latte\MacroTokens::T_WHITESPACE)) {
-				throw new CompileException("Unexpected '" . $tokens->currentValue() . "' in {default $node->args}");
+				throw new CompileException("Unexpected '{$tokens->currentValue()}' in {default $node->args}");
 
 			} else {
 				$res->append($tokens->currentToken());
@@ -383,61 +369,48 @@ class CoreMacros extends MacroSet
 	}
 
 
-	/********************* run-time helpers ****************d*g**/
-
-
 	/**
-	 * Includes subtemplate.
-	 * @param  mixed      included file name or template
-	 * @param  array      parameters
-	 * @param  Nette\Templating\ITemplate  current template
-	 * @return Nette\Templating\Template
+	 * {contentType ...}
 	 */
-	public static function includeTemplate($destination, array $params, Nette\Templating\ITemplate $template)
+	public function macroContentType(MacroNode $node, PhpWriter $writer)
 	{
-		if ($destination instanceof Nette\Templating\ITemplate) {
-			$tpl = $destination;
+		if (strpos($node->args, 'xhtml') !== FALSE) {
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_XHTML);
 
-		} elseif ($destination == NULL) { // intentionally ==
-			throw new Nette\InvalidArgumentException("Template file name was not specified.");
+		} elseif (strpos($node->args, 'html') !== FALSE) {
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_HTML);
 
-		} elseif ($template instanceof Nette\Templating\IFileTemplate) {
-			if (substr($destination, 0, 1) !== '/' && substr($destination, 1, 1) !== ':') {
-				$destination = dirname($template->getFile()) . '/' . $destination;
-			}
-			$tpl = clone $template;
-			$tpl->setFile($destination);
+		} elseif (strpos($node->args, 'xml') !== FALSE) {
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_XML);
+
+		} elseif (strpos($node->args, 'javascript') !== FALSE) {
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_JS);
+
+		} elseif (strpos($node->args, 'css') !== FALSE) {
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_CSS);
+
+		} elseif (strpos($node->args, 'calendar') !== FALSE) {
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_ICAL);
 
 		} else {
-			throw new Nette\NotSupportedException('Macro {include "filename"} is supported only with Nette\Templating\IFileTemplate.');
+			$this->getCompiler()->setContentType(Latte\Compiler::CONTENT_TEXT);
 		}
 
-		$tpl->setParameters($params); // interface?
-		return $tpl;
+		// temporary solution
+		if (strpos($node->args, '/')) {
+			return $writer->write('header(%var)', "Content-Type: $node->args");
+		}
 	}
 
 
 	/**
-	 * Initializes local & global storage in template.
-	 * @return \stdClass
+	 * {status ...}
 	 */
-	public static function initRuntime(Nette\Templating\ITemplate $template, $templateId)
+	public function macroStatus(MacroNode $node, PhpWriter $writer)
 	{
-		// local storage
-		if (isset($template->_l)) {
-			$local = $template->_l;
-			unset($template->_l);
-		} else {
-			$local = new \stdClass;
-		}
-		$local->templates[$templateId] = $template;
-
-		// global storage
-		if (!isset($template->_g)) {
-			$template->_g = new \stdClass;
-		}
-
-		return array($local, $template->_g);
+		return $writer->write((substr($node->args, -1) === '?' ? 'if (!headers_sent()) ' : '') .
+			'header((isset($_SERVER["SERVER_PROTOCOL"]) ? $_SERVER["SERVER_PROTOCOL"] : "HTTP/1.1") . " " . %0.var, TRUE, %0.var)', (int) $node->args
+		);
 	}
 
 }

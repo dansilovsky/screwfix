@@ -16,8 +16,14 @@ use Nette;
  * @author     David Grudl
  * @author     Jan Skrasek
  */
-class Row extends Nette\ArrayHash implements IRow
+class Row extends Nette\Utils\ArrayHash implements IRow
 {
+
+	public function __get($key)
+	{
+		throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'.");
+	}
+
 
 	/**
 	 * Returns a item.
@@ -29,7 +35,7 @@ class Row extends Nette\ArrayHash implements IRow
 		if (is_int($key)) {
 			$arr = array_slice((array) $this, $key, 1);
 			if (!$arr) {
-				trigger_error('Undefined offset: ' . __CLASS__ . "[$key]", E_USER_NOTICE);
+				throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'.");
 			}
 			return current($arr);
 		}

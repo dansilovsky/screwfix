@@ -28,44 +28,49 @@ class Strings
 
 
 	/**
-	 * Checks if the string is valid for the specified encoding.
+	 * Checks if the string is valid for UTF-8 encoding.
 	 * @param  string  byte stream to check
-	 * @param  string  expected encoding
 	 * @return bool
 	 */
-	public static function checkEncoding($s, $encoding = 'UTF-8')
+	public static function checkEncoding($s)
 	{
-		return $s === self::fixEncoding($s, $encoding);
+		if (func_num_args() > 1 && strcasecmp(func_get_arg(1), 'UTF-8')) {
+			trigger_error(__METHOD__ . ' supports only UTF-8 encoding.', E_USER_DEPRECATED);
+		}
+		return $s === self::fixEncoding($s);
 	}
 
 
 	/**
-	 * Returns correctly encoded string.
+	 * Removes invalid code unit sequences from UTF-8 string.
 	 * @param  string  byte stream to fix
-	 * @param  string  encoding
 	 * @return string
 	 */
-	public static function fixEncoding($s, $encoding = 'UTF-8')
+	public static function fixEncoding($s)
 	{
+		if (func_num_args() > 1 && strcasecmp(func_get_arg(1), 'UTF-8')) {
+			trigger_error(__METHOD__ . ' supports only UTF-8 encoding.', E_USER_DEPRECATED);
+		}
 		// removes xD800-xDFFF, x110000 and higher
-		if (PHP_VERSION_ID >= 50400) {
-			ini_set('mbstring.substitute_character', 'none');
-			return mb_convert_encoding($s, $encoding, $encoding);
+		if (PHP_VERSION_ID < 50400) {
+			return @iconv('UTF-16', 'UTF-8//IGNORE', iconv('UTF-8', 'UTF-16//IGNORE', $s)); // intentionally @
 		} else {
-			return @iconv('UTF-16', 'UTF-8//IGNORE', iconv($encoding, 'UTF-16//IGNORE', $s)); // intentionally @
+			return htmlspecialchars_decode(htmlspecialchars($s, ENT_NOQUOTES | ENT_IGNORE, 'UTF-8'), ENT_NOQUOTES);
 		}
 	}
 
 
 	/**
-	 * Returns a specific character.
+	 * Returns a specific character in UTF-8.
 	 * @param  int     codepoint
-	 * @param  string  encoding
 	 * @return string
 	 */
-	public static function chr($code, $encoding = 'UTF-8')
+	public static function chr($code)
 	{
-		return iconv('UTF-32BE', $encoding . '//IGNORE', pack('N', $code));
+		if (func_num_args() > 1 && strcasecmp(func_get_arg(1), 'UTF-8')) {
+			trigger_error(__METHOD__ . ' supports only UTF-8 encoding.', E_USER_DEPRECATED);
+		}
+		return iconv('UTF-32BE', 'UTF-8//IGNORE', pack('N', $code));
 	}
 
 
@@ -166,6 +171,9 @@ class Strings
 	{
 		$s = preg_replace('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{2FF}\x{370}-\x{10FFFF}]#u', '', $s);
 		$s = strtr($s, '`\'"^~', "\x01\x02\x03\x04\x05");
+		$s = str_replace(array("\xE2\x80\x9E", "\xE2\x80\x9C", "\xE2\x80\x9D", "\xE2\x80\x9A",
+			"\xE2\x80\x98", "\xE2\x80\x99", "\xC2\xBB", "\xC2\xAB"),
+			array("\x03", "\x03", "\x03", "\x02", "\x02", "\x02", ">>", "<<"), $s);
 		if (ICONV_IMPL === 'glibc') {
 			$s = @iconv('UTF-8', 'WINDOWS-1250//TRANSLIT', $s); // intentionally @
 			$s = strtr($s, "\xa5\xa3\xbc\x8c\xa7\x8a\xaa\x8d\x8f\x8e\xaf\xb9\xb3\xbe\x9c\x9a\xba\x9d\x9f\x9e"
@@ -397,45 +405,12 @@ class Strings
 
 
 	/**
-	 * Generate random string.
-	 * @param  int
-	 * @param  string
-	 * @return string
+	 * Use Nette\Utils\Random::generate
+	 * @deprecated
 	 */
 	public static function random($length = 10, $charlist = '0-9a-z')
 	{
-		$charlist = str_shuffle(preg_replace_callback('#.-.#', function($m) {
-			return implode('', range($m[0][0], $m[0][2]));
-		}, $charlist));
-		$chLen = strlen($charlist);
-
-		if (function_exists('openssl_random_pseudo_bytes')
-			&& (PHP_VERSION_ID >= 50400 || !defined('PHP_WINDOWS_VERSION_BUILD')) // slow in PHP 5.3 & Windows
-		) {
-			$rand3 = openssl_random_pseudo_bytes($length);
-		}
-		if (empty($rand3) && function_exists('mcrypt_create_iv')) {
-			$rand3 = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
-		}
-		if (empty($rand3) && @is_readable('/dev/urandom')) {
-			$rand3 = file_get_contents('/dev/urandom', FALSE, NULL, -1, $length);
-		}
-		if (empty($rand3)) {
-			static $cache;
-			$rand3 = $cache ?: $cache = md5(serialize($_SERVER), TRUE);
-		}
-
-		$s = '';
-		for ($i = 0; $i < $length; $i++) {
-			if ($i % 5 === 0) {
-				list($rand, $rand2) = explode(' ', microtime());
-				$rand += lcg_value();
-			}
-			$rand *= $chLen;
-			$s .= $charlist[($rand + $rand2 + ord($rand3[$i % strlen($rand3)])) % $chLen];
-			$rand -= (int) $rand;
-		}
-		return $s;
+		return Random::generate($length, $charlist);
 	}
 
 

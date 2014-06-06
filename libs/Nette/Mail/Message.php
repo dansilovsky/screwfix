@@ -21,7 +21,6 @@ use Nette,
  * @property   string $returnPath
  * @property   int $priority
  * @property   mixed $htmlBody
- * @property   IMailer $mailer
  */
 class Message extends MimePart
 {
@@ -30,17 +29,11 @@ class Message extends MimePart
 		NORMAL = 3,
 		LOW = 5;
 
-	/** @deprecated */
-	public static $defaultMailer = 'Nette\Mail\SendmailMailer';
-
 	/** @var array */
 	public static $defaultHeaders = array(
 		'MIME-Version' => '1.0',
 		'X-Mailer' => 'Nette Framework',
 	);
-
-	/** @var IMailer */
-	private $mailer;
 
 	/** @var array */
 	private $attachments = array();
@@ -226,9 +219,9 @@ class Message extends MimePart
 	 */
 	public function setHtmlBody($html, $basePath = NULL)
 	{
-		if ($html instanceof Nette\Templating\ITemplate) {
+		if ($html instanceof Nette\Templating\ITemplate || $html instanceof Nette\Application\UI\ITemplate) {
 			$html->mail = $this;
-			if ($basePath === NULL && $html instanceof Nette\Templating\IFileTemplate) {
+			if ($basePath === NULL && ($html instanceof Nette\Templating\IFileTemplate || $html instanceof Nette\Application\UI\ITemplate)) {
 				$basePath = dirname($html->getFile());
 			}
 			$html = $html->__toString(TRUE);
@@ -244,7 +237,7 @@ class Message extends MimePart
 			foreach (array_reverse($matches) as $m) {
 				$file = rtrim($basePath, '/\\') . '/' . $m[3][0];
 				if (!isset($cids[$file])) {
-					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader("Content-ID"), 1, -1);
+					$cids[$file] = substr($this->addEmbeddedFile($file)->getHeader('Content-ID'), 1, -1);
 				}
 				$html = substr_replace($html,
 					"{$m[1][0]}{$m[2][0]}cid:{$cids[$file]}",
@@ -318,7 +311,7 @@ class Message extends MimePart
 			$content = (string) $content;
 		}
 		$part->setBody($content);
-		$part->setContentType($contentType ? $contentType : Nette\Utils\MimeTypeDetector::fromString($content));
+		$part->setContentType($contentType ? $contentType : finfo_buffer(finfo_open(FILEINFO_MIME_TYPE), $content));
 		$part->setEncoding(preg_match('#(multipart|message)/#A', $contentType) ? self::ENCODING_8BIT : self::ENCODING_BASE64);
 		$part->setHeader('Content-Disposition', $disposition . '; filename="' . Strings::fixEncoding(basename($file)) . '"');
 		return $part;
@@ -326,40 +319,6 @@ class Message extends MimePart
 
 
 	/********************* building and sending ****************d*g**/
-
-
-	/**
-	 * @deprecated
-	 */
-	public function send()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use IMailer::send() instead.', E_USER_DEPRECATED);
-		$this->getMailer()->send($this);
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	public function setMailer(IMailer $mailer)
-	{
-		//trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		$this->mailer = $mailer;
-		return $this;
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	public function getMailer()
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		if ($this->mailer === NULL) {
-			$this->mailer = is_object(static::$defaultMailer) ? static::$defaultMailer : new static::$defaultMailer;
-		}
-		return $this->mailer;
-	}
 
 
 	/**
@@ -441,7 +400,7 @@ class Message extends MimePart
 	/** @return string */
 	private function getRandomId()
 	{
-		return '<' . Strings::random() . '@'
+		return '<' . Nette\Utils\Random::generate() . '@'
 			. preg_replace('#[^\w.-]+#', '', isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : php_uname('n'))
 			. '>';
 	}

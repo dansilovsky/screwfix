@@ -40,9 +40,6 @@ class Connection extends Nette\Object
 	/** @var SqlPreprocessor */
 	private $preprocessor;
 
-	/** @var Context */
-	private $context;
-
 	/** @var PDO */
 	private $pdo;
 
@@ -212,67 +209,6 @@ class Connection extends Nette\Object
 	{
 		$args = func_get_args();
 		return new SqlLiteral(array_shift($args), $args);
-	}
-
-
-	/********************* Selection ****************d*g**/
-
-
-	/** @deprecated */
-	function table($table)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use Nette\Database\Context::table() instead.', E_USER_DEPRECATED);
-		if (!$this->context) {
-			$this->context = new Context($this);
-		}
-		return $this->context->table($table);
-	}
-
-
-	/** @deprecated */
-	function setContext(Context $context)
-	{
-		$this->context = $context;
-		return $this;
-	}
-
-
-	/** @deprecated */
-	function getContext()
-	{
-		return $this->context;
-	}
-
-
-	/** @deprecated */
-	function setDatabaseReflection()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use Nette\Database\Context instead.', E_USER_DEPRECATED);
-		return $this;
-	}
-
-
-	/** @deprecated */
-	function setCacheStorage()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use Nette\Database\Context instead.', E_USER_DEPRECATED);
-	}
-
-
-	/** @deprecated */
-	function lastInsertId($name = NULL)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use getInsertId() instead.', E_USER_DEPRECATED);
-		return $this->getInsertId($name);
-	}
-
-
-	/** @deprecated */
-	function exec($statement)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use Nette\Database\Context::query()->getRowCount() instead.', E_USER_DEPRECATED);
-		$args = func_get_args();
-		return $this->queryArgs(array_shift($args), $args)->getRowCount();
 	}
 
 }

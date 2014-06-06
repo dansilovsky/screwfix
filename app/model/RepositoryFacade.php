@@ -26,7 +26,7 @@ abstract class RepositoryFacade {
 	 */
 	protected $date;
 	
-	public function __construct(Repository $repository, \Nette\Caching\Cache $cache, CalendarDateTime $date)
+	public function __construct(Repository $repository, Cache $cache, CalendarDateTime $date)
 	{
 		$this->repository = $repository;
 		$this->cache = $cache;

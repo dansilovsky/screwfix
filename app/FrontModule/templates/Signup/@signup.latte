@@ -6,14 +6,97 @@
 
 {block content}
 <div id="contentSignup">
-	<div id="progressBar">
-		<ul>
-
-			<li n:class="$presenter->isLinkCurrent('Signup:Credentials') ? current">Credentials</li>
-			<li>&blacktriangleright;</li>
-			<li n:class="$presenter->isLinkCurrent('Signup:Setup') ? current">Shift pattern</li>
-		</ul>
-	</div>
 	<h1>Sign up</h1>
-	{include #contentSignup}
+	{form credentialsForm}
+		<div n:if="$form->ownErrors" class="formRowCommonError">
+			<ul>
+				<li n:foreach="$form->ownErrors as $error">{$error}</li>
+			</ul>
+		</div>
+		<div id="formCredentials">
+			{if $form['username']->errors}		
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['username']->errors as $error">{$error}</li>
+				</ul>
+				{input username}
+			</div>
+			{else}
+			<div class="formRowNolabel">		
+				{input username}
+			</div>
+			{/if}
+			{if $form['email']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['email']->errors as $error">{$error}</li>
+				</ul>
+				{label email /}
+				{input username}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">
+				{label email /}
+				{input email}
+			</div>
+			{/if}
+			{if $form['password']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['password']->errors as $error">{$error}</li>
+				</ul>
+				{input password}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">		
+				{input password}
+			</div>
+			{/if}
+			{if $form['verifyPassword']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['verifyPassword']->errors as $error">{$error}</li>
+				</ul>
+				{input verifyPassword}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">		
+				{input verifyPassword}
+			</div>
+			{/if}
+		</div>
+		<div id="formPattern">
+			
+			
+			
+			<div class="formRowNolabel">
+				{label sysPattern /} {input sysPattern}
+			</div>
+			
+			
+			
+			
+			{if $form['pattern']->errors}
+			<div class="formRowError">
+				<ul>
+					<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
+				</ul>
+				{input pattern}
+
+			</div>
+			{else}
+			<div class="formRowNolabel">		
+				{input pattern}
+			</div>
+			{/if}
+			<div class="formLine buttonArea">
+			{input createAccount}
+			</div>
+		</div>
+		
+		
+	{/form}
 </div>

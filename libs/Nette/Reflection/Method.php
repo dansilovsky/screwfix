@@ -8,7 +8,7 @@
 namespace Nette\Reflection;
 
 use Nette,
-	Nette\ObjectMixin;
+	Nette\Utils\ObjectMixin;
 
 
 /**
@@ -74,6 +74,14 @@ class Method extends \ReflectionMethod
 	public function __toString()
 	{
 		return parent::getDeclaringClass()->getName() . '::' . $this->getName() . '()';
+	}
+
+
+	public function getClosure($object = NULL)
+	{
+		return PHP_VERSION_ID < 50400
+			? Nette\Utils\Callback::closure($object ?: parent::getDeclaringClass()->getName(), $this->getName())
+			: parent::getClosure($object);
 	}
 
 
@@ -169,16 +177,6 @@ class Method extends \ReflectionMethod
 
 
 	/********************* Nette\Object behaviour ****************d*g**/
-
-
-	/**
-	 * @deprecated
-	 */
-	public static function getReflection()
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return new ClassType(get_called_class());
-	}
 
 
 	public function __call($name, $args)

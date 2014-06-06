@@ -7,7 +7,8 @@
 
 namespace Nette\Http;
 
-use Nette;
+use Nette,
+	Nette\Utils\DateTime;
 
 
 /**
@@ -92,7 +93,7 @@ class Response extends Nette\Object implements IResponse
 	public function setHeader($name, $value)
 	{
 		self::checkHeaders();
-		if ($value === NULL && function_exists('header_remove')) {
+		if ($value === NULL) {
 			header_remove($name);
 		} elseif (strcasecmp($name, 'Content-Length') === 0 && ini_get('zlib.output_compression')) {
 			// ignore, PHP bug #44164
@@ -161,7 +162,7 @@ class Response extends Nette\Object implements IResponse
 			return $this;
 		}
 
-		$time = Nette\DateTime::from($time);
+		$time = DateTime::from($time);
 		$this->setHeader('Cache-Control', 'max-age=' . ($time->format('U') - time()));
 		$this->setHeader('Expires', self::date($time));
 		return $this;
@@ -219,7 +220,7 @@ class Response extends Nette\Object implements IResponse
 	 */
 	public static function date($time = NULL)
 	{
-		$time = Nette\DateTime::from($time);
+		$time = DateTime::from($time);
 		$time->setTimezone(new \DateTimeZone('GMT'));
 		return $time->format('D, d M Y H:i:s \G\M\T');
 	}
@@ -234,7 +235,7 @@ class Response extends Nette\Object implements IResponse
 			&& in_array($this->code, array(400, 403, 404, 405, 406, 408, 409, 410, 500, 501, 505), TRUE)
 			&& preg_match('#^text/html(?:;|$)#', $this->getHeader('Content-Type', 'text/html'))
 		) {
-			echo Nette\Utils\Strings::random(2e3, " \t\r\n"); // sends invisible garbage for IE
+			echo Nette\Utils\Random::generate(2e3, " \t\r\n"); // sends invisible garbage for IE
 			self::$fixIE = FALSE;
 		}
 	}
@@ -258,7 +259,7 @@ class Response extends Nette\Object implements IResponse
 		setcookie(
 			$name,
 			$value,
-			$time ? Nette\DateTime::from($time)->format('U') : 0,
+			$time ? DateTime::from($time)->format('U') : 0,
 			$path === NULL ? $this->cookiePath : (string) $path,
 			$domain === NULL ? $this->cookieDomain : (string) $domain,
 			$secure === NULL ? $this->cookieSecure : (bool) $secure,

@@ -5,9 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Latte;
-
-use Nette;
+namespace Latte;
 
 
 /**
@@ -15,7 +13,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class PhpWriter extends Nette\Object
+class PhpWriter extends Object
 {
 	/** @var MacroTokens */
 	private $tokens;
@@ -50,18 +48,18 @@ class PhpWriter extends Nette\Object
 	{
 		$mask = preg_replace('#%(node|\d+)\.#', '%$1_', $mask);
 		$me = $this;
-		$mask = Nette\Utils\Strings::replace($mask, '#%escape(\(([^()]*+|(?1))+\))#', function($m) use ($me) {
+		$mask = preg_replace_callback('#%escape(\(([^()]*+|(?1))+\))#', function($m) use ($me) {
 			return $me->escapeFilter(new MacroTokens(substr($m[1], 1, -1)))->joinAll();
-		});
-		$mask = Nette\Utils\Strings::replace($mask, '#%modify(\(([^()]*+|(?1))+\))#', function($m) use ($me) {
+		}, $mask);
+		$mask = preg_replace_callback('#%modify(\(([^()]*+|(?1))+\))#', function($m) use ($me) {
 			return $me->formatModifiers(substr($m[1], 1, -1));
-		});
+		}, $mask);
 
 		$args = func_get_args();
 		$pos = $this->tokens->position;
 		$word = strpos($mask, '%node_word') === FALSE ? NULL : $this->tokens->fetchWord();
 
-		$code = Nette\Utils\Strings::replace($mask, '#([,+]\s*)?%(node_|\d+_|)(word|var|raw|array|args)(\?)?(\s*\+\s*)?()#',
+		$code = preg_replace_callback('#([,+]\s*)?%(node_|\d+_|)(word|var|raw|array|args)(\?)?(\s*\+\s*)?()#',
 		function($m) use ($me, $word, & $args) {
 			list(, $l, $source, $format, $cond, $r) = $m;
 
@@ -93,7 +91,7 @@ class PhpWriter extends Nette\Object
 			} else {
 				return $l . $code . $r;
 			}
-		});
+		}, $mask);
 
 		$this->tokens->position = $pos;
 		return $code;
@@ -318,14 +316,14 @@ class PhpWriter extends Nette\Object
 						$res = $this->escapeFilter($res);
 						$tokens->nextToken('|');
 					} elseif (!strcasecmp($tokens->currentValue(), 'safeurl')) {
-						$res->prepend('Nette\Templating\Helpers::safeUrl(');
+						$res->prepend('Latte\Runtime\Filters::safeUrl(');
 						$inside = TRUE;
 					} else {
 						$res->prepend('$template->' . $tokens->currentValue() . '(');
 						$inside = TRUE;
 					}
 				} else {
-					throw new CompileException("Modifier name must be alphanumeric string, '" . $tokens->currentValue() . "' given.");
+					throw new CompileException("Modifier name must be alphanumeric string, '{$tokens->currentValue()}' given.");
 				}
 			}
 		}
@@ -352,31 +350,31 @@ class PhpWriter extends Nette\Object
 					case Compiler::CONTEXT_DOUBLE_QUOTED_ATTR:
 					case Compiler::CONTEXT_UNQUOTED_ATTR:
 						if ($context[1] === Compiler::CONTENT_JS) {
-							$tokens->prepend('Nette\Templating\Helpers::escapeJs(')->append(')');
+							$tokens->prepend('Latte\Runtime\Filters::escapeJs(')->append(')');
 						} elseif ($context[1] === Compiler::CONTENT_CSS) {
-							$tokens->prepend('Nette\Templating\Helpers::escapeCss(')->append(')');
+							$tokens->prepend('Latte\Runtime\Filters::escapeCss(')->append(')');
 						}
-						$tokens->prepend('htmlSpecialChars(')->append($context[0] === Compiler::CONTEXT_SINGLE_QUOTED_ATTR ? ', ENT_QUOTES)' : ')');
+						$tokens->prepend('Latte\Runtime\Filters::escapeHtml(')->append($context[0] === Compiler::CONTEXT_SINGLE_QUOTED_ATTR ? ', ENT_QUOTES)' : ', ENT_COMPAT)');
 						if ($context[0] === Compiler::CONTEXT_UNQUOTED_ATTR) {
 							$tokens->prepend("'\"' . ")->append(" . '\"'");
 						}
 						return $tokens;
 					case Compiler::CONTEXT_COMMENT:
-						return $tokens->prepend('Nette\Templating\Helpers::escapeHtmlComment(')->append(')');
+						return $tokens->prepend('Latte\Runtime\Filters::escapeHtmlComment(')->append(')');
 					case Compiler::CONTENT_JS:
 					case Compiler::CONTENT_CSS:
-						return $tokens->prepend('Nette\Templating\Helpers::escape' . ucfirst($context[0]) . '(')->append(')');
+						return $tokens->prepend('Latte\Runtime\Filters::escape' . ucfirst($context[0]) . '(')->append(')');
 					default:
-						return $tokens->prepend('Nette\Templating\Helpers::escapeHtml(')->append(', ENT_NOQUOTES)');
+						return $tokens->prepend('Latte\Runtime\Filters::escapeHtml(')->append(', ENT_NOQUOTES)');
 				}
 
 			case Compiler::CONTENT_XML:
 				$context = $this->compiler->getContext();
 				switch ($context[0]) {
 					case Compiler::CONTEXT_COMMENT:
-						return $tokens->prepend('Nette\Templating\Helpers::escapeHtmlComment(')->append(')');
+						return $tokens->prepend('Latte\Runtime\Filters::escapeHtmlComment(')->append(')');
 					default:
-						$tokens->prepend('Nette\Templating\Helpers::escapeXml(')->append(')');
+						$tokens->prepend('Latte\Runtime\Filters::escapeXml(')->append(')');
 						if ($context[0] === Compiler::CONTEXT_UNQUOTED_ATTR) {
 							$tokens->prepend("'\"' . ")->append(" . '\"'");
 						}
@@ -386,7 +384,7 @@ class PhpWriter extends Nette\Object
 			case Compiler::CONTENT_JS:
 			case Compiler::CONTENT_CSS:
 			case Compiler::CONTENT_ICAL:
-				return $tokens->prepend('Nette\Templating\Helpers::escape' . ucfirst($this->compiler->getContentType()) . '(')->append(')');
+				return $tokens->prepend('Latte\Runtime\Filters::escape' . ucfirst($this->compiler->getContentType()) . '(')->append(')');
 			case Compiler::CONTENT_TEXT:
 				return $tokens;
 			default:

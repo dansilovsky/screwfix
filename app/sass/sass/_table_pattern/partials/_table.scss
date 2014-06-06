@@ -28,8 +28,12 @@ table.inputPattern {
 			text-align: center;
 		}
 		
+		&:last-child {
+			text-align: center;
+		}
+		
 		div {
-			&:first-child {
+			&.date {
 				text-align: right;
 			}
 		}
@@ -44,6 +48,14 @@ table.inputPattern {
 				@include darken-background($color-table);
 			}
 		}
+	}
+	
+	.buttonIcon {
+		@include buttonIcon;
+	}
+	
+	.buttonIconMinusWrapper {
+		margin: px-to-em(44px, $base-font-size) 0;
 	}
 }
 

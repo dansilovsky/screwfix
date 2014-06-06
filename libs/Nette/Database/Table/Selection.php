@@ -143,7 +143,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function getPrimary($need = TRUE)
 	{
 		if ($this->primary === NULL && $need) {
-			throw new \LogicException("Table \"{$this->name}\" does not have a primary key.");
+			throw new \LogicException("Table '{$this->name}' does not have a primary key.");
 		}
 		return $this->primary;
 	}
@@ -281,16 +281,6 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 
 	/**
-	 * @deprecated
-	 */
-	public function find($key)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use $selection->wherePrimary() instead.', E_USER_DEPRECATED);
-		return $this->wherePrimary($key);
-	}
-
-
-	/**
 	 * Adds condition for primary key.
 	 * @param  mixed
 	 * @return self
@@ -376,7 +366,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function page($page, $itemsPerPage, & $numOfPages = NULL)
 	{
-		if (func_get_args() > 2) {
+		if (func_num_args() > 2) {
 			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
 		}
 		return $this->limit($itemsPerPage, ($page - 1) * $itemsPerPage);
@@ -391,13 +381,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function group($columns)
 	{
 		$this->emptyResultSet();
-		if (func_num_args() === 2 && strpos($columns, '?') === FALSE) {
-			trigger_error('Calling ' . __METHOD__ . '() with second argument is deprecated; use $selection->having() instead.', E_USER_DEPRECATED);
-			$this->having(func_get_arg(1));
-			$this->sqlBuilder->setGroup($columns);
-		} else {
-			call_user_func_array(array($this->sqlBuilder, 'setGroup'), func_get_args());
-		}
+		call_user_func_array(array($this->sqlBuilder, 'setGroup'), func_get_args());
 		return $this;
 	}
 
@@ -602,7 +586,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 
 	/**
-	 * Returns general cache key indenpendent on query parameters or sql limit
+	 * Returns general cache key independent on query parameters or sql limit
 	 * Used e.g. for previously accessed columns caching
 	 * @return string
 	 */

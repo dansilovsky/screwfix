@@ -14,38 +14,52 @@ use Nette;
  * Definition used by ContainerBuilder.
  *
  * @author     David Grudl
+ *
+ * @method string getClass()
+ * @method Statement getFactory()
+ * @method ServiceDefinition setSetup(Statement[])
+ * @method Statement[] getSetup()
+ * @method ServiceDefinition setParameters(array)
+ * @method array getParameters()
+ * @method ServiceDefinition setTags(array)
+ * @method array getTags()
+ * @method ServiceDefinition setAutowired(bool)
+ * @method bool isAutowired()
+ * @method ServiceDefinition setInject(bool)
+ * @method bool getInject()
+ * @method ServiceDefinition setImplement(string)
+ * @method string getImplement()
+ * @method ServiceDefinition setImplementType(string)
+ * @method string getImplementType()
  */
 class ServiceDefinition extends Nette\Object
 {
 	/** @var string  class or interface name */
-	public $class;
+	private $class;
 
 	/** @var Statement */
-	public $factory;
+	private $factory;
 
 	/** @var Statement[] */
-	public $setup = array();
+	private $setup = array();
 
 	/** @var array */
 	public $parameters = array();
 
 	/** @var array */
-	public $tags = array();
-
-	/** @var mixed */
-	public $autowired = TRUE;
+	private $tags = array();
 
 	/** @var bool */
-	public $shared = TRUE;
+	private $autowired = TRUE;
 
 	/** @var bool */
 	public $inject = FALSE;
 
 	/** @var string  interface name */
-	public $implement;
+	private $implement;
 
 	/** @internal @var string  create | get */
-	public $implementType;
+	private $implementType;
 
 
 	public function setClass($class, array $args = array())
@@ -60,7 +74,7 @@ class ServiceDefinition extends Nette\Object
 
 	public function setFactory($factory, array $args = array())
 	{
-		$this->factory = new Statement($factory, $args);
+		$this->factory = $factory instanceof Statement ? $factory : new Statement($factory, $args);
 		return $this;
 	}
 
@@ -83,14 +97,6 @@ class ServiceDefinition extends Nette\Object
 	}
 
 
-	public function setParameters(array $params)
-	{
-		$this->shared = $this->autowired = FALSE;
-		$this->parameters = $params;
-		return $this;
-	}
-
-
 	public function addTag($tag, $attrs = TRUE)
 	{
 		$this->tags[$tag] = $attrs;
@@ -98,34 +104,19 @@ class ServiceDefinition extends Nette\Object
 	}
 
 
-	public function setAutowired($on)
+	/** @deprecated */
+	public function setShared($on)
 	{
-		$this->autowired = $on;
+		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
+		$this->autowired = $on ? $this->autowired : FALSE;
 		return $this;
 	}
 
 
 	/** @deprecated */
-	public function setShared($on)
+	public function isShared()
 	{
-		$this->shared = (bool) $on;
-		$this->autowired = $this->shared ? $this->autowired : FALSE;
-		return $this;
-	}
-
-
-	public function setInject($on)
-	{
-		$this->inject = (bool) $on;
-		return $this;
-	}
-
-
-	public function setImplement($implement)
-	{
-		$this->implement = $implement;
-		$this->shared = TRUE;
-		return $this;
+		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
 	}
 
 }

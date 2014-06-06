@@ -86,7 +86,7 @@ class FileUpload extends Nette\Object
 	public function getContentType()
 	{
 		if ($this->isOk() && $this->type === NULL) {
-			$this->type = Nette\Utils\MimeTypeDetector::fromFile($this->tmpName);
+			$this->type = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $this->tmpName);
 		}
 		return $this->type;
 	}
@@ -118,7 +118,7 @@ class FileUpload extends Nette\Object
 	 */
 	public function __toString()
 	{
-		return $this->tmpName;
+		return (string) $this->tmpName;
 	}
 
 
@@ -172,11 +172,11 @@ class FileUpload extends Nette\Object
 
 	/**
 	 * Returns the image.
-	 * @return Nette\Image
+	 * @return Nette\Utils\Image
 	 */
 	public function toImage()
 	{
-		return Nette\Image::fromFile($this->tmpName);
+		return Nette\Utils\Image::fromFile($this->tmpName);
 	}
 
 

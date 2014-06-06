@@ -32,9 +32,9 @@ common:
 
 
 	services:
-		authenticator: Screwfix\Authenticator
+		cache: Screwfix\Cache
 
-		cache: Nette\Caching\Cache
+		authenticator: Screwfix\Authenticator
 
 		cookies: Dan\Cookies(%cookies%)
 

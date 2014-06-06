@@ -10,7 +10,7 @@ namespace Screwfix;
  */
 class Template extends \Nette\Templating\FileTemplate {
 
-	public function __construct(\Nette\Latte\Engine $latte)
+	public function __construct(\Latte\Engine $latte)
 	{
 		parent::__construct(null);
 		

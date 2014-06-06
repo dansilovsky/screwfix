@@ -56,10 +56,14 @@ class Helpers
 				$res .= '%';
 
 			} elseif (isset($recursive[$part])) {
-				throw new Nette\InvalidArgumentException('Circular reference detected for variables: ' . implode(', ', array_keys($recursive)) . '.');
+				throw new Nette\InvalidArgumentException(sprintf('Circular reference detected for variables: %s.', implode(', ', array_keys($recursive))));
 
 			} else {
-				$val = Nette\Utils\Arrays::get($params, explode('.', $part));
+				try {
+					$val = Nette\Utils\Arrays::get($params, explode('.', $part));
+				} catch (Nette\InvalidArgumentException $e) {
+					throw new Nette\InvalidArgumentException("Missing parameter '$part'.", 0, $e);
+				}
 				if ($recursive) {
 					$val = self::expand($val, $params, (is_array($recursive) ? $recursive : array()) + array($part => 1));
 				}
@@ -151,14 +155,11 @@ class Helpers
 
 			} elseif (!$type) {
 				throw new Nette\InvalidStateException("Property $property has not @var annotation.");
+			}
 
-			} elseif (!class_exists($type) && !interface_exists($type)) {
-				if ($type[0] !== '\\') {
-					$type = $property->getDeclaringClass()->getNamespaceName() . '\\' . $type;
-				}
-				if (!class_exists($type) && !interface_exists($type)) {
-					throw new Nette\InvalidStateException("Please use a fully qualified name of class/interface in @var annotation at $property property. Class '$type' cannot be found.");
-				}
+			$type = Nette\Reflection\AnnotationsParser::expandClassName($type, $property->getDeclaringClass());
+			if (!class_exists($type) && !interface_exists($type)) {
+				throw new Nette\InvalidStateException("Class or interface '$type' used in @var annotation at $property not found.");
 			}
 			$res[$property->getName()] = $type;
 		}

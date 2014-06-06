@@ -27,7 +27,7 @@ use Nette;
  * @property-read Nette\Utils\Html $elementPrototype
  * @property   IFormRenderer $renderer
  */
-class Form extends Container
+class Form extends Container implements Nette\Utils\IHtmlString
 {
 	/** validator */
 	const EQUAL = ':equal',
@@ -50,11 +50,12 @@ class Form extends Container
 		LENGTH = ':length',
 		EMAIL = ':email',
 		URL = ':url',
-		REGEXP = ':regexp',
 		PATTERN = ':pattern',
 		INTEGER = ':integer',
 		NUMERIC = ':integer',
 		FLOAT = ':float',
+		MIN = ':min',
+		MAX = ':max',
 		RANGE = ':range';
 
 	// multiselect
@@ -74,6 +75,7 @@ class Form extends Container
 	const DATA_TEXT = 1;
 	const DATA_LINE = 2;
 	const DATA_FILE = 3;
+	const DATA_KEYS = 8;
 
 	/** @internal tracker ID */
 	const TRACKER_ID = '_form_';
@@ -121,18 +123,23 @@ class Form extends Container
 	 */
 	public function __construct($name = NULL)
 	{
-		$this->element = Nette\Utils\Html::el('form');
-		$this->element->action = ''; // RFC 1808 -> empty uri means 'this'
-		$this->element->method = self::POST;
-		$this->element->id = $name === NULL ? NULL : 'frm-' . $name;
-
-		$this->monitor(__CLASS__);
 		if ($name !== NULL) {
+			$this->getElementPrototype()->id = 'frm-' . $name;
 			$tracker = new Controls\HiddenField($name);
 			$tracker->setOmitted();
 			$this[self::TRACKER_ID] = $tracker;
 		}
 		parent::__construct(NULL, $name);
+	}
+
+
+	/**
+	 * @return void
+	 */
+	protected function validateParent(Nette\ComponentModel\IContainer $parent)
+	{
+		parent::validateParent($parent);
+		$this->monitor(__CLASS__);
 	}
 
 
@@ -167,7 +174,7 @@ class Form extends Container
 	 */
 	public function setAction($url)
 	{
-		$this->element->action = $url;
+		$this->getElementPrototype()->action = $url;
 		return $this;
 	}
 
@@ -178,7 +185,7 @@ class Form extends Container
 	 */
 	public function getAction()
 	{
-		return $this->element->action;
+		return $this->getElementPrototype()->action;
 	}
 
 
@@ -192,7 +199,7 @@ class Form extends Container
 		if ($this->httpData !== NULL) {
 			throw new Nette\InvalidStateException(__METHOD__ . '() must be called until the form is empty.');
 		}
-		$this->element->method = strtolower($method);
+		$this->getElementPrototype()->method = strtolower($method);
 		return $this;
 	}
 
@@ -203,7 +210,7 @@ class Form extends Container
 	 */
 	public function getMethod()
 	{
-		return $this->element->method;
+		return $this->getElementPrototype()->method;
 	}
 
 
@@ -407,7 +414,9 @@ class Form extends Container
 					$this->onError($this);
 					break;
 				}
-				Nette\Utils\Callback::invoke($handler, $this);
+				$params = Nette\Utils\Callback::toReflection($handler)->getParameters();
+				$values = isset($params[1]) ? $this->getValues($params[1]->isArray()) : NULL;
+				Nette\Utils\Callback::invoke($handler, $this, $values);
 			}
 		} elseif (!$this->isValid()) {
 			$this->onError($this);
@@ -542,6 +551,11 @@ class Form extends Container
 	 */
 	public function getElementPrototype()
 	{
+		if (!$this->element) {
+			$this->element = Nette\Utils\Html::el('form');
+			$this->element->action = ''; // RFC 1808 -> empty uri means 'this'
+			$this->element->method = self::POST;
+		}
 		return $this->element;
 	}
 
@@ -584,7 +598,7 @@ class Form extends Container
 
 	/**
 	 * Renders form to string.
-	 * @return bool  can throw exceptions? (hidden parameter)
+	 * @return can throw exceptions? (hidden parameter)
 	 * @return string
 	 */
 	public function __toString()
@@ -593,11 +607,10 @@ class Form extends Container
 			return $this->getRenderer()->render($this);
 
 		} catch (\Exception $e) {
-			if (func_get_args() && func_get_arg(0)) {
+			if (func_num_args()) {
 				throw $e;
-			} else {
-				trigger_error("Exception in " . __METHOD__ . "(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}", E_USER_ERROR);
 			}
+			trigger_error("Exception in " . __METHOD__ . "(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}", E_USER_ERROR);
 		}
 	}
 
@@ -625,9 +638,7 @@ class Form extends Container
 	{
 		$toggles = array();
 		foreach ($this->getControls() as $control) {
-			foreach ($control->getRules()->getToggles(TRUE) as $id => $hide) {
-				$toggles[$id] = empty($toggles[$id]) ? $hide : TRUE;
-			}
+			$toggles = $control->getRules()->getToggleStates($toggles);
 		}
 		return $toggles;
 	}

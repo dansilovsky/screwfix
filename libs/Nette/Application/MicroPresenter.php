@@ -22,16 +22,24 @@ use Nette,
  */
 class MicroPresenter extends Nette\Object implements Application\IPresenter
 {
-	/** @var Nette\DI\Container */
+	/** @var Nette\DI\Container|NULL */
 	private $context;
 
-	/** @var Nette\Application\Request */
+	/** @var Nette\Http\IRequest|NULL */
+	private $httpRequest;
+
+	/** @var IRouter|NULL */
+	private $router;
+
+	/** @var Request */
 	private $request;
 
 
-	public function __construct(Nette\DI\Container $context)
+	public function __construct(Nette\DI\Container $context = NULL, Http\IRequest $httpRequest = NULL, IRouter $router = NULL)
 	{
 		$this->context = $context;
+		$this->httpRequest = $httpRequest;
+		$this->router = $router;
 	}
 
 
@@ -52,18 +60,17 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 	{
 		$this->request = $request;
 
-		$httpRequest = $this->context->getByType('Nette\Http\IRequest');
-		if (!$httpRequest->isAjax() && ($request->isMethod('get') || $request->isMethod('head'))) {
-			$refUrl = clone $httpRequest->getUrl();
-			$url = $this->context->getByType('Nette\Application\IRouter')->constructUrl($request, $refUrl->setPath($refUrl->getScriptPath()));
-			if ($url !== NULL && !$httpRequest->getUrl()->isEqual($url)) {
+		if ($this->httpRequest && $this->router && !$this->httpRequest->isAjax() && ($request->isMethod('get') || $request->isMethod('head'))) {
+			$refUrl = clone $this->httpRequest->getUrl();
+			$url = $this->router->constructUrl($request, $refUrl->setPath($refUrl->getScriptPath()));
+			if ($url !== NULL && !$this->httpRequest->getUrl()->isEqual($url)) {
 				return new Responses\RedirectResponse($url, Http\IResponse::S301_MOVED_PERMANENTLY);
 			}
 		}
 
 		$params = $request->getParameters();
 		if (!isset($params['callback'])) {
-			throw new Application\BadRequestException("Parameter callback is missing.");
+			throw new Application\BadRequestException('Parameter callback is missing.');
 		}
 		$params['presenter'] = $this;
 		$callback = $params['callback'];
@@ -75,7 +82,10 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 				unset($params[$param->getPosition()]);
 			}
 		}
-		$params = Nette\DI\Helpers::autowireArguments($reflection, $params, $this->context);
+
+		if ($this->context) {
+			$params = Nette\DI\Helpers::autowireArguments($reflection, $params, $this->context);
+		}
 
 		$response = call_user_func_array($callback, $params);
 
@@ -83,15 +93,14 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 			$response = array($response, array());
 		}
 		if (is_array($response)) {
+			$response = $this->createTemplate()->setParameters($response[1]);
 			if ($response[0] instanceof \SplFileInfo) {
-				$response = $this->createTemplate('Nette\Templating\FileTemplate')
-					->setParameters($response[1])->setFile($response[0]);
+				$response->setFile($response[0]);
 			} else {
-				$response = $this->createTemplate('Nette\Templating\Template')
-					->setParameters($response[1])->setSource($response[0]);
+				$response->setSource($response[0]); // TODO
 			}
 		}
-		if ($response instanceof Nette\Templating\ITemplate) {
+		if ($response instanceof Application\UI\ITemplate) {
 			return new Responses\TextResponse($response);
 		} else {
 			return $response;
@@ -103,24 +112,21 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 	 * Template factory.
 	 * @param  string
 	 * @param  callable
-	 * @return Nette\Templating\ITemplate
+	 * @return Application\UI\ITemplate
 	 */
 	public function createTemplate($class = NULL, $latteFactory = NULL)
 	{
-		$template = $class ? new $class : new Nette\Templating\FileTemplate;
+		$latte = $latteFactory ? $latteFactory() : $this->getContext()->getByType('Nette\Bridges\ApplicationLatte\ILatteFactory')->create();
+		$template = $class ? new $class : new Nette\Bridges\ApplicationLatte\Template($latte);
 
 		$template->setParameters($this->request->getParameters());
 		$template->presenter = $this;
-		$template->context = $context = $this->context;
-		$url = $context->getByType('Nette\Http\IRequest')->getUrl();
-		$template->baseUrl = rtrim($url->getBaseUrl(), '/');
-		$template->basePath = rtrim($url->getBasePath(), '/');
-
-		$template->registerHelperLoader('Nette\Templating\Helpers::loader');
-		$template->setCacheStorage($context->getService('nette.templateCacheStorage'));
-		$template->onPrepareFilters[] = function($template) use ($latteFactory) {
-			$template->registerFilter($latteFactory ? $latteFactory() : new Nette\Latte\Engine);
-		};
+		$template->context = $this->context;
+		if ($this->httpRequest) {
+			$url = $this->httpRequest->getUrl();
+			$template->baseUrl = rtrim($url->getBaseUrl(), '/');
+			$template->basePath = rtrim($url->getBasePath(), '/');
+		}
 		return $template;
 	}
 

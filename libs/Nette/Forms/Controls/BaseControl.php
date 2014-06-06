@@ -10,8 +10,8 @@ namespace Nette\Forms\Controls;
 use Nette,
 	Nette\Forms\IControl,
 	Nette\Utils\Html,
-	Nette\Forms\Form,
-	Nette\Forms\Rule;
+	Nette\Utils\Validators,
+	Nette\Forms\Form;
 
 
 /**
@@ -248,15 +248,13 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 	public function getControl()
 	{
 		$this->setOption('rendered', TRUE);
-
-		$rules = self::exportRules($this->rules);
 		$el = clone $this->control;
 		return $el->addAttributes(array(
 			'name' => $this->getHtmlName(),
 			'id' => $this->getHtmlId(),
 			'required' => $this->isRequired(),
 			'disabled' => $this->isDisabled(),
-			'data-nette-rules' => $rules ? Nette\Utils\Json::encode($rules) : NULL,
+			'data-nette-rules' => self::exportRules($this->rules) ?: NULL,
 		));
 	}
 
@@ -314,7 +312,7 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 	public function getHtmlId()
 	{
 		if (!isset($this->control->id)) {
-			$this->control->id = sprintf(self::$idMask, $this->lookupPath(NULL));
+			$this->control->id = sprintf(self::$idMask, $this->lookupPath());
 		}
 		return $this->control->id;
 	}
@@ -390,9 +388,9 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 	 * @param  mixed      optional rule arguments
 	 * @return self
 	 */
-	public function addRule($operation, $message = NULL, $arg = NULL)
+	public function addRule($validator, $message = NULL, $arg = NULL)
 	{
-		$this->rules->addRule($operation, $message, $arg);
+		$this->rules->addRule($validator, $message, $arg);
 		return $this;
 	}
 
@@ -403,9 +401,9 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 	 * @param  mixed     optional condition arguments
 	 * @return Nette\Forms\Rules      new branch
 	 */
-	public function addCondition($operation, $value = NULL)
+	public function addCondition($validator, $value = NULL)
 	{
-		return $this->rules->addCondition($operation, $value);
+		return $this->rules->addCondition($validator, $value);
 	}
 
 
@@ -416,9 +414,9 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 	 * @param  mixed      optional condition arguments
 	 * @return Nette\Forms\Rules      new branch
 	 */
-	public function addConditionOn(IControl $control, $operation, $value = NULL)
+	public function addConditionOn(IControl $control, $validator, $value = NULL)
 	{
-		return $this->rules->addConditionOn($control, $operation, $value);
+		return $this->rules->addConditionOn($control, $validator, $value);
 	}
 
 
@@ -523,24 +521,23 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 	{
 		$payload = array();
 		foreach ($rules as $rule) {
-			if (!is_string($op = $rule->operation)) {
+			if (!is_string($op = $rule->validator)) {
 				if (!Nette\Utils\Callback::isStatic($op)) {
 					continue;
 				}
 				$op = Nette\Utils\Callback::toString($op);
 			}
-			if ($rule->type === Rule::VALIDATOR) {
-				$item = array('op' => ($rule->isNegative ? '~' : '') . $op, 'msg' => $rules->formatMessage($rule, FALSE));
-
-			} elseif ($rule->type === Rule::CONDITION) {
+			if ($rule->branch) {
 				$item = array(
 					'op' => ($rule->isNegative ? '~' : '') . $op,
-					'rules' => static::exportRules($rule->subRules),
+					'rules' => static::exportRules($rule->branch, FALSE),
 					'control' => $rule->control->getHtmlName()
 				);
-				if ($rule->subRules->getToggles()) {
-					$item['toggle'] = $rule->subRules->getToggles();
+				if ($rule->branch->getToggles()) {
+					$item['toggle'] = $rule->branch->getToggles();
 				}
+			} else {
+				$item = array('op' => ($rule->isNegative ? '~' : '') . $op, 'msg' => $rules->formatMessage($rule, FALSE));
 			}
 
 			if (is_array($rule->arg)) {
@@ -561,7 +558,7 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 
 
 	/**
-	 * Equal validator: are control's value and second parameter equal?
+	 * Is control's value equal with second parameter?
 	 * @return bool
 	 */
 	public static function validateEqual(IControl $control, $arg)
@@ -590,7 +587,7 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 
 
 	/**
-	 * Filled validator: is control filled?
+	 * Is control filled?
 	 * @return bool
 	 */
 	public static function validateFilled(IControl $control)
@@ -610,24 +607,42 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 
 
 	/**
-	 * Valid validator: is control valid?
+	 * Is control valid?
 	 * @return bool
 	 */
 	public static function validateValid(IControl $control)
 	{
-		return $control->rules->validate();
+		return $control->getRules()->validate();
 	}
 
 
 	/**
-	 * Rangle validator: is a control's value number in specified range?
-	 * @param  Nette\Forms\IControl
-	 * @param  array  min and max value pair
+	 * Is a control's value number in specified range?
 	 * @return bool
 	 */
 	public static function validateRange(IControl $control, $range)
 	{
-		return Nette\Utils\Validators::isInRange($control->getValue(), $range);
+		return Validators::isInRange($control->getValue(), $range);
+	}
+
+
+	/**
+	 * Is a control's value number greater than or equal to the specified minimum?
+	 * @return bool
+	 */
+	public static function validateMin(IControl $control, $minimum)
+	{
+		return Validators::isInRange($control->getValue(), array($minimum, NULL));
+	}
+
+
+	/**
+	 * Is a control's value number less than or equal to the specified maximum?
+	 * @return bool
+	 */
+	public static function validateMax(IControl $control, $maximum)
+	{
+		return Validators::isInRange($control->getValue(), array(NULL, $maximum));
 	}
 
 
@@ -641,12 +656,12 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 			$range = array($range, $range);
 		}
 		$value = $control->getValue();
-		return Nette\Utils\Validators::isInRange(is_array($value) ? count($value) : Nette\Utils\Strings::length($value), $range);
+		return Validators::isInRange(is_array($value) ? count($value) : Nette\Utils\Strings::length($value), $range);
 	}
 
 
 	/**
-	 * Min-length validator: has control's value minimal count/length?
+	 * Has control's value minimal count/length?
 	 * @return bool
 	 */
 	public static function validateMinLength(IControl $control, $length)
@@ -656,7 +671,7 @@ abstract class BaseControl extends Nette\ComponentModel\Component implements ICo
 
 
 	/**
-	 * Max-length validator: is control's value count/length in limit?
+	 * Is control's value count/length in limit?
 	 * @return bool
 	 */
 	public static function validateMaxLength(IControl $control, $length)

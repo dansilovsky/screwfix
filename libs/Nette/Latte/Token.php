@@ -5,9 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Latte;
-
-use Nette;
+namespace Latte;
 
 
 /**
@@ -15,7 +13,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class Token extends Nette\Object
+class Token extends Object
 {
 	const TEXT = 'text',
 		MACRO_TAG = 'macroTag', // latte macro tag

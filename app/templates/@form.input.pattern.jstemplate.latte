@@ -1,0 +1,60 @@
+<script type="text/template" id="formInputPatternTemplate">
+	<table class="inputPattern>
+		<tr><th>Week</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Firday</th><th>Saturday</th><th>Sunday</th></tr>
+		<% for(weekI=0; mo.pattern.length; weekI++) { %>
+			<tr>
+			
+		
+		
+	</table>
+</script>
+
+{var $i = 0}
+<table class="inputPattern" n:if="$pattern">
+	<tr><th>Week</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Firday</th><th>Saturday</th><th>Sunday</th></tr>
+{foreach $pattern as $weekNum => $week}
+	<tr>
+		<td>{$weekNum}</td>
+	{foreach $week as $dayNum => $times}
+		
+		<td {if !$times}class="dayOff"{/if}>
+			{if $times}
+				<div>26 April</div>
+				<div class="formRowInputpattern">
+					<label>from</label>
+					<select name="fromHour">
+						<option n:for="$hour=0; $hour<24; $hour++" {!$hour|selectOption:$times[0]:'h'} value="{$hour}">{$hour|padTime}</option>
+					</select>
+					<select name="fromMinute">
+						<option n:for="$minute=0; $minute<60; $minute+=15" {!$minute|selectOption:$times[0]:'m'} value="{$minute}">{$minute|padTime}</option>
+					</select>
+				</div>
+				<div class="formRowInputpattern">							
+					<label>to</label>
+					<select name="toHour">
+						<option n:for="$hour=0; $hour<24; $hour++" {!$hour|selectOption:$times[1]:'h'} value="{$hour}">{$hour|padTime}</option>
+					</select>				
+					<select name="toMinute">
+						<option n:for="$minute=0; $minute<60; $minute+=15" {!$minute|selectOption:$times[1]:'m'} value="{$minute}">{$minute|padTime}</option>
+					</select>
+				</div>
+				<div>
+					<a href="javascript:;">change</a>
+				</div>
+				
+			{else}
+			<div>26 April</div>
+			<div class="formRowInputpattern">
+				Off day
+			</div>
+			<div>
+				<a href="javascript:;">change</a>
+			</div>
+			<input type="hidden" name="{$name}[]" value="{$inputPattern[$i]}">
+			{/if}
+		</td>
+		{var $i++}
+	{/foreach}	
+	</tr>
+{/foreach}
+</table>

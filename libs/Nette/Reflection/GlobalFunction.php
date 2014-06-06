@@ -8,7 +8,7 @@
 namespace Nette\Reflection;
 
 use Nette,
-	Nette\ObjectMixin;
+	Nette\Utils\ObjectMixin;
 
 
 /**
@@ -64,7 +64,9 @@ class GlobalFunction extends \ReflectionFunction
 
 	public function getClosure()
 	{
-		return $this->isClosure() ? $this->value : NULL;
+		return PHP_VERSION_ID < 50400
+			? Nette\Utils\Callback::closure($this->value)
+			: parent::getClosure();
 	}
 
 
@@ -92,17 +94,54 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-	/********************* Nette\Object behaviour ****************d*g**/
+	/********************* Nette\Annotations support ****************d*g**/
 
 
 	/**
-	 * @deprecated
+	 * Has method specified annotation?
+	 * @param  string
+	 * @return bool
 	 */
-	public static function getReflection()
+	public function hasAnnotation($name)
 	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return new ClassType(get_called_class());
+		$res = AnnotationsParser::getAll($this);
+		return !empty($res[$name]);
 	}
+
+
+	/**
+	 * Returns an annotation value.
+	 * @param  string
+	 * @return IAnnotation
+	 */
+	public function getAnnotation($name)
+	{
+		$res = AnnotationsParser::getAll($this);
+		return isset($res[$name]) ? end($res[$name]) : NULL;
+	}
+
+
+	/**
+	 * Returns all annotations.
+	 * @return IAnnotation[][]
+	 */
+	public function getAnnotations()
+	{
+		return AnnotationsParser::getAll($this);
+	}
+
+
+	/**
+	 * Returns value of annotation 'description'.
+	 * @return string
+	 */
+	public function getDescription()
+	{
+		return $this->getAnnotation('description');
+	}
+
+
+	/********************* Nette\Object behaviour ****************d*g**/
 
 
 	public function __call($name, $args)

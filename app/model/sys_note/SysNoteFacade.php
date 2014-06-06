@@ -11,7 +11,7 @@ namespace Screwfix;
  */
 class SysNoteFacade extends RepositoryFacade {
 
-	public function __construct(SysNoteRepository $repository, \Nette\Caching\Cache $cache, CalendarDateTime $date)
+	public function __construct(SysNoteRepository $repository, Cache $cache, CalendarDateTime $date)
 	{
 		parent::__construct($repository, $cache, $date);
 	}

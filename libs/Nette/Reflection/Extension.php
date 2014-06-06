@@ -8,7 +8,7 @@
 namespace Nette\Reflection;
 
 use Nette,
-	Nette\ObjectMixin;
+	Nette\Utils\ObjectMixin;
 
 
 /**
@@ -48,16 +48,6 @@ class Extension extends \ReflectionExtension
 
 
 	/********************* Nette\Object behaviour ****************d*g**/
-
-
-	/**
-	 * @deprecated
-	 */
-	public static function getReflection()
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return new ClassType(get_called_class());
-	}
 
 
 	public function __call($name, $args)

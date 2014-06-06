@@ -1,15 +1,23 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 07-May-2014, 12:57:09
-    Author     : Daniel Silovsky
-*/
-
 @mixin button {
-	background-color: blue;
-	border-radius: 0px;
+	background-color: $color-highlight-dark;
+	border: 0;
+	color: $color-text-highlight-dark;
+	
+	&:hover {
+		@include lighten-background($color-highlight-dark);
+	}
 }
 
+@mixin buttonIcon {
+	$fontSize: $base-font-size;
+	$sideSize: $base-line-height;
+	
+	@include button;
+	font-size: px-to-em($fontSize, $base-font-size);
+	font-weight: bold;
+	height: px-to-em($sideSize, $fontSize);
+	line-height: px-to-em($sideSize, $fontSize);
+	padding: 0;
+	text-align: center;
+	width: px-to-em($sideSize, $fontSize);
+}

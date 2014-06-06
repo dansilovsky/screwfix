@@ -26,10 +26,19 @@ class Form extends Nette\Forms\Form implements ISignalReceiver
 	public function __construct(Nette\ComponentModel\IContainer $parent = NULL, $name = NULL)
 	{
 		parent::__construct();
-		$this->monitor('Nette\Application\UI\Presenter');
 		if ($parent !== NULL) {
 			$parent->addComponent($this, $name);
 		}
+	}
+
+
+	/**
+	 * @return void
+	 */
+	protected function validateParent(Nette\ComponentModel\IContainer $parent)
+	{
+		parent::validateParent($parent);
+		$this->monitor('Nette\Application\UI\Presenter');
 	}
 
 
@@ -60,11 +69,7 @@ class Form extends Nette\Forms\Form implements ISignalReceiver
 			}
 
 			if (!$this->getAction()) {
-				$this->setAction(new Link(
-					$presenter,
-					$name . self::NAME_SEPARATOR . 'submit!',
-					array()
-				));
+				$this->setAction(new Link($presenter, 'this', array()));
 			}
 
 			if (iterator_count($this->getControls()) && $this->isSubmitted()) {
@@ -74,6 +79,10 @@ class Form extends Nette\Forms\Form implements ISignalReceiver
 					}
 				}
 			}
+
+			$signal = new Nette\Forms\Controls\HiddenField($name . self::NAME_SEPARATOR . 'submit');
+			$signal->setOmitted()->setHtmlId(FALSE);
+			$this[Presenter::SIGNAL_KEY] = $signal;
 		}
 		parent::attached($presenter);
 	}

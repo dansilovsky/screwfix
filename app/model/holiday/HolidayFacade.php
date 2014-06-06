@@ -11,7 +11,7 @@ namespace Screwfix;
  */
 class HolidayFacade extends RepositoryFacade {
 
-	public function __construct(HolidayRepository $repository, \Nette\Caching\Cache $cache, CalendarDateTime $date)
+	public function __construct(HolidayRepository $repository, Cache $cache, CalendarDateTime $date)
 	{
 		parent::__construct($repository, $cache, $date);
 	}

@@ -72,7 +72,7 @@ class MimePart extends Nette\Object
 					Nette\Utils\Validators::assert($recipient, 'unicode', "header '$name'");
 				}
 				if (preg_match('#[\r\n]#', $recipient)) {
-					throw new Nette\InvalidArgumentException("Name must not contain line separator.");
+					throw new Nette\InvalidArgumentException('Name must not contain line separator.');
 				}
 				Nette\Utils\Validators::assert($email, 'email', "header '$name'");
 				$tmp[$email] = $recipient;
@@ -81,7 +81,7 @@ class MimePart extends Nette\Object
 		} else {
 			$value = (string) $value;
 			if (!Strings::checkEncoding($value)) {
-				throw new Nette\InvalidArgumentException("Header is not valid UTF-8 string.");
+				throw new Nette\InvalidArgumentException('Header is not valid UTF-8 string.');
 			}
 			$this->headers[$name] = preg_replace('#[\r\n]+#', ' ', $value);
 		}
@@ -213,7 +213,7 @@ class MimePart extends Nette\Object
 	 */
 	public function setBody($body)
 	{
-		if ($body instanceof Nette\Templating\ITemplate) {
+		if ($body instanceof Nette\Templating\ITemplate || $body instanceof Nette\Application\UI\ITemplate) {
 			$body->mail = $this;
 			$body = $body->__toString(TRUE);
 		}
@@ -242,7 +242,7 @@ class MimePart extends Nette\Object
 	public function getEncodedMessage()
 	{
 		$output = '';
-		$boundary = '--------' . Strings::random();
+		$boundary = '--------' . Nette\Utils\Random::generate();
 
 		foreach ($this->headers as $name => $value) {
 			$output .= $name . ': ' . $this->getEncodedHeader($name);
@@ -257,7 +257,7 @@ class MimePart extends Nette\Object
 		if ($body !== '') {
 			switch ($this->getEncoding()) {
 				case self::ENCODING_QUOTED_PRINTABLE:
-					$output .= function_exists('quoted_printable_encode') ? quoted_printable_encode($body) : self::encodeQuotedPrintable($body);
+					$output .= quoted_printable_encode($body);
 					break;
 
 				case self::ENCODING_BASE64:

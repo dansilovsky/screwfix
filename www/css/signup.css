@@ -32,15 +32,6 @@
 */
 /* input height + label or margin between inputs height */
 /* includes borders and paddings */
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 07-May-2014, 12:57:09
-    Author     : Daniel Silovsky
-*/
 /* 
     Created on : 24-May-2014, 19:01:35
     Author     : Daniel Silovsky
@@ -259,7 +250,7 @@ input:focus, select:focus {
 }
 
 /* line 43, ../../app/sass/sass/modules/_forms.scss */
-input[type=text], input[type=password], input[type=submit], button {
+input[type=text], input[type=password], input[type=submit], input[type=button], button {
   font-size: 1em;
   margin: 0;
 }
@@ -275,7 +266,7 @@ input[type=text], input[type=password] {
 }
 
 /* line 56, ../../app/sass/sass/modules/_forms.scss */
-input[type=submit], button {
+input[type=submit], input[type=button], button {
   height: 2.14286em;
   line-height: 2.14286em;
 }
@@ -510,18 +501,43 @@ table.inputPattern td:first-child {
   vertical-align: middle;
   text-align: center;
 }
-/* line 32, ../../app/sass/sass/_table_pattern/partials/_table.scss */
-table.inputPattern td div:first-child {
+/* line 31, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern td:last-child {
+  text-align: center;
+}
+/* line 36, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern td div.date {
   text-align: right;
 }
-/* line 37, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 41, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern a {
   color: #3074b6;
   font-weight: bold;
 }
-/* line 43, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 47, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern tr:nth-child(even) td {
   background-color: #e3e3e3;
+}
+/* line 53, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern .buttonIcon {
+  background-color: #3074b6;
+  border: 0;
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+  height: 1.42857em;
+  line-height: 1.42857em;
+  padding: 0;
+  text-align: center;
+  width: 1.42857em;
+}
+/* line 6, ../../app/sass/sass/modules/_buttons.scss */
+table.inputPattern .buttonIcon:hover {
+  background-color: #3681ca;
+}
+/* line 57, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+table.inputPattern .buttonIconMinusWrapper {
+  margin: 3.14286em 0;
 }
 
 /* line 171, ../../app/sass/sass/modules/_forms.scss */
@@ -585,8 +601,6 @@ html, body {
 
 /* line 5, ../../app/sass/sass/signup/partials/_content.scss */
 #contentSignup {
-  margin: 0 auto;
-  width: 22.85714em;
   padding: 1.42857em 2.14286em;
 }
 
@@ -608,7 +622,7 @@ input:focus, select:focus {
 }
 
 /* line 43, ../../app/sass/sass/modules/_forms.scss */
-input[type=text], input[type=password], input[type=submit], button {
+input[type=text], input[type=password], input[type=submit], input[type=button], button {
   font-size: 1em;
   margin: 0;
 }
@@ -624,7 +638,7 @@ input[type=text], input[type=password] {
 }
 
 /* line 56, ../../app/sass/sass/modules/_forms.scss */
-input[type=submit], button {
+input[type=submit], input[type=button], button {
   height: 2.14286em;
   line-height: 2.14286em;
 }
@@ -728,27 +742,30 @@ input[type=text], input[type=password] {
   width: 21.57143em;
 }
 
-/* line 3, ../../app/sass/sass/signup/partials/_form.scss */
-form {
-  margin: 0 auto;
+/* line 4, ../../app/sass/sass/signup/partials/_form.scss */
+#formCredentials {
   width: 22.85714em;
 }
 
-/* line 1, ../../app/sass/sass/signup/partials/_bar_progress.scss */
-#progressBar {
-  color: #d7d7d7;
-  margin-bottom: 1.42857em;
+/* line 8, ../../app/sass/sass/signup/partials/_form.scss */
+#formPattern {
+  width: 70.5em;
 }
-/* line 5, ../../app/sass/sass/signup/partials/_bar_progress.scss */
-#progressBar ul {
-  display: inline-block;
-}
-/* line 9, ../../app/sass/sass/signup/partials/_bar_progress.scss */
-#progressBar li {
-  display: inline-block;
-  padding-right: 0.57143em;
-}
-/* line 13, ../../app/sass/sass/signup/partials/_bar_progress.scss */
-#progressBar li.current {
-  font-weight: bolder;
-}
+
+/*#progressBar {
+	color: $color-grey-darker;
+	margin-bottom: px-to-em($base-line-height, $base-font-size);
+	
+	ul {
+		display: inline-block;
+	}
+	
+	li {
+		display: inline-block;
+		padding-right: px-to-em($padding-text, $base-font-size);
+		
+		&.current {			
+			font-weight: bolder;
+		}
+	}
+}*/

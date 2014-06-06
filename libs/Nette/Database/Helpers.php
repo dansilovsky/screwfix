@@ -7,7 +7,8 @@
 
 namespace Nette\Database;
 
-use Nette;
+use Nette,
+	Tracy;
 
 
 /**
@@ -86,7 +87,7 @@ class Helpers
 		$sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
 		// reduce spaces
-		$sql = preg_replace('#[ \t]{2,}#', " ", $sql);
+		$sql = preg_replace('#[ \t]{2,}#', ' ', $sql);
 
 		$sql = wordwrap($sql, 100);
 		$sql = preg_replace('#([ \t]*\r?\n){2,}#', "\n", $sql);
@@ -126,7 +127,7 @@ class Helpers
 				if ($type === 'stream') {
 					$info = stream_get_meta_data($param);
 				}
-				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri']) . '"' : NULL) . '>&lt;' . htmlSpecialChars($type) . " resource&gt;</i> ";
+				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri']) . '"' : NULL) . '>&lt;' . htmlSpecialChars($type) . ' resource&gt;</i> ';
 
 			} else {
 				return htmlspecialchars($param);
@@ -177,7 +178,7 @@ class Helpers
 
 
 	/**
-	 * Import SQL dump from file - extreme fast.
+	 * Import SQL dump from file - extremely fast.
 	 * @return int  count of commands
 	 */
 	public static function loadFromFile(Connection $connection, $file)
@@ -190,14 +191,21 @@ class Helpers
 		}
 
 		$count = 0;
+		$delimiter = ';';
 		$sql = '';
 		while (!feof($handle)) {
-			$s = fgets($handle);
-			$sql .= $s;
-			if (substr(rtrim($s), -1) === ';') {
+			$s = rtrim(fgets($handle));
+			if (!strncasecmp($s, 'DELIMITER ', 10)) {
+				$delimiter = substr($s, 10);
+
+			} elseif (substr($s, -strlen($delimiter)) === $delimiter) {
+				$sql .= substr($s, 0, -strlen($delimiter));
 				$connection->query($sql); // native query without logging
 				$sql = '';
 				$count++;
+
+			} else {
+				$sql .= $s . "\n";
 			}
 		}
 		if (trim($sql) !== '') {
@@ -211,10 +219,10 @@ class Helpers
 
 	public static function createDebugPanel($connection, $explain = TRUE, $name = NULL)
 	{
-		$panel = new Nette\Database\Diagnostics\ConnectionPanel($connection);
+		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
 		$panel->explain = $explain;
 		$panel->name = $name;
-		Nette\Diagnostics\Debugger::getBar()->addPanel($panel);
+		Tracy\Debugger::getBar()->addPanel($panel);
 		return $panel;
 	}
 

@@ -8,7 +8,7 @@ namespace Screwfix;
  * @copyright (c) 2013, Daniel Silovsky
  * @license http://www.screwfix-calendar.co.uk/license
  */
-class LatteEngine extends \Nette\Latte\Engine {
+class LatteEngine extends \Latte\Engine {
 
 	
 }

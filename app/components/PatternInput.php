@@ -99,6 +99,7 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 		$pattern = $this->_pattern ? self::buildPatternArray($this->_pattern) : array();
 		
 		$this->_template->name = $this->getHtmlName();
+		$this->_template->id = $this->getHtmlId();
 		$this->_template->pattern = $pattern;
 		$this->_template->inputPattern = $this->_pattern;
 		$this->_template->compile();

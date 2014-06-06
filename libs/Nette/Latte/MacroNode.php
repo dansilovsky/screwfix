@@ -5,9 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Latte;
-
-use Nette;
+namespace Latte;
 
 
 /**
@@ -15,7 +13,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class MacroNode extends Nette\Object
+class MacroNode extends Object
 {
 	const PREFIX_INNER = 'inner',
 		PREFIX_TAG = 'tag',

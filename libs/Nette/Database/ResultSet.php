@@ -164,7 +164,7 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
 			} elseif ($type === IReflection::FIELD_DATETIME || $type === IReflection::FIELD_DATE || $type === IReflection::FIELD_TIME) {
-				$row[$key] = new Nette\DateTime($value);
+				$row[$key] = new Nette\Utils\DateTime($value);
 
 			} elseif ($type === IReflection::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
@@ -172,7 +172,7 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === IReflection::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = Nette\DateTime::from($value);
+				$row[$key] = Nette\Utils\DateTime::from($value);
 			}
 		}
 
@@ -292,19 +292,14 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 	}
 
 
-	/** @deprecated */
-	function columnCount()
+	/**
+	 * Fetches all rows and returns associative tree.
+	 * @param  string  associative descriptor
+	 * @return array
+	 */
+	public function fetchAssoc($path)
 	{
-		trigger_error(__METHOD__ . '() is deprecated; use getColumnCount() instead.', E_USER_DEPRECATED);
-		return $this->getColumnCount();
-	}
-
-
-	/** @deprecated */
-	function rowCount()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use getRowCount() instead.', E_USER_DEPRECATED);
-		return $this->getRowCount();
+		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
 	}
 
 }

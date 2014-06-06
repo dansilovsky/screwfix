@@ -5,9 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Latte;
-
-use Nette;
+namespace Latte;
 
 
 /**
@@ -15,7 +13,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class MacroTokens extends Nette\Utils\TokenIterator
+class MacroTokens extends TokenIterator
 {
 	const T_WHITESPACE = 1,
 		T_COMMENT = 2,
@@ -27,7 +25,7 @@ class MacroTokens extends Nette\Utils\TokenIterator
 		T_KEYWORD = 8,
 		T_CHAR = 9;
 
-	/** @var Nette\Utils\Tokenizer */
+	/** @var Tokenizer */
 	private static $tokenizer;
 
 	/** @var int */
@@ -43,11 +41,11 @@ class MacroTokens extends Nette\Utils\TokenIterator
 
 	public function parse($s)
 	{
-		self::$tokenizer = self::$tokenizer ?: new Nette\Utils\Tokenizer(array(
+		self::$tokenizer = self::$tokenizer ?: new Tokenizer(array(
 			self::T_WHITESPACE => '\s+',
 			self::T_COMMENT => '(?s)/\*.*?\*/',
 			self::T_STRING => Parser::RE_STRING,
-			self::T_KEYWORD => '(?:true|false|null|and|or|xor|clone|new|instanceof|return|continue|break|endif|endforeach|endwhile|endswitch|[A-Z_][A-Z0-9_]{2,})(?![\w\pL_])', // keyword or const
+			self::T_KEYWORD => '(?:true|false|null|and|or|xor|clone|new|instanceof|return|continue|break|[A-Z_][A-Z0-9_]{2,})(?![\w\pL_])', // keyword or const
 			self::T_CAST => '\((?:expand|string|array|int|integer|float|bool|boolean|object)\)', // type casting
 			self::T_VARIABLE => '\$[\w\pL_]+',
 			self::T_NUMBER => '[+-]?[0-9]+(?:\.[0-9]+)?(?:e[0-9]+)?',

@@ -5,10 +5,7 @@
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
  */
 
-namespace Nette\Latte;
-
-use Nette,
-	Nette\Utils\Strings;
+namespace Latte;
 
 
 /**
@@ -16,7 +13,7 @@ use Nette,
  *
  * @author     David Grudl
  */
-class Parser extends Nette\Object
+class Parser extends Object
 {
 	/** @internal regular expression for single & double quoted PHP string */
 	const RE_STRING = '\'(?:\\\\.|[^\'\\\\])*\'|"(?:\\\\.|[^"\\\\])*"';
@@ -28,7 +25,7 @@ class Parser extends Nette\Object
 	public $defaultSyntax = 'latte';
 
 	/** @var bool */
-	public $shortNoEscape = TRUE;
+	public $shortNoEscape = FALSE;
 
 	/** @var array */
 	public $syntaxes = array(
@@ -82,8 +79,8 @@ class Parser extends Nette\Object
 		if (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
 			$input = substr($input, 3);
 		}
-		if (!Strings::checkEncoding($input)) {
-			throw new Nette\InvalidArgumentException('Template is not valid UTF-8 stream.');
+		if (!preg_match('##u', $input)) {
+			throw new \InvalidArgumentException('Template is not valid UTF-8 stream.');
 		}
 		$input = str_replace("\r\n", "\n", $input);
 		$this->input = $input;
@@ -125,8 +122,8 @@ class Parser extends Nette\Object
 	{
 		$matches = $this->match('~
 			(?:(?<=\n|^)[ \t]*)?<(?P<closing>/?)(?P<tag>[a-z0-9:]+)|  ##  begin of HTML tag <tag </tag - ignores <!DOCTYPE
-			<(?P<htmlcomment>!--)|     ##  begin of HTML comment <!--
-			'.$this->macroRe.'         ##  macro tag
+			<(?P<htmlcomment>!--(?!>))|     ##  begin of HTML comment <!--, but not <!-->
+			'.$this->macroRe.'              ##  macro tag
 		~xsi');
 
 		if (!empty($matches['htmlcomment'])) { // <!--
@@ -186,7 +183,7 @@ class Parser extends Nette\Object
 			$token->value = isset($matches['value']) ? $matches['value'] : '';
 
 			if ($token->value === '"' || $token->value === "'") { // attribute = "'
-				if (Strings::startsWith($token->name, self::N_PREFIX)) {
+				if (strncmp($token->name, self::N_PREFIX, strlen(self::N_PREFIX)) === 0) {
 					$token->value = '';
 					if ($m = $this->match('~(.*?)' . $matches['value'] . '~xsi')) {
 						$token->value = $m[1];
@@ -225,11 +222,11 @@ class Parser extends Nette\Object
 	private function contextHtmlComment()
 	{
 		$matches = $this->match('~
-			(?P<htmlcomment>--\s*>)|   ##  end of HTML comment
-			'.$this->macroRe.'         ##  macro tag
+			(?P<htmlcomment>-->)|   ##  end of HTML comment
+			'.$this->macroRe.'      ##  macro tag
 		~xsi');
 
-		if (!empty($matches['htmlcomment'])) { // --\s*>
+		if (!empty($matches['htmlcomment'])) { // -->
 			$this->addToken(Token::HTML_TAG_END, $matches[0]);
 			$this->setContext(self::CONTEXT_HTML_TEXT);
 		}
@@ -256,17 +253,40 @@ class Parser extends Nette\Object
 	 */
 	private function match($re)
 	{
-		if ($matches = Strings::match($this->input, $re, PREG_OFFSET_CAPTURE, $this->offset)) {
-			$value = substr($this->input, $this->offset, $matches[0][1] - $this->offset);
-			if ($value !== '') {
-				$this->addToken(Token::TEXT, $value);
+		if (!preg_match($re, $this->input, $matches, PREG_OFFSET_CAPTURE, $this->offset)) {
+			if (preg_last_error()) {
+				throw new RegexpException(NULL, preg_last_error());
 			}
-			$this->offset = $matches[0][1] + strlen($matches[0][0]);
-			foreach ($matches as $k => $v) {
-				$matches[$k] = $v[0];
-			}
+			return array();
+		}
+
+		$value = substr($this->input, $this->offset, $matches[0][1] - $this->offset);
+		if ($value !== '') {
+			$this->addToken(Token::TEXT, $value);
+		}
+		$this->offset = $matches[0][1] + strlen($matches[0][0]);
+		foreach ($matches as $k => $v) {
+			$matches[$k] = $v[0];
 		}
 		return $matches;
+	}
+
+
+	/**
+	 * @return self
+	 */
+	public function setContentType($type)
+	{
+		if (strpos($type, 'html') !== FALSE) {
+			$this->xmlMode = FALSE;
+			$this->setContext(self::CONTEXT_HTML_TEXT);
+		} elseif (strpos($type, 'xml') !== FALSE) {
+			$this->xmlMode = TRUE;
+			$this->setContext(self::CONTEXT_HTML_TEXT);
+		} else {
+			$this->setContext(self::CONTEXT_RAW);
+		}
+		return $this;
 	}
 
 
@@ -291,7 +311,7 @@ class Parser extends Nette\Object
 		if (isset($this->syntaxes[$type])) {
 			$this->setDelimiters($this->syntaxes[$type][0], $this->syntaxes[$type][1]);
 		} else {
-			throw new Nette\InvalidArgumentException("Unknown syntax '$type'");
+			throw new \InvalidArgumentException("Unknown syntax '$type'");
 		}
 		return $this;
 	}
@@ -308,9 +328,11 @@ class Parser extends Nette\Object
 		$this->macroRe = '
 			(?P<comment>' . $left . '\\*.*?\\*' . $right . '\n{0,2})|
 			' . $left . '
-				(?P<macro>(?:' . self::RE_STRING . '|\{
-						(?P<inner>' . self::RE_STRING . '|\{(?P>inner)\}|[^\'"{}])*+
-				\}|[^\'"{}])+?)
+				(?P<macro>(?:
+					' . self::RE_STRING . '|
+					\{(?:' . self::RE_STRING . '|[^\'"{}])*+\}|
+					[^\'"{}]
+				)+?)
 			' . $right . '
 			(?P<rmargin>[ \t]*(?=\n))?
 		';
@@ -325,16 +347,17 @@ class Parser extends Nette\Object
 	 */
 	public function parseMacroTag($tag)
 	{
-		$match = Strings::match($tag, '~^
+		if (!preg_match('~^
 			(
 				(?P<name>\?|/?[a-z]\w*+(?:[.:]\w+)*+(?!::|\(|\\\\))|   ## ?, name, /name, but not function( or class:: or namespace\
 				(?P<noescape>!?)(?P<shortname>/?[=\~#%^&_]?)      ## !expression, !=expression, ...
 			)(?P<args>.*?)
-			(?P<modifiers>\|[a-z](?:'.Parser::RE_STRING.'|[^\'"])*)?
+			(?P<modifiers>\|[a-z](?:'.Parser::RE_STRING.'|[^\'"])*(?<!/))?
 			(?P<empty>/?\z)
-		()\z~isx');
-
-		if (!$match) {
+		()\z~isx', $tag, $match)) {
+			if (preg_last_error()) {
+				throw new RegexpException(NULL, preg_last_error());
+			}
 			return FALSE;
 		}
 		if ($match['name'] === '') {
@@ -389,12 +412,7 @@ class Parser extends Nette\Object
 			$this->setSyntax($this->defaultSyntax);
 
 		} elseif ($token->type === Token::MACRO_TAG && $token->name === 'contentType') {
-			if (preg_match('#html|xml#', $token->value, $m)) {
-				$this->xmlMode = $m[0] === 'xml';
-				$this->setContext(self::CONTEXT_HTML_TEXT);
-			} else {
-				$this->setContext(self::CONTEXT_RAW);
-			}
+			$this->setContentType($token->value);
 		}
 	}
 

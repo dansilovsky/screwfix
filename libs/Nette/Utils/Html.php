@@ -23,7 +23,7 @@ use Nette;
  *
  * @author     David Grudl
  */
-class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAggregate
+class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAggregate, IHtmlString
 {
 	/** @var string  element's name */
 	private $name;
@@ -84,7 +84,7 @@ class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAg
 	public function setName($name, $isEmpty = NULL)
 	{
 		if ($name !== NULL && !is_string($name)) {
-			throw new Nette\InvalidArgumentException("Name must be string or NULL, " . gettype($name) ." given.");
+			throw new Nette\InvalidArgumentException(sprintf('Name must be string or NULL, %s given.', gettype($name)));
 		}
 
 		$this->name = $name;
@@ -237,7 +237,7 @@ class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAg
 	public function setHtml($html)
 	{
 		if (is_array($html)) {
-			throw new Nette\InvalidArgumentException("Textual content must be a scalar, " . gettype($html) ." given.");
+			throw new Nette\InvalidArgumentException(sprintf('Textual content must be a scalar, %s given.', gettype($html)));
 		}
 		$this->removeChildren();
 		$this->children[] = (string) $html;
@@ -331,7 +331,7 @@ class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAg
 			}
 
 		} else {
-			throw new Nette\InvalidArgumentException("Child node must be scalar or Html object, " . (is_object($child) ? get_class($child) : gettype($child)) ." given.");
+			throw new Nette\InvalidArgumentException(sprintf('Child node must be scalar or Html object, %s given.', is_object($child) ? get_class($child) : gettype($child)));
 		}
 
 		return $this;
@@ -407,19 +407,14 @@ class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAg
 
 	/**
 	 * Iterates over a elements.
-	 * @param  bool    recursive?
-	 * @param  string  class types filter
-	 * @return \RecursiveIterator
+	 * @return \ArrayIterator
 	 */
-	public function getIterator($deep = FALSE)
+	public function getIterator()
 	{
-		if ($deep) {
-			$deep = $deep > 0 ? \RecursiveIteratorIterator::SELF_FIRST : \RecursiveIteratorIterator::CHILD_FIRST;
-			return new \RecursiveIteratorIterator(new Nette\Iterators\Recursor(new \ArrayIterator($this->children)), $deep);
-
-		} else {
-			return new Nette\Iterators\Recursor(new \ArrayIterator($this->children));
+		if (func_num_args() && func_get_arg(0)) {
+			throw new Nette\DeprecatedException(__METHOD__ . " doesn't support deep iterator any more.");
 		}
+		return new \ArrayIterator($this->children);
 	}
 
 
@@ -521,35 +516,48 @@ class Html extends Nette\Object implements \ArrayAccess, \Countable, \IteratorAg
 				continue;
 
 			} elseif (is_array($value)) {
-				if ($key === 'data') {
+				if ($key === 'data') { // deprecated
 					foreach ($value as $k => $v) {
 						if ($v !== NULL && $v !== FALSE) {
+							if (is_array($v)) {
+								$v = Json::encode($v);
+							}
 							$q = strpos($v, '"') === FALSE ? '"' : "'";
-							$s .= ' data-' . $k . '=' . $q . str_replace(array('&', $q), array('&amp;', $q === '"' ? '&quot;' : '&#39;'), $v) . $q;
+							$s .= ' data-' . $k . '='
+								. $q . str_replace(array('&', $q), array('&amp;', $q === '"' ? '&quot;' : '&#39;'), $v)
+								. (strpos($v, '`') !== FALSE && strpbrk($v, ' <>"\'') === FALSE ? ' ' : '')
+								. $q;
 						}
 					}
 					continue;
-				}
 
-				$tmp = NULL;
-				foreach ($value as $k => $v) {
-					if ($v != NULL) { // intentionally ==, skip NULLs & empty string
-						//  composite 'style' vs. 'others'
-						$tmp[] = $v === TRUE ? $k : (is_string($k) ? $k . ':' . $v : $v);
+				} elseif (strncmp($key, 'data-', 5) === 0) {
+					$value = Json::encode($value);
+
+				} else {
+					$tmp = NULL;
+					foreach ($value as $k => $v) {
+						if ($v != NULL) { // intentionally ==, skip NULLs & empty string
+							//  composite 'style' vs. 'others'
+							$tmp[] = $v === TRUE ? $k : (is_string($k) ? $k . ':' . $v : $v);
+						}
 					}
-				}
-				if ($tmp === NULL) {
-					continue;
-				}
+					if ($tmp === NULL) {
+						continue;
+					}
 
-				$value = implode($key === 'style' || !strncmp($key, 'on', 2) ? ';' : ' ', $tmp);
+					$value = implode($key === 'style' || !strncmp($key, 'on', 2) ? ';' : ' ', $tmp);
+				}
 
 			} else {
 				$value = (string) $value;
 			}
 
 			$q = strpos($value, '"') === FALSE ? '"' : "'";
-			$s .= ' ' . $key . '=' . $q . str_replace(array('&', $q), array('&amp;', $q === '"' ? '&quot;' : '&#39;'), $value) . $q;
+			$s .= ' ' . $key . '='
+				. $q . str_replace(array('&', $q), array('&amp;', $q === '"' ? '&quot;' : '&#39;'), $value)
+				. (strpos($value, '`') !== FALSE && strpbrk($value, ' <>"\'') === FALSE ? ' ' : '')
+				. $q;
 		}
 
 		$s = str_replace('@', '&#64;', $s);

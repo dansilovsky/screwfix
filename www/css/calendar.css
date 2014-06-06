@@ -32,15 +32,6 @@
 */
 /* input height + label or margin between inputs height */
 /* includes borders and paddings */
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 07-May-2014, 12:57:09
-    Author     : Daniel Silovsky
-*/
 /* 
     Created on : 24-May-2014, 19:01:35
     Author     : Daniel Silovsky
@@ -259,7 +250,7 @@ input:focus, select:focus {
 }
 
 /* line 43, ../../app/sass/sass/modules/_forms.scss */
-input[type=text], input[type=password], input[type=submit], button {
+input[type=text], input[type=password], input[type=submit], input[type=button], button {
   font-size: 1em;
   margin: 0;
 }
@@ -275,7 +266,7 @@ input[type=text], input[type=password] {
 }
 
 /* line 56, ../../app/sass/sass/modules/_forms.scss */
-input[type=submit], button {
+input[type=submit], input[type=button], button {
   height: 2.14286em;
   line-height: 2.14286em;
 }
