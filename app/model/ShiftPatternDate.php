@@ -9,7 +9,7 @@ namespace Screwfix;
  * @copyright (c) 2013, Daniel Silovsky
  * @license http://www.screwfix-calendar.co.uk/license
  */
-class ShiftPatternDate extends \Nette\DateTime {
+class ShiftPatternDate extends DateTime {
 	
 	/**
 	 * Start date Monday 1970-01-05 00:00:00
