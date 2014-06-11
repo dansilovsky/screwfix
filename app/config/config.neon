@@ -39,6 +39,7 @@ common:
 		cookies: Dan\Cookies(%cookies%)
 
 		calendarDateTime: Screwfix\CalendarDateTime
+		- Screwfix\CalendarDateTimeFactory
 
 		patternRepository: Screwfix\PatternRepository
 		patternFacade: Screwfix\PatternFacade(@patternRepository)
