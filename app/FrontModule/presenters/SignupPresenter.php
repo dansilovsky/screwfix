@@ -45,7 +45,7 @@ class SignupPresenter extends BaseaccountPresenter {
 		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
 		
 		reset($sysPatternSelection);
-		$defaultPattern = self::buildDefaultPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
+		$defaultPattern = $this->buildDefaultPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
 		$form['pattern'] = $this->patternInputFactory->create();
 		$form['pattern']->setDefaultValue($defaultPattern);
@@ -68,7 +68,7 @@ class SignupPresenter extends BaseaccountPresenter {
 	public function credentialsFormSubmitted(Form $form)
 	{
 		$formValues = $form->getValues();
-
+		
 		$userUsernameRow = $this->userFacade->getByUsername($formValues->username);
 
 		$userEmailRow = $this->userFacade->getByEmail($formValues->email);

@@ -59,7 +59,8 @@ class HomePresenter extends CalendarPresenter {
 
 	protected function fromTo()
 	{
-		$this->from = new \Screwfix\CalendarDateTime('now');
+		$this->from = $this->calendarDateFactory->create();
+		
 		$this->from->subMonth()
 			->subMonth()
 			->floor();
