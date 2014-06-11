@@ -75,9 +75,9 @@ class DaysPresenter extends BasePresenter {
 	protected function fromTo() 
 	{
 		$from = $this->request->getQuery('from');
-		$this->from = new \Screwfix\CalendarDateTime($from);
+		$this->from = $this->calendarDateFactory->create($from);
 		
 		$to = $this->request->getQuery('to');
-		$this->to = new \Screwfix\CalendarDateTime($to);
+		$this->to = $this->calendarDateFactory->create($to);
 	}
 }
