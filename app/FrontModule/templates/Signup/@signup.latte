@@ -69,23 +69,15 @@
 			{/if}
 		</div>
 		<div id="formPattern">
-			
-			
-			
 			<div class="formRowNolabel">
 				{label sysPattern /} {input sysPattern}
-			</div>
-			
-			
-			
-			
+			</div>			
 			{if $form['pattern']->errors}
 			<div class="formRowError">
 				<ul>
 					<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
 				</ul>
 				{input pattern}
-
 			</div>
 			{else}
 			<div class="formRowNolabel">		
