@@ -1,7 +1,7 @@
-{var $i = 0}
+{var $i = 1}
 
 
-
+<input type="hidden" name="{$name}" value="{$inputPattern}">
 <table id="{$id}" class="inputPattern" n:if="$pattern">
 	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Firday</th><th>Saturday</th><th>Sunday</th><th></th></tr>
 {foreach $pattern as $weekNum => $week}
@@ -36,7 +36,6 @@
 				<div>
 					<a href="javascript:;" title="Change to off day">change</a>
 				</div>
-				<input type="hidden" name="{$name}[]" value="{$inputPattern[$i]}">
 				
 			{else}
 			<div class="date">26 April</div>
@@ -46,7 +45,6 @@
 			<div>
 				<a href="javascript:;" title="Change to working day">change</a>
 			</div>
-			<input type="hidden" name="{$name}[]" value="{$inputPattern[$i]}">
 			{/if}
 		</td>
 		{var $i++}

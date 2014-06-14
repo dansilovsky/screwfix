@@ -17,15 +17,21 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	
 	private $_template;
 	
-	private $_request;
+	/**
+	 * @var ShiftPatternDate
+	 */
+	private $_date;
 
-	public function __construct(Template $template, \Nette\Http\Request $request)
+	/**
+	 * @return ShiftPatternDate
+	 */
+	public function __construct(Template $template, $templateFileName)
 	{
 		parent::__construct(null);
 		$this->addRule(__CLASS__ . '::validatePattern', 'Shift pattern is invalid.');
 		
 		$this->_template = $template;
-		$this->_template->setFile(__DIR__ . '/PatternInput.latte');
+		$this->_template->setFile(__DIR__ . "/$templateFileName");
 		$this->_template->registerHelper('dayName', function($dayNumber) { return DateTime::dayName($dayNumber); });
 		$this->_template->registerHelper('padTime', function($t) { 
 			if ($t < 10) {
@@ -50,8 +56,6 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 				return $timeUnit === $minute ? 'selected="selected"' : '';
 			}
 		});
-		
-		$this->_request = $request;
 	}
 
 
@@ -73,7 +77,7 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	}
 
 	/**
-	 * @return DateTime|NULL
+	 * @return array|null
 	 */
 	public function getValue()
 	{
@@ -85,8 +89,8 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 
 	public function loadHttpData()
 	{
-		$name = $this->getHtmlName() . '[]';
 		$this->_pattern = $this->getHttpData(Form::DATA_LINE, '[]');
+		exit;
 	}
 
 
@@ -94,8 +98,7 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	 * Generates control's HTML element.
 	 */
 	public function getControl()
-	{
-		
+	{		
 		$pattern = $this->_pattern ? self::buildPatternArray($this->_pattern) : array();
 		
 		$this->_template->name = $this->getHtmlName();
@@ -114,8 +117,14 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	{
 		$pattern = $control->_pattern;
 		
-		foreach ($pattern as $day)
+		foreach ($pattern as $key => $day)
 		{
+			if ($key === 0)
+			{
+				if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $day)) { return false; }
+				continue;
+			}
+			
 			if (!preg_match('/^\d,\d,(null|(\d{2}:\d{2},\d{2}:\d{2}))$/', $day)) { return false; }
 		}
 		
@@ -129,13 +138,18 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	 * @return array
 	 */
 	static public function buildPatternArray(array $inputPattern)
-	{
+	{		
 		$pattern = array();
 		
 		$previousWeekNum = -1;
 		
-		foreach ($inputPattern as $day)
+		foreach ($inputPattern as $key => $day)
 		{
+			if ($key === 0)
+			{
+				// its firstDay element
+				continue;
+			}
 			$dayValues = list($weekNum, $dayNum, $from) = explode(',', $day);
 			
 			$to = isset($dayValues[3]) ? $dayValues[3] : null;
@@ -146,7 +160,7 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 			if ($weekNum !== $previousWeekNum)
 			{
 				$previousWeekNum = $weekNum;
-				$pattern[$weekNum] = array();				
+				$pattern[$weekNum] = array();		
 			}
 			
 			if ($from !== 'null')
@@ -161,6 +175,5 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 		
 		return $pattern;
 	}
-
 }
 

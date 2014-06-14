@@ -39,7 +39,7 @@ common:
 		cookies: Dan\Cookies(%cookies%)
 
 		calendarDateTime: Screwfix\CalendarDateTime
-		- Screwfix\CalendarDateTimeFactory
+		calendarDateTimeFactory: Screwfix\CalendarDateTimeFactory
 
 		patternRepository: Screwfix\PatternRepository
 		patternFacade: Screwfix\PatternFacade(@patternRepository)
@@ -67,14 +67,15 @@ common:
 		latteEngine: Screwfix\LatteEngine
 		template: Screwfix\Template
 
-		patternInput: Screwfix\PatternInput
-		patternInputFactory:
-			implement: Screwfix\IPatternInputFactory
+		patternInputOverviwFactory: Screwfix\PatternInputOverviewFactory
+		patternInputEditFactory: Screwfix\PatternInputEditFactory
 
 		shiftPattern:
 			parameters: [pattern]
 			class: Screwfix\ShiftPatternFilter(%pattern%)
 			autowired: no
+
+		shiftPatternIteratorFactory: Screwfix\ShiftPatternIteratorFactory
 
 		authorizator:
 			class: Nette\Security\Permission

@@ -15,7 +15,7 @@ namespace Dan\Iterators;
  */
 class AroundIterator implements \Iterator {
 	
-	protected $array;
+	protected $array = array();
 	
 	protected $position = 0;
 	
@@ -83,5 +83,10 @@ class AroundIterator implements \Iterator {
 		{
 			throw new \Dan\AroundIterator_OutOfScope_Exception('Given start position is out of scope.');
 		}		
+	}
+	
+	function currentMove()
+	{
+		return $this->movesCount;
 	}
 }

@@ -12,8 +12,14 @@ use Nette\Application\UI\Form;
  */
 abstract class BaseaccountPresenter extends BasePresenter {
 	
-	/** @var \Screwfix\IPatternInputFactory @inject */
-	public $patternInputFactory;
+	/** @var \Screwfix\PatternInputEditFactory @inject */
+	public $patternInputEditFactory;
+	
+	/** @var \Screwfix\PatternInputOverviewFactory @inject */
+	public $patternInputOverviewFactory;
+	
+	/** @var \Screwfix\ShiftPatternIteratorFactory @inject */
+	public $patternIteratorFactory;
 	
 	protected function createComponentCredentialsForm() 
 	{
@@ -59,7 +65,7 @@ abstract class BaseaccountPresenter extends BasePresenter {
 		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
 		
 		reset($sysPatternSelection);
-		$defaultPattern = self::buildDefaultPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
+		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
 		$form['pattern'] = $this->patternInputFactory->create();
 		$form['pattern']->setDefaultValue($defaultPattern);
@@ -78,18 +84,23 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	}
 	
 	/**
-	 * Builds default input pattern array from pattern array.
+	 * Builds default input pattern array from pattern array. 
+	 * Array must be same as if it was sent by post request.
 	 *      eg. array('0,0,07:00,15:00', '0,0,null')
 	 * 
 	 * @param array $pattern
 	 * @return array
 	 */
-	static public function buildDefaultPattern(array $pattern)
-	{
+	public function buildDefaultInputPattern(array $pattern)
+	{		
 		$result = array();
 		
-		foreach($pattern as $weekNum => $week)
+		$patternIterator = $this->patternIteratorFactory->create($pattern);		
+		
+		foreach($patternIterator as $week)
 		{
+			$weekNum = $patternIterator->currentMove();
+			
 			foreach ($week as $dayNum => $day)
 			{	
 				if ($day)
@@ -102,6 +113,12 @@ abstract class BaseaccountPresenter extends BasePresenter {
 				}
 			}
 		}
+		
+		$firstDay = $this->calendarDateFactory->create()
+			->floor(\Screwfix\CalendarDateTime::W)
+			->format(\Screwfix\DateTime::FORMAT_DATE);
+		
+		array_unshift($result, $firstDay);
 		
 		return $result;
 	}

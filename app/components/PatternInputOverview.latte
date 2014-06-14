@@ -1,0 +1,65 @@
+{var $i = 1}
+
+
+<input type="hidden" name="{$name}[]" value="{$inputPattern[0]}">
+<table id="{$id}" class="inputPattern" n:if="$pattern">
+	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Firday</th><th>Saturday</th><th>Sunday</th><th></th></tr>
+{foreach $pattern as $weekNum => $week}
+	<tr>
+		<td>
+			<div>{$weekNum}</div>
+
+		</td>
+	{foreach $week as $dayNum => $times}
+		
+		<td {if !$times}class="dayOff"{/if}>
+			{if $times}
+				<div class="date">26 April</div>
+				<div class="formRowInputpattern">
+					<label>from</label>
+					<select name="fromHour">
+						<option n:for="$hour=0; $hour<24; $hour++" {$hour|noescape|selectOption:$times[0]:'h'} value="{$hour}">{$hour|padTime}</option>
+					</select>
+					<select name="fromMinute">
+						<option n:for="$minute=0; $minute<60; $minute+=15" {$minute|noescape|selectOption:$times[0]:'m'} value="{$minute}">{$minute|padTime}</option>
+					</select>
+				</div>
+				<div class="formRowInputpattern">							
+					<label>to</label>
+					<select name="toHour">
+						<option n:for="$hour=0; $hour<24; $hour++" {$hour|noescape|selectOption:$times[1]:'h'} value="{$hour}">{$hour|padTime}</option>
+					</select>				
+					<select name="toMinute">
+						<option n:for="$minute=0; $minute<60; $minute+=15" {$minute|noescape|selectOption:$times[1]:'m'} value="{$minute}">{$minute|padTime}</option>
+					</select>
+				</div>
+				<div>
+					<a href="javascript:;" title="Change to off day">change</a>
+				</div>
+				<input type="hidden" name="{$name}[]" value="{$inputPattern[$i]}">
+				
+			{else}
+			<div class="date">26 April</div>
+			<div class="formRowInputpattern">
+				Off day
+			</div>
+			<div>
+				<a href="javascript:;" title="Change to working day">change</a>
+			</div>
+			<input type="hidden" name="{$name}[]" value="{$inputPattern[$i]}">
+			{/if}
+		</td>
+		{var $i++}
+	{/foreach}
+		<td>
+			<div><input type="button" class="buttonIcon" value="+" title="Add week before this one"></div>			
+			<div class="buttonIconMinusWrapper"><input type="button" class="buttonIcon" value="-" title="Remove this week"></div>			
+			<div><input type="button" class="buttonIcon" value="+" title="Add week after this one"></div>			
+			<div></div>
+
+		</td>
+	</tr>
+	{/foreach}
+</table>{* Latte template *}
+
+{block content}

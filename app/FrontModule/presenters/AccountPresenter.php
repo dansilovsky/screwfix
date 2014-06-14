@@ -12,9 +12,6 @@ use Nette\Application\UI\Form;
  */
 class AccountPresenter extends BaseaccountPresenter {
 	
-	/** @var \Screwfix\IPatternInputFactory @inject */
-	public $patternInputFactory;
-	
 	protected function createComponentCredentialsForm() 
 	{
 		$form = parent::createComponentCredentialsForm();
@@ -33,7 +30,7 @@ class AccountPresenter extends BaseaccountPresenter {
 		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
 		
 		reset($sysPatternSelection);
-		$defaultPattern = self::buildDefaultPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
+		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
 		$form['pattern'] = $this->patternInputFactory->create();
 		$form['pattern']->setDefaultValue($defaultPattern);

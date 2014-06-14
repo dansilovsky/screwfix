@@ -45,9 +45,9 @@ class SignupPresenter extends BaseaccountPresenter {
 		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
 		
 		reset($sysPatternSelection);
-		$defaultPattern = $this->buildDefaultPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
+		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
-		$form['pattern'] = $this->patternInputFactory->create();
+		$form['pattern'] = $this->patternInputOverviewFactory->create();
 		$form['pattern']->setDefaultValue($defaultPattern);
 		
 		$form->addSubmit('createAccount', 'Create account')

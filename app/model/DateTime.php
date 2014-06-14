@@ -9,7 +9,12 @@ namespace Screwfix;
  * @copyright (c) 2013, Daniel Silovsky
  * @license http://www.screwfix-calendar.co.uk/license
  */
-class DateTime extends \Nette\DateTime {
+class DateTime extends \Nette\Utils\DateTime {
+	
+	/**
+	 * screwfix basic date format
+	 */
+	const FORMAT_DATE = 'Y-m-d';
 	
 	private $_oneDayInterval;
 	
@@ -24,8 +29,32 @@ class DateTime extends \Nette\DateTime {
 		$this->_oneDayInterval = new \DateInterval('P1D');
 		$this->_oneMonthInterval = new \DateInterval('P1M');
 	}
-
-
+	
+	/**
+	 * Moves date to now.
+	 * 
+	 * @return DateTime
+	 */
+	public function toNow()
+	{
+		$this->modify('now');
+	}
+	
+	/**
+	 * Moves date to now on clone of this instance and returns the clone.
+	 * 
+	 * @return DateTime
+	 */
+	public function toNowClone()
+	{
+		$dolly = clone $this;
+		$dolly->modify('now');
+		
+		return $dolly;
+	}
+	
+	
+	
 	/**
 	 * Ads an interval on the clone of this instance and returns the clone.
 	 * 

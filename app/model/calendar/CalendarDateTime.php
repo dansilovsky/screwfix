@@ -9,7 +9,7 @@ namespace Screwfix;
  * @copyright (c) 2013, Daniel Silovsky
  * @license http://www.screwfix-calendar.co.uk/license
  */
-class CalendarDateTime extends \Screwfix\DateTime {
+class CalendarDateTime extends DateTime {
 	
 	const W = 0,
 	      M = 1,
@@ -17,7 +17,7 @@ class CalendarDateTime extends \Screwfix\DateTime {
 	
 	/**
 	 * Rounds date down. 
-	 * So far it supporst only rounding to a year and a month
+	 * So far it supporst only rounding to a year, month, and week
 	 * 
 	 * @param  int  $unit  date unit to which we watnt to round date down
 	 * @return CalendarDateTime  
@@ -66,7 +66,7 @@ class CalendarDateTime extends \Screwfix\DateTime {
 	
 	/**
 	 * Rounds date up.
-	 * So far it supporst only rounding to a year and a month.
+	 * So far it supporst only rounding to a year, month, and week.
 	 * 
 	 * @param type $unit
 	 * @return \Screwfix\CalendarDateTime
