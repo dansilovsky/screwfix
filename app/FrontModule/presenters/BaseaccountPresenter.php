@@ -84,41 +84,30 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	}
 	
 	/**
-	 * Builds default input pattern array from pattern array. 
-	 * Array must be same as if it was sent by post request.
-	 *      eg. array('0,0,07:00,15:00', '0,0,null')
+	 * Builds default input pattern value array from pattern array.
 	 * 
 	 * @param array $pattern
 	 * @return array
 	 */
 	public function buildDefaultInputPattern(array $pattern)
 	{		
-		$result = array();
+		$result = array(
+			'pattern' => array(), 
+			'firstDay' => null
+		);
 		
 		$patternIterator = $this->patternIteratorFactory->create($pattern);		
 		
 		foreach($patternIterator as $week)
 		{
-			$weekNum = $patternIterator->currentMove();
-			
-			foreach ($week as $dayNum => $day)
-			{	
-				if ($day)
-				{
-					$result[] = "$weekNum,$dayNum,$day[0],$day[1]";
-				}
-				else
-				{
-					$result[] = "$weekNum,$dayNum,null";
-				}
-			}
+			$result['pattern'][] = $week;
 		}
 		
 		$firstDay = $this->calendarDateFactory->create()
 			->floor(\Screwfix\CalendarDateTime::W)
 			->format(\Screwfix\DateTime::FORMAT_DATE);
 		
-		array_unshift($result, $firstDay);
+		$result['firstDay'] = $firstDay;
 		
 		return $result;
 	}

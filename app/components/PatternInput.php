@@ -12,33 +12,58 @@ use Nette\Forms\Form,
  * @license http://www.screwfix-calendar.co.uk/license
  */
 class PatternInput extends \Nette\Forms\Controls\BaseControl
-{	
+{
+	/**
+	 * Array containg first day of pattern and pattern itself
+	 * @var Array 
+	 */
+	private $_value;
+	
+	/**
+	 * Json string containg first day of pattern and pattern itself
+	 * @var string 
+	 */
+	private $_input;
+	
+	/**
+	 * Pattern array as extracted from input.
+	 * @var array 
+	 */
 	private $_pattern;
+	
+	/**
+	 * Date string extracted from input.
+	 * @var string 
+	 */
+	private $_firstDay;
 	
 	private $_template;
 	
 	/**
-	 * @var ShiftPatternDate
+	 * @var DateTime
 	 */
 	private $_date;
 
 	/**
 	 * @return ShiftPatternDate
 	 */
-	public function __construct(Template $template, $templateFileName)
+	public function __construct(Template $template, DateTime $date, $templateFileName)
 	{
 		parent::__construct(null);
 		$this->addRule(__CLASS__ . '::validatePattern', 'Shift pattern is invalid.');
 		
 		$this->_template = $template;
 		$this->_template->setFile(__DIR__ . "/$templateFileName");
+		
 		$this->_template->registerHelper('dayName', function($dayNumber) { return DateTime::dayName($dayNumber); });
+		
 		$this->_template->registerHelper('padTime', function($t) { 
 			if ($t < 10) {
 				return '0' . $t;
 			}
 			return $t;			
 		});
+		
 		$this->_template->registerHelper('selectOption', function ($timeUnit, $time, $type) {
 			$timeUnit = (int) $timeUnit;
 			list($hour, $minute) = explode(':', $time);
@@ -56,14 +81,29 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 				return $timeUnit === $minute ? 'selected="selected"' : '';
 			}
 		});
+		
+		// returns curren formated date and moves date one day forward
+		$this->_template->registerHelper('day', function($date) {
+			$day = $date->format('d F');
+			$date->addDay();
+			
+			return $day;
+		});
+		
+		$this->_date = $date;
 	}
 
-
+	/**
+	 * @param array $value array containing firstDay and pattern
+	 * @throws PatternInput_InvalidData_Exception
+	 */
 	public function setValue($value)
 	{	
 		if ($value)
-		{			
-			$this->_pattern = $value;
+		{
+			$this->_input = \Nette\Utils\Json::encode($value);
+			
+			$this->_value = $value;
 			
 			if (!self::validatePattern($this))
 			{
@@ -72,7 +112,7 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 		}
 		else
 		{
-			$this->_pattern = null;
+			$this->_value = null;
 		}
 	}
 
@@ -82,15 +122,18 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	public function getValue()
 	{
 		return self::validatePattern($this)
-			? $this->_pattern
+			? $this->_value
 			: null;
 	}
 
 
 	public function loadHttpData()
 	{
-		$this->_pattern = $this->getHttpData(Form::DATA_LINE, '[]');
-		exit;
+		$value = $this->getHttpData(Form::DATA_LINE);
+		
+		$this->_input = $value;
+		
+		$this->_value = \Nette\Utils\Json::decode($value, \Nette\Utils\Json::FORCE_ARRAY);
 	}
 
 
@@ -99,12 +142,11 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	 */
 	public function getControl()
 	{		
-		$pattern = $this->_pattern ? self::buildPatternArray($this->_pattern) : array();
-		
 		$this->_template->name = $this->getHtmlName();
 		$this->_template->id = $this->getHtmlId();
-		$this->_template->pattern = $pattern;
-		$this->_template->inputPattern = $this->_pattern;
+		$this->_template->pattern = $this->_value['pattern'];
+		$this->_template->input = $this->_input;		
+		$this->_template->date = $this->_date->modify($this->_value['firstDay']);
 		$this->_template->compile();
 		
 		return $this->_template;	
@@ -115,17 +157,31 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 	 */
 	public static function validatePattern(\Nette\Forms\IControl $control)
 	{
-		$pattern = $control->_pattern;
+		$pattern = $control->_value['pattern'];
 		
-		foreach ($pattern as $key => $day)
-		{
-			if ($key === 0)
+		$firstDay = $control->_value['firstDay'];
+		
+		foreach ($pattern as $week)
+		{			
+			foreach ($week as $day)
 			{
-				if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $day)) { return false; }
-				continue;
+				if ($day !== null)
+				{
+					if (
+						!preg_match('/^\d{2}:\d{2}$/', $day[0]) &&
+						!preg_match('/^\d{2}:\d{2}$/', $day[1])
+
+					) 
+					{ 
+						return false;
+					}
+				}
 			}
-			
-			if (!preg_match('/^\d,\d,(null|(\d{2}:\d{2},\d{2}:\d{2}))$/', $day)) { return false; }
+		}
+		
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $firstDay))
+		{
+			return false;
 		}
 		
 		return true;

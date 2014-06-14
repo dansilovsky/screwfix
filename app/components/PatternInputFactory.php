@@ -16,18 +16,24 @@ abstract class PatternInputFactory {
 	 */
 	protected $template;
 	
+	/**
+	 * @var CalendarDateTime
+	 */
+	protected $date;
+	
 	/** 
 	 * @var string 
 	 */
 	protected $latteName;
 	
-	public function __construct(Template $template)
+	public function __construct(Template $template, CalendarDateTime $date)
 	{
 		$this->template = $template;
+		$this->date = $date;
 	}
 	
 	public function create()
 	{
-		return new PatternInput($this->template, $this->latteName);
+		return new PatternInput($this->template, $this->date, $this->latteName);
 	}
 }

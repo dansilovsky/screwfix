@@ -1,7 +1,4 @@
-{var $i = 1}
-
-
-<input type="hidden" name="{$name}" value="{$inputPattern}">
+<input type="hidden" name="{$name}" value="{$input}">
 <table id="{$id}" class="inputPattern" n:if="$pattern">
 	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Firday</th><th>Saturday</th><th>Sunday</th><th></th></tr>
 {foreach $pattern as $weekNum => $week}
@@ -14,7 +11,7 @@
 		
 		<td {if !$times}class="dayOff"{/if}>
 			{if $times}
-				<div class="date">26 April</div>
+				<div class="date">{$date|day}</div>
 				<div class="formRowInputpattern">
 					<label>from</label>
 					<select name="fromHour">
@@ -38,7 +35,7 @@
 				</div>
 				
 			{else}
-			<div class="date">26 April</div>
+			<div class="date">{$date|day}</div>
 			<div class="formRowInputpattern">
 				Off day
 			</div>
@@ -47,7 +44,6 @@
 			</div>
 			{/if}
 		</td>
-		{var $i++}
 	{/foreach}
 		<td>
 			<div><input type="button" class="buttonIcon" value="+" title="Add week before this one"></div>			
