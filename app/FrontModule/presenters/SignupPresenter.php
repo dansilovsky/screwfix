@@ -2,7 +2,9 @@
 
 namespace FrontModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+	Screfix\BaseaccountForm;
+
 
 /**
  * SignupPresenter
@@ -13,11 +15,11 @@ use Nette\Application\UI\Form;
  */
 class SignupPresenter extends BaseaccountPresenter {
 	
-	protected function createComponentCredentialsForm() 
+	protected function createComponentSignupForm() 
 	{		
-		$form = new Form($this, 'credentialsForm');
-		// credentials part
+		$form = new BaseaccountForm($this, 'signupForm');
 		
+		// credentials part		
 		$form->addText('username', null, 30, 30)
 			->setAttribute('placeholder', 'Username')
 			->setAttribute('value', $this->identity->username)
@@ -55,7 +57,7 @@ class SignupPresenter extends BaseaccountPresenter {
 		
 		// common part		
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);
-		$form->onSuccess[] = $this->credentialsFormSubmitted;
+		$form->onSuccess[] = $this->signupFormSubmitted;
 		
 		return $form;
 	}
@@ -65,7 +67,7 @@ class SignupPresenter extends BaseaccountPresenter {
 	 *
 	 * @param  Nette\Application\UI\Form $form
 	 */
-	public function credentialsFormSubmitted(Form $form)
+	public function signupFormSubmitted(Form $form)
 	{
 		$formValues = $form->getValues();
 		
@@ -118,5 +120,4 @@ class SignupPresenter extends BaseaccountPresenter {
 			}
 		}
 	}
-
 }

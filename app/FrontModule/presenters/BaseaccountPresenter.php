@@ -1,7 +1,8 @@
 <?php
 namespace FrontModule;
 
-use Nette\Application\UI\Form;
+use Nette\Application\UI\Form,
+	Screfix\BaseaccountForm;
 
 /**
  * BaseaccountPresenter
@@ -23,7 +24,7 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	
 	protected function createComponentCredentialsForm() 
 	{
-		$form = new Form($this, 'credentialsForm');
+		$form = new BaseaccountForm($this, 'credentialsForm');
 		
 		$form->addSelect('select', 'Select', array('option1' => 'option1', 'option2' => 'option2',));
 		$form->addCheckbox('remember', 'Remember me');
@@ -60,7 +61,9 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	protected function createComponentSetupForm() {
 		$sysPatternSelection = $this->sysPatternFacade->getFormSelection();	
 		
-		$form = new Form($this, 'setupForm');
+		$form = new BaseaccounForm($this, 'setupForm');
+		
+		$form->getElementPrototype()->id = $this->commonFormId;
 		
 		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
 		
