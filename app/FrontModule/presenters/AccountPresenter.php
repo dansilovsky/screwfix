@@ -32,7 +32,7 @@ class AccountPresenter extends BaseaccountPresenter {
 		reset($sysPatternSelection);
 		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
-		$form['pattern'] = $this->patternInputFactory->create();
+		$form['pattern'] = $this->patternInputEditFactory->create();
 		$form['pattern']->setDefaultValue($defaultPattern);
 		
 		$form->addSubmit('send', 'Send')
