@@ -32,7 +32,7 @@
 					<li n:foreach="$form['email']->errors as $error">{$error}</li>
 				</ul>
 				{label email /}
-				{input username}
+				{input email}
 
 			</div>
 			{else}
@@ -70,18 +70,18 @@
 		</div>
 		<div id="formPattern">
 			<div class="formRowNolabel">
-				{label sysPattern /} {input sysPattern}
+				{label sysPatternSelect /} {input sysPatternSelect}
 			</div>
-			{if $form['pattern']->errors}
+			{if $form['patternInput']->errors}
 			<div class="formRowError">
 				<ul>
-					<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
+					<li n:foreach="$form['patternInput']->errors as $error">{$error}</li>
 				</ul>
-				{input pattern}
+				{input patternInput}
 			</div>
 			{else}
 			<div class="formRowNolabel">
-				{input pattern}
+				{input patternInput}
 			</div>
 			{/if}
 			<div class="formLine buttonArea">
