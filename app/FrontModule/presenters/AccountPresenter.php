@@ -28,13 +28,13 @@ class AccountPresenter extends BaseaccountPresenter {
 		
 		$form = new BaseaccountForm($this, 'setupForm');
 		
-		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
+		$form->addSelect('sysPatternSelect', 'Select pattern', $sysPatternSelection);
 		
 		reset($sysPatternSelection);
 		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
-		$form['pattern'] = $this->patternInputEditFactory->create();
-		$form['pattern']->setDefaultValue($defaultPattern);
+		$form['patternInput'] = $this->patternInputEditFactory->create();
+		$form['patternInput']->setDefaultValue($defaultPattern);
 		
 		$form->addSubmit('send', 'Send')
 			->setAttribute('class', 'button');

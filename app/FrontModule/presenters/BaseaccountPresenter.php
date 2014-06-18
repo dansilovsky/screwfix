@@ -65,13 +65,13 @@ abstract class BaseaccountPresenter extends BasePresenter {
 		
 		$form->getElementPrototype()->id = $this->commonFormId;
 		
-		$form->addSelect('sysPattern', 'Select pattern', $sysPatternSelection);
+		$form->addSelect('sysPatternSelect', 'Select pattern', $sysPatternSelection);
 		
 		reset($sysPatternSelection);
 		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
 		
-		$form['pattern'] = $this->patternInputFactory->create();
-		$form['pattern']->setDefaultValue($defaultPattern);
+		$form['patternInput'] = $this->patternInputFactory->create();
+		$form['patternInput']->setDefaultValue($defaultPattern);
 		
 		$form->addSubmit('send', 'Send')
 			->setAttribute('class', 'button');
