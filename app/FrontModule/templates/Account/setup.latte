@@ -6,10 +6,10 @@
 	<div class="formRowNolabel">
 		{label sysPatternSelect /} {input sysPatternSelect}
 	</div>
-	{if $form['pattern']->errors}
+	{if $form['patternInput']->errors}
 	<div class="formRowError">
 		<ul>
-			<li n:foreach="$form['pattern']->errors as $error">{$error}</li>
+			<li n:foreach="$form['patternInput']->errors as $error">{$error}</li>
 		</ul>
 		{input patternInput}
 
@@ -23,9 +23,3 @@
 	{input send}
 	</div>
 {/form}
-
-{define #javascritpBottom}
-<script type="text/template" id="accountInputPattern">
-	
-</script>
-{/define}
