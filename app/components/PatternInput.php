@@ -84,7 +84,7 @@ class PatternInput extends \Nette\Forms\Controls\BaseControl
 		
 		// returns curren formated date and moves date one day forward
 		$this->_template->registerHelper('day', function($date) {
-			$day = $date->format('d F');
+			$day = $date->format('j F');
 			$date->addDay();
 			
 			return $day;
