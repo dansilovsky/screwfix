@@ -21,7 +21,6 @@ class ShiftPatternIteratorFactory {
 		$this->shiftPatternDate = $shiftPatternDate;
 	}
 
-
 	/**
 	 * @param array $pattern  pattern array
 	 * @return ShiftPatternIterator
