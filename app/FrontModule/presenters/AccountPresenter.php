@@ -22,12 +22,13 @@ class AccountPresenter extends BaseaccountPresenter {
 		
 		$form->addText('username', null, 30, 30)
 			->setAttribute('placeholder', 'Username')
-			->setAttribute('value', $this->identity->username)
+			->setValue($this->identity->username)
 			->addRule(Form::MIN_LENGTH, 'Username must contain at least %d characters.', 3)
 			->addRule(Form::MAX_LENGTH, 'Username is too long. Use maximum of %d characters.', 60)
 			->addRule(Form::PATTERN, 'Username can contain only alphabetical characters or underscore.', '\w{3,60}');
 		$form->addText('email', 'Email', 30, 30)
 			->setAttribute('placeholder', 'Email')
+			->setValue($this->identity->email)
 			->setRequired('Enter an email please.')
 			->addRule(Form::MAX_LENGTH, 'Email is too long. Use maximum of %d characters.', 255)
 			->addRule(Form::EMAIL, 'Invalid email address.');
