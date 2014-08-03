@@ -73,6 +73,7 @@ class AroundIterator implements \Iterator {
 	 * Sets start position
 	 * 
 	 * @param int $position
+	 * @return $this
 	 * @throws \Dan\AroundIterator_OutOfScope_Exception
 	 */
 	function setStart($position)
@@ -82,7 +83,9 @@ class AroundIterator implements \Iterator {
 		if (!isset($this->array[$this->position]))
 		{
 			throw new \Dan\AroundIterator_OutOfScope_Exception('Given start position is out of scope.');
-		}		
+		}
+		
+		return $this;
 	}
 	
 	function currentMove()

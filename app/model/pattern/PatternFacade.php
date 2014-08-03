@@ -34,7 +34,7 @@ class PatternFacade extends RepositoryFacade {
 	{
 		$data = array(
 			'user_id' => $userId, 
-			'patter' => $pattern
+			'pattern' => serialize($pattern)
 		);
 		
 		$this->repository->insert($data);

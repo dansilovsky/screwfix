@@ -288,6 +288,76 @@
 	
 }).call(this, jQuery);
 
+// common objects
+(function($){
+	var common = {};
+	
+	/**
+	 * Determines a week pattern number.
+	 * If no year given then it sets itself to todays date
+	 * 
+	 * @param {int} year
+	 * @param {int} month integer 1 to 12
+	 * @param {int} day
+	 */
+	var ShiftPatternDate = common.ShiftPatternDate = function(year, month, day) {		
+		var date = new Zidane.Calendar(year, month, day);
+		
+		if (!year) {
+			date.today();
+		}
+		
+		var startDate = new Zidane.Calendar(1970, 1, 5);
+		
+		return {
+			/**
+			 * Determines week pattern number.
+			 * @param {int} weeksInPattern number of weeks in shift pattern
+			 * @returns {int}
+			 */
+			week: function(weeksInPattern) {
+				var days = date.diffDays(startDate);
+				
+				var weeks = Math.floor(days/7);
+				
+				var weekPatternNum = weeks % weeksInPattern;
+				
+				if (weekPatternNum === 0) {
+					weekPatternNum = weeksInPattern - 1;
+				}
+				else {
+					weekPatternNum--;
+				}
+				
+				return weekPatternNum;
+			},
+			
+			/**
+			 * Adjusts weeks order of given pattern according to this date			 * 
+			 * @param {array} pattern
+			 * @returns {array} new adjusted pattern
+			 */
+			adjust: function(pattern) {
+				var newPattern = [];
+				var startWeek = this.week(pattern.length);
+				
+				for (
+					var i=startWeek, counter=0; 
+					counter<pattern.length; 
+					i = (i+1 >= pattern.length) ? 0 : i+1, counter++
+				) {
+					newPattern[counter] = pattern[i];
+				}
+				
+				return newPattern;
+			}
+		}
+	}
+	
+	Screwfix = $.extend({}, Screwfix, {common: common});
+	
+}).call(this, jQuery);
+
 // TODO: smaz to
 Screwfix.testCounter = 0;
 

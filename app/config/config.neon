@@ -63,6 +63,7 @@ common:
 		bankHolidayFacade: Screwfix\BankHolidayFacade
 
 		shiftPatternDate: Screwfix\ShiftPatternDate
+		shiftPatternDateFactory: Screwfix\ShiftPatternDateFactory
 		
 		latteEngine: Screwfix\LatteEngine
 		template: Screwfix\Template
@@ -74,6 +75,10 @@ common:
 			parameters: [pattern]
 			class: Screwfix\ShiftPatternFilter(%pattern%)
 			autowired: no
+		
+		shiftPatternFilterFactory: Screwfix\ShiftPatternFilterFactory
+
+		aroundIteratorFactory: Screwfix\AroundIteratorFactory
 
 		shiftPatternIteratorFactory: Screwfix\ShiftPatternIteratorFactory
 

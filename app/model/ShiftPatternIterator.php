@@ -3,7 +3,8 @@
 namespace Screwfix;
 
 /**
- * PatternIterator iterates over the shift pattern from a current shift pattern week.
+ * PatternIterator iterates over the shift pattern from a shift pattern week. 
+ * Pattern week is derived from given shift pattern date.
  *
  * @author Daniel Silovsky
  * @copyright (c) 2013, Daniel Silovsky
@@ -12,13 +13,20 @@ namespace Screwfix;
 class ShiftPatternIterator extends \Dan\Iterators\AroundIterator {
 
 	protected $firstDay;
-	
+
 	public function __construct(array $pattern, ShiftPatternDate $shiftPatternDate)
 	{
 		parent::__construct($pattern);
 		
-		$startPosition = $shiftPatternDate->week(count($pattern));
+		$this->setDate($shiftPatternDate);
+	}
+	
+	public function setDate(ShiftPatternDate $shiftPatternDate)
+	{
+		$startPosition = $shiftPatternDate->week(count($this->array));
 		
 		$this->setStart($startPosition);
+		
+		return $this;
 	}
 }

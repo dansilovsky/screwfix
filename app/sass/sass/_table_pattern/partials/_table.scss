@@ -32,19 +32,6 @@ table.inputPattern {
 			text-align: center;
 		}
 		
-		&.customize {
-			padding: 0;
-			
-			a {
-				background-color: $color-highlight-dark;
-				color: $color-text-highlight-dark;
-				display: block;
-				font-weight: normal;
-				height: px-to-em($form-vr-button-height, $base-font-size);
-				line-height: px-to-em($form-vr-button-height, $base-font-size);
-			}
-		}
-		
 		div {
 			&.date {
 				text-align: right;

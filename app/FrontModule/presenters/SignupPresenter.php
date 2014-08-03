@@ -3,8 +3,7 @@
 namespace FrontModule;
 
 use Nette\Application\UI\Form,
-	Screfix\BaseaccountForm;
-
+    Screwfix\BaseaccountForm;
 
 /**
  * SignupPresenter
@@ -14,11 +13,11 @@ use Nette\Application\UI\Form,
  * @license http://www.screwfix-calendar.co.uk/license
  */
 class SignupPresenter extends BaseaccountPresenter {
-	
-	protected function createComponentSignupForm() 
-	{		
+
+	protected function createComponentSignupForm()
+	{
 		$form = new BaseaccountForm($this, 'signupForm');
-		
+
 		// credentials part		
 		$form->addText('username', null, 30, 30)
 			->setAttribute('placeholder', 'Username')
@@ -38,30 +37,29 @@ class SignupPresenter extends BaseaccountPresenter {
 		$form->addPassword('verifyPassword', null, 30)
 			->setAttribute('placeholder', 'Retype password')
 			->setRequired('Reenter a password please.')
-			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);		
+			->addRule(Form::EQUAL, 'Passwords do not match.', $form['password']);
 		$form->addCheckbox('remember', 'Remember me');
-		
+
 		// shift pattern part		
 		$sysPatternSelection = $this->sysPatternFacade->getFormSelection();
-		
+
 		$form->addSelect('sysPatternSelect', 'Select pattern', $sysPatternSelection);
-		
+
 		reset($sysPatternSelection);
 		$defaultPattern = $this->buildDefaultInputPattern(\Nette\Utils\Json::decode(key($sysPatternSelection)));
-		
+
 		$form['patternInput'] = $this->patternInputOverviewFactory->create();
 		$form['patternInput']->setDefaultValue($defaultPattern);
-		
+
 		$form->addSubmit('createAccount', 'Create account')
 			->setAttribute('class', 'button');
-		
+
 		// common part		
 		$form->addProtection('Time limit has expired. Please send the form again.', 1800);
 		$form->onSuccess[] = $this->signupFormSubmitted;
-		
+
 		return $form;
 	}
-	
 
 	/**
 	 *
@@ -70,7 +68,7 @@ class SignupPresenter extends BaseaccountPresenter {
 	public function signupFormSubmitted(Form $form)
 	{
 		$formValues = $form->getValues();
-		
+
 		$userUsernameRow = $this->userFacade->getByUsername($formValues->username);
 
 		$userEmailRow = $this->userFacade->getByEmail($formValues->email);
@@ -98,7 +96,6 @@ class SignupPresenter extends BaseaccountPresenter {
 				'password' => $hashedPassword
 			);
 
-
 			try
 			{
 				$this->userFacade->save($userArr);
@@ -112,12 +109,19 @@ class SignupPresenter extends BaseaccountPresenter {
 
 				$user->login($formValues->username, $formValues->password);
 
-				$this->redirect('Account:setup');
+				$pattern = $this->adjustPattern($formValues->patternInput['pattern'], $formValues->patternInput['firstDay']);
+
+				$patternFilter = $this->shiftPatternFilterFactory->create($pattern);
+				
+				$this->patternFacade->save($user->getId(), $patternFilter);
 			}
 			catch (\Exception $ex)
 			{
 				$form->addError('Sorry, something went wrong. Please try again.');
 			}
+
+			$this->redirect('Home:default');
 		}
 	}
+
 }

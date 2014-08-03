@@ -1,6 +1,6 @@
 <?php
 
-namespace Screfix;
+namespace Screwfix;
 
 /**
  * BaseaccountForm assigns common id.

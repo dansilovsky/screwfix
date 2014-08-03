@@ -1,0 +1,113 @@
+<script type="text/template" id="formPatternInputOverviewTemplate">
+	<input type="hidden" name="patternInput" value="<%- mo.patternStr %>">
+	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr>
+	<% for(var i=0, w=1; i<mo.pattern.length; i++, w++) { %>
+	<tr>
+		<td>
+			<div><%= w %></div>
+		</td>
+		<% var times; for(var ii=0; ii<mo.pattern[i].length; ii++, mo.date.nextDay()) { times = mo.pattern[i][ii]; %>
+		<td>
+			<div class="date"><%= mo.date.toString() %></div>
+			<% if (times) { %>
+			<div class="time">
+				<%- times[0] %> - <%- times[1] %>
+			</div>
+			<% } else { %>
+			<div class="time">
+				Off day
+			</div>
+			<% } %>
+		</td>
+		<% } %>
+	</tr>
+	<% } %>
+	<tr>
+		<td colspan="8">
+			<input type="button" class="button" name="customize" value="Customize">
+		</td>
+	</tr>	
+</script>
+<script n:syntax="off" type="text/template" id="formPatternInputEditTemplate">
+	<input type="hidden" name="patternInput" value="<%- mo.patternStr %>">
+	<tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th></tr>
+	<% for(var i=0, w=1; i<mo.pattern.length; i++, w++) { %>
+	<tr>
+		<td>
+			<div><%= w %></div>
+		</td>
+		<%  
+			for(var ii=0, times; ii<mo.pattern[i].length; ii++, mo.date.nextDay()) { 
+				times = mo.pattern[i][ii];
+				mo.view.daysData.push({date: mo.date.clone(), times: times}); 
+		%>
+		<td class="day <% if (!times) { %>dayOff" <% } else { %>dayIn"<% } %>>
+		</td>
+		<% } %>
+	</tr>
+	<% } %>
+	<tr>
+		<td colspan="8">
+		<input type="button" class="button" name="uncustomize" value="Show overview">
+		<input type="button" class="button" name="addWeek" value="Add week +">
+		<input type="button" class="button" name="removeWeek" value="Remove week -">
+		</td>
+	</tr>
+</script>
+<script type="text/template" id="formPatternInputDayInTemplate">
+	<div class="date"><%= mo.date.toString() %></div>
+	<div class="formRowInputpattern">
+		<label>from</label>
+		<select name="fromHour">
+			<% for(var hour=0; hour<24; hour++) { %>
+			<option <%= mo.view.selectOption(hour, mo.times[0], 'h') %> value="<%= mo.view.padTime(hour) %>"><%= mo.view.padTime(hour) %></option>
+			<% } %>
+		</select>
+		<select name="fromMinute">
+			<% for(var minute=0; minute<60; minute+=15) { %>
+			<option <%= mo.view.selectOption(minute, mo.times[0], 'm') %> value="<%= mo.view.padTime(minute) %>"><%= mo.view.padTime(minute) %></option>
+			<% } %>
+		</select>
+	</div>
+	<div class="formRowInputpattern">
+		<label>to</label>
+		<select name="toHour">
+			<% for(var hour=0; hour<24; hour++) { %>
+			<option <%= mo.view.selectOption(hour, mo.times[1], 'h') %> value="<%= mo.view.padTime(hour) %>"><%= mo.view.padTime(hour) %></option>
+			<% } %>
+		</select>
+		<select name="toMinute">
+			<% for(var minute=0; minute<60; minute+=15) { %>
+			<option <%= mo.view.selectOption(minute, mo.times[1], 'm') %> value="<%= mo.view.padTime(minute) %>"><%= mo.view.padTime(minute) %></option>
+			<% } %>
+		</select>
+	</div>
+	<div>
+		<a href="javascript:;" title="Change to off day">change</a>
+	</div>
+</script>
+<script type="text/template" id="formPatternInputDayOffTemplate">
+	<div class="date"><%= mo.date.toString() %></div>
+	<div class="formRowInputpattern">
+		Off day
+	</div>
+	<div>
+		<a href="javascript:;" title="Change to working day">change</a>
+	</div>
+</script>
+<script type="text/javascript" src="{$basePath}/js/underscore-dev-1.6.0.js"></script>
+<script type="text/javascript" src="{$basePath}/js/backbone-dev-1.1.2.js"></script>
+<script type="text/javascript" src="{$basePath}/js/zidane.js"></script>
+<script type="text/javascript">
+	var Screwfix = {		
+		acl: {
+			roles: {$acl->getRoles()}
+		},
+		user: {
+			{var roles = $user->getRoles()}
+			role: {$roles[0]}
+		},
+	};
+</script>
+<script type="text/javascript" src="{$basePath}/js/common.js"></script>
+<script type="text/javascript" src="{$basePath}/js/baseaccount.js"></script>

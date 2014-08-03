@@ -22,6 +22,8 @@ class ShiftPatternIteratorFactory {
 	}
 
 	/**
+	 * Creates new instance of ShiftPatternIteratorFactory set to current date
+	 * 
 	 * @param array $pattern  pattern array
 	 * @return ShiftPatternIterator
 	 */

@@ -2,7 +2,7 @@
 namespace FrontModule;
 
 use Nette\Application\UI\Form,
-	Screfix\BaseaccountForm;
+	Screwfix\BaseaccountForm;
 
 /**
  * BaseaccountPresenter
@@ -21,6 +21,9 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	
 	/** @var \Screwfix\ShiftPatternIteratorFactory @inject */
 	public $patternIteratorFactory;
+	
+	/** @var \Screwfix\ShiftPatternFilterFactory @inject */
+	public $shiftPatternFilterFactory;
 	
 	protected function createComponentCredentialsForm() 
 	{
@@ -115,4 +118,31 @@ abstract class BaseaccountPresenter extends BasePresenter {
 		return $result;
 	}
 	
+	/**
+	 * Adjusts patterns weeks order by given date of first day of pattern.
+	 * Commonly pattern sent by client from signup or edit.
+	 * 
+	 * @param array $pattern
+	 * @param string $date a date of first day in pattern. The format of date is yyyy-mm-dd
+	 * @return array adjusted pattern
+	 */
+	public function adjustPattern(array $pattern, $date)
+	{
+		$adjustedPattern = array();
+		
+		$patternCount = count($pattern);
+		
+		$patternWeekNumber = $this->shiftPatternDateFactory->create($date)
+			->week($patternCount);
+		
+		$aroundIterator = $this->aroundIteratorFactory->create($pattern)
+			->setStart($patternCount - $patternWeekNumber);		
+		
+		foreach($aroundIterator as $week)
+		{
+			$adjustedPattern[] = $week;
+		}
+		
+		return $adjustedPattern;
+	}	
 }

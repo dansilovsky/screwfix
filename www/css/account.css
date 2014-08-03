@@ -720,37 +720,24 @@ table.inputPattern td:first-child {
 table.inputPattern td:last-child {
   text-align: center;
 }
-/* line 35, ../../app/sass/sass/_table_pattern/partials/_table.scss */
-table.inputPattern td.customize {
-  padding: 0;
-}
-/* line 38, ../../app/sass/sass/_table_pattern/partials/_table.scss */
-table.inputPattern td.customize a {
-  background-color: #3074b6;
-  color: white;
-  display: block;
-  font-weight: normal;
-  height: 2.14286em;
-  line-height: 2.14286em;
-}
-/* line 49, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 36, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern td div.date {
   text-align: right;
 }
-/* line 53, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 40, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern td div.time {
   margin-top: 1.42857em;
 }
-/* line 58, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 45, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern a {
   color: #3074b6;
   font-weight: bold;
 }
-/* line 64, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 51, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern tr:nth-child(even) td {
   background-color: #e3e3e3;
 }
-/* line 70, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 57, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern .buttonIcon {
   background-color: #3074b6;
   border: 0;
@@ -767,7 +754,7 @@ table.inputPattern .buttonIcon {
 table.inputPattern .buttonIcon:hover {
   background-color: #3681ca;
 }
-/* line 74, ../../app/sass/sass/_table_pattern/partials/_table.scss */
+/* line 61, ../../app/sass/sass/_table_pattern/partials/_table.scss */
 table.inputPattern .buttonIconMinusWrapper {
   margin: 3.14286em 0;
 }

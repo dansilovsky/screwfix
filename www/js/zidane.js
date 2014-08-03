@@ -7,7 +7,7 @@
 	/**
 	 * 
 	 * @param {int} year  optional
-	 * @param {int} month optional
+	 * @param {int} month optional integer 1 to 12
 	 * @param {int} day   optional
 	 * @param {callback} format callback function to format date to string, function takes 3 arguments year, month and day
 	 */
@@ -238,12 +238,46 @@
 				
 				return this;
 			},
+			
+			/** 
+			 * Moves date to today.
+			 * @return {this}
+			 */
+			today: function() {
+				var now = new Date();
+				
+				this.set(now.getFullYear(), now.getMonth() + 1, now.getDate());
+				
+				return this;
+			},
+			
+			/**
+			 * Difference in days between given date and current date.
+			 * @param {string|Zidane.Calendar}   date   format of date string yyyy-mm-dd
+			 * @return {int}
+			 */
+			diffDays: function(date) {
+				var dateObj;
+				
+				if (_.isString(date)) {
+					dateObj = new Zidane.Calendar();
+					dateObj.setFromStr(date);
+				}
+				else {
+					dateObj = date;
+				}
+				
+				var utc1 = Date.UTC(this.getYear(), this.getMonth() - 1, this.getDate());
+				var utc2 = Date.UTC(dateObj.getYear(), dateObj.getMonth() -1, dateObj.getDate());
+				
+				return Math.abs(Math.floor((utc1 - utc2) / DAY));
+			},
 
-			// facade methods that just copy methos of Date object
+			// facade methods that just mimic methos of Date object
 			toString: function() {
 				
 				if (format) {
-					return format.call(this, this.getYear(), this.getMonth(), this.getDate());
+					return format.call(this, this.getYear(), this.getMonth(), this.getDate(), this);
 				}
 				
 				return date.toDateString();
