@@ -21,7 +21,6 @@ class SignupPresenter extends BaseaccountPresenter {
 		// credentials part		
 		$form->addText('username', null, 30, 30)
 			->setAttribute('placeholder', 'Username')
-			->setAttribute('value', $this->identity->username)
 			->addRule(Form::MIN_LENGTH, 'Username must contain at least %d characters.', 3)
 			->addRule(Form::MAX_LENGTH, 'Username is too long. Use maximum of %d characters.', 60)
 			->addRule(Form::PATTERN, 'Username can contain only alphabetical characters or underscore.', '\w{3,60}');
