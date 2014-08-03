@@ -6,7 +6,7 @@ namespace Screwfix;
 abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	
 	/**
-	 * @var Nette\Security\User 
+	 * @var Nette\Security\User
 	 */
 	protected $user;
 	
@@ -29,6 +29,11 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 * @var Cookies 
 	 */
 	protected $cookies;
+	
+	/**
+	 * @var UserFacade 
+	 */
+	protected $userFacade;
 	
 	/**
 	 * @var PatternFacade 
@@ -58,6 +63,15 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	 * @var BankHolidayFacade
 	 */
 	protected $bankHolidayFacade;
+	
+	/** @var \Screwfix\CalendarDateTimeFactory @inject **/
+	public $calendarDateFactory;
+	
+	/** @var \Screwfix\ShiftPatternDateFactory @inject **/
+	public $shiftPatternDateFactory;
+	
+	/** @var \Screwfix\AroundIteratorFactory @inject **/
+	public $aroundIteratorFactory;
 
 	protected function startup()
         {
@@ -87,36 +101,72 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 //			
 //			
 //		}exit;
-
-		
-		
+//
+//		
+//		
 //		$iterator = new CalendarMonthPeriod('1970/02/01', 12);
 //		
-//		$patternArray = array(//weeks
+//		$ShiftPatternDate = new ShiftPatternDate();
+//		$ShiftPatternDate->set('2014-05-20 00:00:00');
+//		$week = $ShiftPatternDate->week(6);
+//		echo "<br>------!!!------<br><pre>";
+//		var_dump($week);
+//		exit;
+//		echo "</pre><br>------!!!------<br>";
+//		$patternArray = array(//weeks			
 //			0 => array(//days
-//				0 => array('00:00', '15:00'),
-//				1 => array('01:00', '15:00'),
-//				2 => array('02:00', '15:00'),
-//				3 => array('03:00', '15:00'),
-//				4 => array('04:00', '15:00'),
-//				5 => NULL,
-//				6 => array('06:00', '15:00'),
-//			),
-//			1 => array(//days
-//				0 => array('12:00', '20:00'),
-//				1 => array('12:00', '20:00'),
-//				2 => array('12:00', '20:00'),
-//				3 => array('12:00', '20:00'),
-//				4 => NULL,
+//				0 => array('15:00', '23:00'),
+//				1 => array('15:00', '23:00'),
+//				2 => array('15:00', '23:00'),
+//				3 => array('15:00', '23:00'),
+//				4 => array('15:00', '23:00'),
 //				5 => NULL,
 //				6 => NULL,
+//			),
+//			1 => array(//days
+//				0 => array('07:00', '15:00'),
+//				1 => array('07:00', '15:00'),
+//				2 => array('07:00', '15:00'),
+//				3 => array('07:00', '15:00'),
+//				4 => array('07:00', '15:00'),
+//				5 => NULL,
+//				6 => array('09:30', '17:30'),
 //			),
 //			2 => array(//days
 //				0 => array('15:00', '23:00'),
 //				1 => array('15:00', '23:00'),
 //				2 => array('15:00', '23:00'),
 //				3 => array('15:00', '23:00'),
+//				4 => NULL,
+//				5 => NULL,
+//				6 => NULL,
+//				
+//			),
+//			3 => array(//days
+//				0 => array('07:00', '15:00'),
+//				1 => array('07:00', '15:00'),
+//				2 => array('07:00', '15:00'),
+//				3 => array('07:00', '15:00'),
+//				4 => array('07:00', '15:00'),
+//				5 => NULL,
+//				6 => NULL,
+//			),
+//			4 => array(//days
+//				0 => array('15:00', '23:00'),
+//				1 => array('15:00', '23:00'),
+//				2 => array('15:00', '23:00'),
+//				3 => array('15:00', '23:00'),
 //				4 => array('15:00', '23:00'),
+//				5 => NULL,
+//				6 => array('09:30', '17:30'),
+//				
+//			),
+//			5 => array(//days
+//				0 => array('07:00', '15:00'),
+//				1 => array('07:00', '15:00'),
+//				2 => array('07:00', '15:00'),
+//				3 => array('07:00', '15:00'),
+//				4 => NULL,
 //				5 => NULL,
 //				6 => NULL,
 //			),
@@ -148,7 +198,131 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 //			echo '<br>';
 //		}
 //		
-//		exit;		
+//		exit;
+		
+		// green team 1
+		$patternArray = array(//weeks			
+			0 => array(//days
+				0 => array('15:00', '23:00'),
+				1 => array('15:00', '23:00'),
+				2 => array('15:00', '23:00'),
+				3 => array('15:00', '23:00'),
+				4 => array('15:00', '23:00'),
+				5 => NULL,
+				6 => NULL,
+			),
+			1 => array(//days
+				0 => array('07:00', '15:00'),
+				1 => array('07:00', '15:00'),
+				2 => array('07:00', '15:00'),
+				3 => array('07:00', '15:00'),
+				4 => array('07:00', '15:00'),
+				5 => NULL,
+				6 => array('09:30', '17:30'),
+			),
+			2 => array(//days
+				0 => array('15:00', '23:00'),
+				1 => array('15:00', '23:00'),
+				2 => array('15:00', '23:00'),
+				3 => array('15:00', '23:00'),
+				4 => NULL,
+				5 => NULL,
+				6 => NULL,
+				
+			),
+			3 => array(//days
+				0 => array('07:00', '15:00'),
+				1 => array('07:00', '15:00'),
+				2 => array('07:00', '15:00'),
+				3 => array('07:00', '15:00'),
+				4 => array('07:00', '15:00'),
+				5 => NULL,
+				6 => NULL,
+			),
+			4 => array(//days
+				0 => array('15:00', '23:00'),
+				1 => array('15:00', '23:00'),
+				2 => array('15:00', '23:00'),
+				3 => array('15:00', '23:00'),
+				4 => array('15:00', '23:00'),
+				5 => NULL,
+				6 => array('09:30', '17:30'),
+				
+			),
+			5 => array(//days
+				0 => array('07:00', '15:00'),
+				1 => array('07:00', '15:00'),
+				2 => array('07:00', '15:00'),
+				3 => array('07:00', '15:00'),
+				4 => NULL,
+				5 => NULL,
+				6 => NULL,
+			),
+		);
+		
+//		// red team 4
+//		$patternArray = array(//weeks			
+//			0 => array(//days
+//				0 => array('07:00','15:00'),
+//				1 => array('07:00','15:00'),
+//				2 => array('07:00','15:00'),
+//				3 => array('07:00','15:00'),
+//				4 => array('07:00','15:00'),
+//				5 => NULL,
+//				6 => NULL,
+//			),
+//			1 => array(//days
+//				0 => array('15:00','23:00'),
+//				1 => array('15:00','23:00'),
+//				2 => array('15:00','23:00'),
+//				3 => array('15:00','23:00'),
+//				4 => array('15:00','23:00'),
+//				5 => NULL,
+//				6 => array('09:30', '17:30'),
+//			),
+//			2 => array(//days
+//				0 => array('07:00','15:00'),
+//				1 => array('07:00','15:00'),
+//				2 => array('07:00','15:00'),
+//				3 => array('07:00','15:00'),
+//				4 => NULL,
+//				5 => NULL,
+//				6 => NULL,
+//				
+//			),
+//			3 => array(//days
+//				0 => array('15:00','23:00'),
+//				1 => array('15:00','23:00'),
+//				2 => array('15:00','23:00'),
+//				3 => array('15:00','23:00'),
+//				4 => array('15:00','23:00'),
+//				5 => NULL,
+//				6 => NULL,
+//			),
+//			4 => array(//days
+//				0 => array('07:00','15:00'),
+//				1 => array('07:00','15:00'),
+//				2 => array('07:00','15:00'),
+//				3 => array('07:00','15:00'),
+//				4 => array('07:00','15:00'),
+//				5 => NULL,
+//				6 => array('09:30', '17:30'),
+//				
+//			),
+//			5 => array(//days
+//				0 => array('15:00','23:00'),
+//				1 => array('15:00','23:00'),
+//				2 => array('15:00','23:00'),
+//				3 => array('15:00','23:00'),
+//				4 => NULL,
+//				5 => NULL,
+//				6 => NULL,
+//			),
+//		);
+//		
+		$shiftPattern = new ShiftPatternFilter(new ShiftPatternDate);
+		$shiftPattern->setPattern($patternArray);
+		
 		
                 parent::startup();
 		
@@ -169,13 +343,13 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		$this->acl = $this->context->authorizator;
 		
 		// facades
+		$this->userFacade = $this->context->userFacade;
 		$this->patternFacade = $this->context->patternFacade;
 		$this->sysPatternFacade = $this->context->sysPatternFacade;
 		$this->noteFacade = $this->context->noteFacade;
 		$this->sysNoteFacade = $this->context->sysNoteFacade;
 		$this->holidayFacade = $this->context->holidayFacade;
 		$this->bankHolidayFacade = $this->context->bankHolidayFacade;
-		
 		
 		// check if acces is allowed for user
 		if (!$this->isAllowed())
@@ -188,7 +362,8 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	{
 		$this->template->identity = $this->user->getIdentity();
 		$this->template->acl = $this->acl;		
-		$this->template->userUrl = $this->user->isLoggedIn() ? $this->link(':Front:User:', $this->identity->username) : null;
+		$this->template->userUrl = $this->user->isLoggedIn() ? $this->link(':Front:User:', $this->identity->username) : null;		
+		$this->template->isStickyFooter = $this->isStickyFooter();
 	}
 
 
@@ -219,6 +394,11 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	{
 	    $this->getUser()->logout();
 	    $this->redirect(':Front:Home:');
+	}
+	
+	public function isStickyFooter()
+	{
+		return ($this->name !== "Front:Home");
 	}
 	
 	/**
