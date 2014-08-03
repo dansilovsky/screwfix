@@ -23,7 +23,7 @@ class DaysPresenter extends BasePresenter {
 
 			$calendarPeriod = $this->calendarDayPeriodFactory->create($this->from, $this->to);
 
-			$this->calendarData = new \Screwfix\CalendarData($calendarPeriod);
+			$this->calendarData = $this->calendarDataFactory->create($calendarPeriod);
 			$this->calendarData->addFilter($shiftPatternFilter)
 				->addFilter($bankHolidayFilter)
 				->addFilter($holidayFilter)
@@ -40,7 +40,7 @@ class DaysPresenter extends BasePresenter {
 
 			$calendarPeriod = $this->calendarDayPeriodFactory->create($this->from, $this->to);
 
-			$this->calendarData = new \Screwfix\CalendarData($calendarPeriod);
+			$this->calendarData = $this->calendarDataFactory->create($calendarPeriod);
 			$this->calendarData->addFilter($sysShiftPatternFilter)
 				->addFilter($bankHolidayFilter)
 				->addFilter($sysNoteFilter)

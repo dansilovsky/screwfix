@@ -43,6 +43,8 @@ common:
 
 		calendarDayPeriodFactory: Screwfix\CalendarDayPeriodFactory
 
+		calendarDataFactory: Screwfix\CalendarDataFactory
+
 		patternRepository: Screwfix\PatternRepository
 		patternFacade: Screwfix\PatternFacade(@patternRepository)
 

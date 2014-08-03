@@ -22,7 +22,7 @@ class HomePresenter extends CalendarPresenter {
 
 			$calendarPeriod = $this->calendarDayPeriodFactory->create($this->from, $this->to);
 
-			$this->calendarData = new \Screwfix\CalendarData($calendarPeriod);
+			$this->calendarData = $this->calendarDataFactory->create($calendarPeriod);
 			$this->calendarData->addFilter($shiftPatternFilter)
 				->addFilter($bankHolidayFilter)
 				->addFilter($holidayFilter)
@@ -39,7 +39,7 @@ class HomePresenter extends CalendarPresenter {
 
 			$calendarPeriod = $this->calendarDayPeriodFactory->create($this->from, $this->to);
 
-			$this->calendarData = new \Screwfix\CalendarData($calendarPeriod);
+			$this->calendarData = $this->calendarDataFactory->create($calendarPeriod);
 			$this->calendarData->addFilter($sysShiftPatternFilter)
 				->addFilter($bankHolidayFilter)
 				->addFilter($sysNoteFilter)
