@@ -21,7 +21,7 @@ class DaysPresenter extends BasePresenter {
 			$noteFilter = $this->getNoteFilter();
 			$sysNoteFilter = $this->getSysNoteFilter();
 
-			$calendarPeriod = new \Screwfix\CalendarDayPeriod($this->from, $this->to);
+			$calendarPeriod = $this->calendarDayPeriodFactory->create($this->from, $this->to);
 
 			$this->calendarData = new \Screwfix\CalendarData($calendarPeriod);
 			$this->calendarData->addFilter($shiftPatternFilter)
@@ -38,7 +38,7 @@ class DaysPresenter extends BasePresenter {
 			$bankHolidayFilter = $this->getBankHolidayFilter();
 			$sysNoteFilter = $this->getSysNoteFilter();
 
-			$calendarPeriod = new \Screwfix\CalendarDayPeriod($this->from, $this->to);
+			$calendarPeriod = $this->calendarDayPeriodFactory->create($this->from, $this->to);
 
 			$this->calendarData = new \Screwfix\CalendarData($calendarPeriod);
 			$this->calendarData->addFilter($sysShiftPatternFilter)

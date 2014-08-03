@@ -72,6 +72,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	
 	/** @var \Screwfix\AroundIteratorFactory @inject **/
 	public $aroundIteratorFactory;
+	
+	/** @var \Screwfix\CalendarDayPeriodFactory @inject **/
+	public $calendarDayPeriodFactory;
 
 	protected function startup()
         {
