@@ -64,8 +64,8 @@ class HomePresenter extends CalendarPresenter {
 		$this->from->subMonth()
 			->subMonth()
 			->floor();
-
-		$interval = new \Screwfix\CalendarInterval(5, \Screwfix\CalendarInterval::M);
+		
+		$interval = $this->calendarIntervalFactory->create(5, \Screwfix\CalendarInterval::M);
 
 		$this->to = clone $this->from;
 		$this->to->add($interval)->subDay();

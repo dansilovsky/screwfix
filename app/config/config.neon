@@ -45,6 +45,8 @@ common:
 
 		calendarDataFactory: Screwfix\CalendarDataFactory
 
+		calendarIntervalFactory: \Screwfix\CalendarIntervalFactory
+
 		patternRepository: Screwfix\PatternRepository
 		patternFacade: Screwfix\PatternFacade(@patternRepository)
 

@@ -78,6 +78,9 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	
 	/** @var \Screwfix\CalendarDataFactory @inject **/
 	public $calendarDataFactory;
+	
+	/** @var \Screwfix\CalendarIntervalFactory @inject **/
+	public $calendarIntervalFactory;
 
 	protected function startup()
         {
