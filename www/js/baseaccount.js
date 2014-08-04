@@ -95,7 +95,7 @@
 		 * @returns {this}
 		 */
 		setPatternInput: function() {
-			this.patternInputEditView.setInput();
+			this.patternInputEditView.setPatternInput();
 			
 			return this;
 		}
