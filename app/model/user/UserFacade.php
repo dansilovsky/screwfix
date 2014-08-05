@@ -39,9 +39,18 @@ class UserFacade extends RepositoryFacade {
 	}
 	
 	public function save(array $user) 
-	{
-		
-		
+	{		
 		$this->repository->insert($user);
+	}
+	
+	/**
+	 * Updates user
+	 * 
+	 * @param type $userId
+	 * @param array $userData must be array where key = field name and value = value eg. array('username' => 'dans', email => 'dan@post.cz')
+	 */
+	public function update($userId, array $userData)
+	{
+		$this->repository->findById($userId)->update($userData);
 	}
 }
