@@ -6,7 +6,7 @@ namespace Screwfix;
 abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 	
 	/**
-	 * @var Nette\Security\User
+	 * @var \Nette\Security\User
 	 */
 	protected $user;
 	

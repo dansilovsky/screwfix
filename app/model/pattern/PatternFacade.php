@@ -48,4 +48,15 @@ class PatternFacade extends RepositoryFacade {
 		
 		$this->repository->findByUserId($userId)->update($data);
 	}
+	
+	public function getFormSelection($user_id)
+	{		
+		$patternJson = $this->getPatternFilter($user_id)
+			->toJson();		
+		
+		return array(
+			$patternJson => 'My pattern'
+		);
+		
+	}
 }

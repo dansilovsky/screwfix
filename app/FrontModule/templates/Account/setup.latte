@@ -2,6 +2,10 @@
 
 {block #contentAccount}
 
+{define #javascritpBottom}
+{include '../@baseaccount.js.latte'}
+{/define}
+
 {form setupForm class=>'formShiftpattern'}
 	<div class="formRowNolabel">
 		{label sysPatternSelect /} {input sysPatternSelect}

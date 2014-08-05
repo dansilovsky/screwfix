@@ -25,10 +25,6 @@ abstract class BaseaccountPresenter extends BasePresenter {
 	/** @var \Screwfix\ShiftPatternFilterFactory @inject */
 	public $shiftPatternFilterFactory;
 	
-	public function credentialsFormSubmitted(Form $form) {
-		
-	}
-	
 	/**
 	 * Builds default input pattern value array from pattern array.
 	 * 
@@ -75,8 +71,10 @@ abstract class BaseaccountPresenter extends BasePresenter {
 		$patternWeekNumber = $this->shiftPatternDateFactory->create($date)
 			->week($patternCount);
 		
+		$startWeekNumber = ($patternWeekNumber === 0) ? 0 : $patternCount - $patternWeekNumber;
+		
 		$aroundIterator = $this->aroundIteratorFactory->create($pattern)
-			->setStart($patternCount - $patternWeekNumber);		
+			->setStart($startWeekNumber);		
 		
 		foreach($aroundIterator as $week)
 		{
