@@ -354,6 +354,7 @@
 		}
 	}
 	
+	common = $.extend({}, common, Screwfix.common);
 	Screwfix = $.extend({}, Screwfix, {common: common});
 	
 }).call(this, jQuery);
