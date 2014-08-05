@@ -17,6 +17,11 @@ class UserRepository extends \Screwfix\Repository {
 	{
 		parent::__construct($this->_name, $context);
 	}
+	
+	public function findById($userId)
+	{
+		return $this->where('id', $userId);
+	}
         
         /**
          * Get user by username
