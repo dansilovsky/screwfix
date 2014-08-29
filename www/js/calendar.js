@@ -104,6 +104,36 @@
 				
 				return this;
 			},
+			
+			/**
+			 * Use this to move date navigator to previous month after calendar has been moved by week.
+			 * @returns this
+			 */
+			prevMonthFromWeek: function() {
+				current = start.clone().startMonth();
+				
+				start = current.clone().startWeek();
+				end = current.clone().endMonth().endWeek();
+				
+				move = DateNavigator.BACKWARD;
+				
+				return this;
+			},
+			
+			/**
+			 * Use this to move date navigator to next month after calendar has been moved by week.
+			 * @returns this
+			 */
+			nextMonthFromWeek: function() {
+				current = end.clone().startMonth();
+				
+				start = current.clone().startWeek();
+				end = current.clone().endMonth().endWeek();
+				
+				move = DateNavigator.FORWARD;
+				
+				return this;
+			},
 				
 			prevWeek: function() {
 				start.prevWeek();
@@ -961,6 +991,8 @@
 			
 			this.on('change:month:prev', this.dateNavigator.prevMonth, this.dateNavigator);
 			this.on('change:month:next', this.dateNavigator.nextMonth, this.dateNavigator);
+			this.on('change:month:prev:week', this.dateNavigator.prevMonthFromWeek, this.dateNavigator);			
+			this.on('change:month:next:week', this.dateNavigator.nextMonthFromWeek, this.dateNavigator);
 			this.on('change:month', this.monthView.changeMonth, this.monthView);
 			this.on('change:month', this.navigatorView.changeMonthDate, this.navigatorView);
 			
@@ -1039,15 +1071,27 @@
 			return this;
 		},
 			
-		prevMonth: function() {
-			this.trigger('change:month:prev', {dateNavigator: this.dateNavigator});
+		prevMonth: function(fromWeek) {
+			if (!fromWeek) {
+				this.trigger('change:month:prev', {dateNavigator: this.dateNavigator});
+			}
+			else {
+				this.trigger('change:month:prev:week', {dateNavigator: this.dateNavigator});
+			}
+			
 			this.trigger('change:month', {dateNavigator: this.dateNavigator});
 			
 			return this;
 		},
 			
-		nextMonth: function() {
-			this.trigger('change:month:next', {dateNavigator: this.dateNavigator});
+		nextMonth: function(fromWeek) {
+			if (!fromWeek) {
+				this.trigger('change:month:next', {dateNavigator: this.dateNavigator});
+			}
+			else {
+				this.trigger('change:month:next:week', {dateNavigator: this.dateNavigator});
+			}
+			
 			this.trigger('change:month', {dateNavigator: this.dateNavigator});
 			
 			return this;
@@ -1089,6 +1133,8 @@
 			this.render();
 			
 			this.$date = this.$el.find('#dateLabel');
+			
+			this.mode = NavigatorView.MODE_MONTH;
 		},
 			
 		render: function() {
@@ -1105,7 +1151,12 @@
 		prevMonth: function(e) {
 			e.preventDefault();
 			
-			this.parent.prevMonth();
+			if (this.mode === NavigatorView.MODE_MONTH) {
+				this.parent.prevMonth(false);
+			}
+			else {
+				this.parent.prevMonth(true);
+			}
 			
 			return this;
 		},
@@ -1113,12 +1164,19 @@
 		nextMonth: function(e) {
 			e.preventDefault();
 			
-			this.parent.nextMonth();
+			if (this.mode === NavigatorView.MODE_MONTH) {
+				this.parent.nextMonth(false);
+			}
+			else {
+				this.parent.nextMonth(true)
+			}
 			
 			return this;
 		},
 		
 		changeMonthDate: function(options) {
+			this.mode = NavigatorView.MODE_MONTH;
+			
 			var currMonth = options.dateNavigator.getCurrentMonth();
 			var month = Zidane.capitalize(currMonth.getMonthString());
 			var year = currMonth.getYear();
@@ -1129,6 +1187,8 @@
 		},
 		
 		changeWeekDate: function(options) {
+			this.mode = NavigatorView.MODE_WEEK;
+			
 			var start = options.dateNavigator.getCurrentStart();
 			var startDay = start.getDate();
 			var startMonth = Zidane.capitalize(start.getMonthString());
@@ -1144,6 +1204,9 @@
 			return this;
 		}
 	});
+	
+	NavigatorView.MODE_WEEK = 'week';
+	NavigatorView.MODE_MONTH = 'month';
 	
 	var ToolsView = Backbone.View.extend({
 		tagName: 'div',
