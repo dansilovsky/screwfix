@@ -12,7 +12,7 @@
 #contentSidebar {
 	@include padding-content;
 	bottom: 0;
-	float: left;
+	/*float: left;*/
 	left: px-to-em($bar-width-side, $base-font-size);
 	overflow: auto;
 	position: absolute;

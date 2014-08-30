@@ -523,7 +523,7 @@ html, body {
 #contentSidebar {
   padding: 1.42857em 2.14286em;
   bottom: 0;
-  float: left;
+  /*float: left;*/
   left: 12.85714em;
   overflow: auto;
   position: absolute;

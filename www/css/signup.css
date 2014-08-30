@@ -604,8 +604,22 @@ html, body {
 }
 
 /* line 5, ../../app/sass/sass/signup/partials/_content.scss */
+#contentMain {
+  bottom: 2.85714em;
+  position: absolute;
+  top: 2.85714em;
+  width: 100%;
+}
+
+/* line 12, ../../app/sass/sass/signup/partials/_content.scss */
 #contentSignup {
   padding: 1.42857em 2.14286em;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: auto;
+  position: absolute;
+  top: 0;
 }
 
 /* line 27, ../../app/sass/sass/modules/_forms.scss */
@@ -755,21 +769,3 @@ input[type=text], input[type=password] {
 #formPattern {
   width: 70.5em;
 }
-
-/*#progressBar {
-	color: $color-grey-darker;
-	margin-bottom: px-to-em($base-line-height, $base-font-size);
-	
-	ul {
-		display: inline-block;
-	}
-	
-	li {
-		display: inline-block;
-		padding-right: px-to-em($padding-text, $base-font-size);
-		
-		&.current {			
-			font-weight: bolder;
-		}
-	}
-}*/
