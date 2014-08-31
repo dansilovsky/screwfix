@@ -23,7 +23,7 @@ $configurator->createRobotLoader()
 	->register();
 
 // Create Dependency Injection container from config.neon file
-$configurator->addConfig(__DIR__ . '/config/config.neon');
+$configurator->addConfig(__DIR__ . '/config/config.neon', $configurator::AUTO);
 $configurator->addConfig(__DIR__ . '/config/config.local.neon', $configurator::NONE); // none section
 $container = $configurator->createContainer();
 
@@ -32,10 +32,25 @@ $container->router[] = $adminRouter = new RouteList('Admin');
 $adminRouter[] = new Route('administration/<action>', 'Admin:default');
 
 $container->router[] = $apiRouter = new RouteList('Api');
-$apiRouter[] = new RestRoute('api/<presenter>[/<id>]', 'Days:default', RestRoute::RESTFUL);
+$apiRouter[] = new RestRoute(
+	'api/<presenter>[/<id>]', 
+	array(
+		'presenter' => 'Days',
+		'action' => 'default',
+		'id' => null,
+	), 
+	RestRoute::RESTFUL
+);
 
 $container->router[] = $frontRouter = new RouteList('Front');
-$frontRouter[] = new Route('<presenter home|signin|signup|test>/<action>[/<id>]', 'Home:default');
-$frontRouter[] = new Route('<user>/<action>', 'User:default');
+$frontRouter[] = new Route(
+	'<presenter home|signin|signup|account|test>/<action>[/<id>]', 
+	array(
+		'presenter' => 'Home', 
+		'action' => 'default', 
+		'id' => null
+	)
+);
+//$frontRouter[] = new Route('<presenter account>/<action>', 'Account:credentials');
 
 return $container;
