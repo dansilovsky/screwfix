@@ -528,10 +528,11 @@ textarea {
 }*/
 /* line 44, ../../app/sass/sass/calendar/partials/_content.scss */
 #calendarTableContainer {
+  clear: left;
   overflow-y: scroll;
 }
 
-/* line 47, ../../app/sass/sass/calendar/partials/_content.scss */
+/* line 48, ../../app/sass/sass/calendar/partials/_content.scss */
 #calendarSelectionInfo {
   -webkit-user-select: none;
   -moz-user-select: none;

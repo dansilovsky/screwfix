@@ -23,7 +23,7 @@ class SysNoteFacade extends RepositoryFacade {
 	 * @param    string   $to     
 	 * @return   array          empty array if no notes found between given dates
 	 */
-	public function notes(CalendarDateTime $from, CalendarDateTime $to)
+	public function getNotesBetween(CalendarDateTime $from, CalendarDateTime $to)
 	{
 		$from = $from->format(Repository::FORMAT_DATE);
 		$to = $to->format(Repository::FORMAT_DATE);
@@ -42,16 +42,65 @@ class SysNoteFacade extends RepositoryFacade {
 
 			if ($date === $prevDate)
 			{
-				$notes[$prevDate][] = $row->note;
+				$notes[$prevDate][] = array('id' => $row->id, 'note' => $row->note);;
 			}
 			else
 			{
-				$notes[$date][] = $row->note;
+				$notes[$date][] = array('id' => $row->id, 'note' => $row->note);;
 			}
 
 			$prevDate = $date;
 		}
 
 		return $notes;
+	}
+	
+	/**
+	 * Get sys notes for given date. 
+	 * Returned array is adopted for the use by clients javascript.
+	 * 
+	 * @param string   $date
+	 * @return array eg. array('sysNote' => array(
+	 *                      array('id' => 1, 'note' => 'text 1'),
+	 *                      array('id' => 2, 'note' => 'text 2'),
+	 *                   ))
+	 */
+	public function getAjaxNote($date)
+	{
+		$note = array();
+		
+		$selection = $this->repository->getByDate($date);
+		
+		foreach($selection as $row)
+		{
+			$note['sysNote'][] = array('id' => $row->id, 'note' => $row->note);
+		}
+		
+		if (empty($note)) {
+			$note = array('sysNote' => null);
+		}
+		
+		return $note;
+	}
+	
+	public function updateNotes($date, $note)
+	{
+		if ($note['id'] === null)
+		{
+			// create
+			$this->repository->save($date, $note['note']);
+		}
+		else if ($note['note'] === null)
+		{
+			// delete
+			$this->repository->get($note['id'])
+				->delete();
+		}
+		else if (isset($note['id'], $note['note'])) 
+		{
+			// update
+			$this->repository->get($note['id'])
+				->update(array('note' => $note['note']));
+		}
 	}
 }

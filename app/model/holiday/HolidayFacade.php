@@ -44,4 +44,34 @@ class HolidayFacade extends RepositoryFacade {
 		
 		return $holidays;
 	}
+	
+	public function updateHolidays($user_id, array $holidays) 
+	{
+		$count = count($holidays);
+		
+		$from = $holidays[0]['id'];
+		
+		$to = $count > 1 ? $holidays[$count - 1]['id'] : null;
+		
+		if ($holidays[0]['holiday'] === null)
+		{
+			// delete
+			if ($to !== null)
+			{
+				$this->repository->between($user_id, $from, $to)->delete();
+			}
+			else
+			{
+				$this->repository->getByDateUser($from, $user_id)->delete();
+			}
+		}
+		else
+		{
+			//create
+			foreach($holidays as $holiday)
+			{
+				$this->repository->save($holiday['id'], $holiday['holiday'], $user_id);
+			}
+		}
+	}
 }

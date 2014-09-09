@@ -50,7 +50,7 @@ class FormMacros extends MacroSet
 	 */
 	public function macroForm(MacroNode $node, PhpWriter $writer)
 	{
-		if ($node->htmlNode && strtolower($node->htmlNode->name) === 'form') {
+		if ($node->prefix) {
 			throw new CompileException('Did you mean <form n:name=...> ?');
 		}
 		$name = $node->tokenizer->fetchWord();
@@ -58,6 +58,7 @@ class FormMacros extends MacroSet
 			throw new CompileException("Missing form name in {{$node->name}}.");
 		}
 		$node->tokenizer->reset();
+		$node->replaced = TRUE;
 		return $writer->write(
 			'Nette\Bridges\FormsLatte\FormMacros::renderFormBegin($form = $_form = '
 			. ($name[0] === '$' ? 'is_object(%node.word) ? %node.word : ' : '')
@@ -73,7 +74,7 @@ class FormMacros extends MacroSet
 	{
 		$name = $node->tokenizer->fetchWord();
 		if ($name === FALSE) {
-			throw new CompileException("Missing form name in {{$node->name}}.");
+			throw new CompileException("Missing name in {{$node->name}}.");
 		}
 		$node->tokenizer->reset();
 		return $writer->write(
@@ -154,7 +155,8 @@ class FormMacros extends MacroSet
 		}
 		$name = array_shift($words);
 		$tagName = strtolower($node->htmlNode->name);
-		$node->isEmpty = !in_array($tagName, array('form', 'select', 'textarea'));
+		$node->isEmpty = !in_array($tagName, array('form', 'select', 'textarea'), TRUE);
+		$node->replaced = TRUE;
 
 		if ($tagName === 'form') {
 			return $writer->write(
@@ -182,7 +184,7 @@ class FormMacros extends MacroSet
 
 	public function macroName(MacroNode $node, PhpWriter $writer)
 	{
-		if (!$node->htmlNode) {
+		if (!$node->prefix) {
 			throw new CompileException("Unknown macro {{$node->name}}, use n:{$node->name} attribute.");
 		} elseif ($node->prefix !== MacroNode::PREFIX_NONE) {
 			throw new CompileException("Unknown attribute n:{$node->prefix}-{$node->name}, use n:{$node->name} attribute.");
@@ -193,6 +195,7 @@ class FormMacros extends MacroSet
 	public function macroNameEnd(MacroNode $node, PhpWriter $writer)
 	{
 		preg_match('#^(.*? n:\w+>)(.*)(<[^?].*)\z#s', $node->content, $parts);
+		$node->replaced = TRUE;
 		if (strtolower($node->htmlNode->name) === 'form') {
 			$node->content = $parts[1] . $parts[2] . '<?php Nette\Bridges\FormsLatte\FormMacros::renderFormEnd($_form, FALSE) ?>' . $parts[3];
 		} else { // select, textarea
@@ -230,7 +233,7 @@ class FormMacros extends MacroSet
 			$control->setOption('rendered', FALSE);
 		}
 		$el = $form->getElementPrototype();
-		$el->action = $action = (string) $el->action;
+		$el->action = (string) $el->action;
 		$el = clone $el;
 		if (strcasecmp($form->getMethod(), 'get') === 0) {
 			$el->action = preg_replace('~\?[^#]*~', '', $el->action, 1);

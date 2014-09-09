@@ -31,6 +31,36 @@ class SysNoteRepository extends Repository {
 			->where('date <= ?', $to)
 			->order('date');
 	}
+	
+	/**
+	 * Get selection by user id and date.
+	 * 
+	 * @param integer $user_id
+	 * @param string  $date
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getByDate($date)
+	{
+		return $this->where('date', $date);
+	}
+	
+	/**
+	 * Inserts one new sys note.
+	 * 
+	 * @param string $note sys note value
+	 * @return \Nette\Database\IRow  inserted row
+	 */
+	public function save($date, $note)
+	{
+		$data = array( 
+			'date' => $date, 
+			'note' => $note
+		);
+		
+		$row = $this->insert($data);
+		
+		return $row;
+	}
 
 	
 }

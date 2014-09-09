@@ -254,7 +254,8 @@
 	});
 	
 	//common functions
-	var connectionErrorAlert = common.connectionErrorAlert = function() {
+	var ajaxErrorAlert = common.ajaxErrorAlert = function(model, response, options) {
+		var title, text;
 		
 		new Screwfix.common.AlertView({
 			title: 'Connection error', 
@@ -365,7 +366,7 @@ Screwfix.testCounter = 0;
 // extend backbones model functionality
 Backbone.Model.prototype.screwfix = Screwfix;
 
-Backbone.Model.prototype.connectionErrorAlert = Screwfix.common.connectionErrorAlert;
+Backbone.Model.prototype.ajaxErrorAlert = Screwfix.common.ajaxErrorAlert;
 
 Backbone.Model.prototype.connectingAnimation = Screwfix.common.connectingAnimation;
 
@@ -377,12 +378,12 @@ Backbone.Model.prototype.on('sync', Backbone.Model.prototype.stopConnectingAnima
 
 Backbone.Model.prototype.on('error', Backbone.Model.prototype.stopConnectingAnimation);
 
-Backbone.Model.prototype.on('error', Backbone.Model.prototype.connectionErrorAlert);
+Backbone.Model.prototype.on('error', Backbone.Model.prototype.ajaxErrorAlert);
 
 // extend Backbone Collection prototype
 Backbone.Collection.prototype.screwfix = Screwfix;
 
-Backbone.Collection.prototype.connectionErrorAlert = Screwfix.common.connectionErrorAlert;
+Backbone.Collection.prototype.ajaxErrorAlert = Screwfix.common.ajaxErrorAlert;
 
 Backbone.Collection.prototype.connectingAnimation = Screwfix.common.connectingAnimation;
 

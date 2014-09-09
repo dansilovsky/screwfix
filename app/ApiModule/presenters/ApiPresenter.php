@@ -13,6 +13,6 @@ interface ApiPresenter {
 
 	public function actionDefault();
 	public function actionCreate();
-	public function actionUpdate();
+	public function actionUpdate($id);
 	public function actionDelete();
 }

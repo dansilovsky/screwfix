@@ -46,8 +46,8 @@ $container->router[] = $frontRouter = new RouteList('Front');
 $frontRouter[] = new Route(
 	'<presenter home|signin|signup|account|test>/<action>[/<id>]', 
 	array(
-		'presenter' => 'Home', 
-		'action' => 'default', 
+		'presenter' => 'Home',
+		'action' => 'default',
 		'id' => null
 	)
 );

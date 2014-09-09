@@ -912,18 +912,17 @@
 				dataType: 'json',
 				data: JSON.stringify(models),
 				contentType: 'application/json',
-				success: function() {
+				success: function(data) {
 					that.stopConnectingAnimation();
+					that.add(data, {merge: true});
 					that.trigger('holidaysUpdated');
 				},
-				error: function(jqXHR, textStatus, errorThrown){
+				error: function(jqXHR, textStatus, errorThrown) {
 					that.stopConnectingAnimation();
-					that.connectionErrorAlert();
+					that.ajaxErrorAlert(null, jqXHR, null);
 					that.trigger('holidaysUpdateError');
 				}
-			});	
-			
-			this.add(models, {merge: true});
+			});
 		}
 	});
 	
@@ -1546,13 +1545,13 @@
 			
 			if (notes !== null) {
 				this.$el.find('.note').each(function(i){
-					$(this).data('note', {i: i, type: 'personal', val: notes[i]});
+					$(this).data('note', {i: i, type: 'personal', id: notes[i].id, val: notes[i].note});
 				});
 			}
 			
 			if (sysNotes !== null) {
 				this.$el.find('.sysNote').each(function(i){
-					$(this).data('note', {i: i, type: 'system', val: sysNotes[i]});
+					$(this).data('note', {i: i, type: 'system', id:sysNotes[i].id, val: sysNotes[i].note});
 				});
 			}
 		},
@@ -1697,6 +1696,7 @@
 			var defaults = {
 				when: this.toString(),
 				i: null,
+				id: null,
 				val: null,
 				type: null,
 				action: 'edit'
@@ -1729,23 +1729,27 @@
 		 * @param {object} note
 		 */
 		saveNote: function(note) {
-			var saveOptions = {patch: true, wait: true, action: 'save'};
-			
-			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
-			var newNote = [];
-			
-			if (oldNote !== null) {
-				newNote = oldNote.slice();
-				
-				if (note.action === 'add') {
-					newNote.push(note.val);
+			var saveOptions = {patch: true, wait: true, action: 'save', 
+				success: function(model, response, options) {
+					if (note.action === 'edit') {
+						// model does not recognize notes edit as a change. Therefore change event has to be triggerd.
+						model.trigger('change', model, options);
+					}
+				},
+				error: function() { 
+					// do something when validation fails viz. backbone docs on model.save()				
 				}
-				else {
-					newNote[note.i] = note.val;
-				}
+			};
+			
+			var oldNotes = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
+			var newNote;
+
+			if (note.action === 'add') {
+				newNote = {id: null, note: note.val};
 			}
 			else {
-				newNote.push(note.val);
+				oldNotes[note.i].note = note.val;
+				newNote = oldNotes[note.i];
 			}
 			
 			if (note.type === 'personal')
@@ -1765,23 +1769,19 @@
 			var deleteOptions = {patch: true, wait: true, action: 'delete'};
 			
 			var oldNote = note.type === 'personal' ? this.model.get('note') : this.model.get('sysNote');
-			
-			var newNote = oldNote.slice();
-			newNote.splice(note.i, 1);
-			
-			if (newNote.length === 0) {
-				newNote = null;
-			}
+
+			var deleteNote = oldNote[note.i];
+			deleteNote.note = null;
 			
 			if (note.type === 'personal')
 			{
 				if (this.user.isAllowed(Zidane.Acl.MEMBER)) {
-					this.model.save({note: newNote}, deleteOptions);
+					this.model.save({note: deleteNote}, deleteOptions);
 				}
 			}
 			else {
 				if (this.user.isAllowed(Zidane.Acl.EDITOR)) {
-					this.model.save({sysNote: newNote}, deleteOptions);
+					this.model.save({sysNote: deleteNote}, deleteOptions);
 				}
 			}
 		},
@@ -1868,6 +1868,7 @@
 		
 		initialize: function(options) {
 			this.master = options.master;
+			// parent is DayView
 			this.parent = options.parent;
 			this.user = options.user;
 			this.note = options.note;

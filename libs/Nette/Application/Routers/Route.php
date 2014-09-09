@@ -93,6 +93,9 @@ class Route extends Nette\Object implements Application\IRouter
 	/** @var string  regular expression pattern */
 	private $re;
 
+	/** @var string[]  parameter aliases in regular expression */
+	private $aliases;
+
 	/** @var array of [value & fixity, filterIn, filterOut] */
 	private $metadata = array();
 
@@ -175,11 +178,11 @@ class Route extends Nette\Object implements Application\IRouter
 			return NULL;
 		}
 
-		// deletes numeric keys, restore '-' chars
+		// assigns matched values to parameters
 		$params = array();
 		foreach ($matches as $k => $v) {
 			if (is_string($k) && $v !== '') {
-				$params[str_replace('___', '-', $k)] = $v; // trick
+				$params[$this->aliases[$k]] = $v;
 			}
 		}
 
@@ -401,7 +404,7 @@ class Route extends Nette\Object implements Application\IRouter
 		}
 
 		if (strpos($url, '//', 2) !== FALSE) {
-			return NULL; // TODO: implement counterpart in match() ?
+			return NULL;
 		}
 
 		$url = ($this->flags & self::SECURED ? 'https:' : 'http:') . $url;
@@ -503,6 +506,7 @@ class Route extends Nette\Object implements Application\IRouter
 		$re = '';
 		$sequence = array();
 		$autoOptional = TRUE;
+		$aliases = array();
 		do {
 			array_unshift($sequence, $parts[$i]);
 			$re = preg_quote($parts[$i], '#') . $re;
@@ -583,7 +587,8 @@ class Route extends Nette\Object implements Application\IRouter
 			$meta[self::PATTERN] = "#(?:$pattern)\\z#A" . ($this->flags & self::CASE_SENSITIVE ? '' : 'iu');
 
 			// include in expression
-			$re = '(?P<' . str_replace('-', '___', $name) . '>(?U)' . $pattern . ')' . $re; // str_replace is dirty trick to enable '-' in parameter name
+			$aliases['p' . $i] = $name;
+			$re = '(?P<p' . $i . '>(?U)' . $pattern . ')' . $re;
 			if ($brackets) { // is in brackets?
 				if (!isset($meta[self::VALUE])) {
 					$meta[self::VALUE] = $meta['defOut'] = NULL;
@@ -608,6 +613,7 @@ class Route extends Nette\Object implements Application\IRouter
 			throw new Nette\InvalidArgumentException("Missing closing ']' in mask '$mask'.");
 		}
 
+		$this->aliases = $aliases;
 		$this->re = '#' . $re . '/?\z#A' . ($this->flags & self::CASE_SENSITIVE ? '' : 'iu');
 		$this->metadata = $metadata;
 		$this->sequence = $sequence;
@@ -734,8 +740,7 @@ class Route extends Nette\Object implements Application\IRouter
 	{
 		$s = strtolower($s);
 		$s = preg_replace('#-(?=[a-z])#', ' ', $s);
-		$s = substr(ucwords('x' . $s), 1);
-		//$s = lcfirst(ucwords($s));
+		$s = lcfirst(ucwords($s));
 		$s = str_replace(' ', '', $s);
 		return $s;
 	}
@@ -787,10 +792,7 @@ class Route extends Nette\Object implements Application\IRouter
 
 
 	/**
-	 * Creates new style.
-	 * @param  string  style name (#style, urlParameter, ?queryParameter)
-	 * @param  string  optional parent style name
-	 * @return void
+	 * @deprecated
 	 */
 	public static function addStyle($style, $parent = '#')
 	{
@@ -811,11 +813,7 @@ class Route extends Nette\Object implements Application\IRouter
 
 
 	/**
-	 * Changes style property value.
-	 * @param  string  style name (#style, urlParameter, ?queryParameter)
-	 * @param  string  property name (Route::PATTERN, Route::FILTER_IN, Route::FILTER_OUT, Route::FILTER_TABLE)
-	 * @param  mixed   property value
-	 * @return void
+	 * @deprecated
 	 */
 	public static function setStyleProperty($style, $key, $value)
 	{

@@ -9,7 +9,7 @@ use Nette,
 <style class="tracy-debug">#tracy-debug .nette-ContainerPanel .tracy-inner{width:700px}#tracy-debug .nette-ContainerPanel table{width:100%;white-space:nowrap}#tracy-debug .nette-ContainerPanel .created{font-weight:bold}#tracy-debug .nette-ContainerPanel .yes{color:green;font-weight:bold}</style>
 
 <div class="nette-ContainerPanel">
-<h1><?php echo get_class($this->container) ?></h1>
+<h1><?php echo get_class($container) ?></h1>
 
 <div class="tracy-inner">
 	<h2>Services</h2>
@@ -47,7 +47,7 @@ use Nette,
 	<h2>Parameters</h2>
 
 	<div class="nette-ContainerPanel-parameters">
-		<?php echo Dumper::toHtml($this->container->parameters); ?>
+		<?php echo Dumper::toHtml($container->parameters); ?>
 	</div>
 </div>
 </div>

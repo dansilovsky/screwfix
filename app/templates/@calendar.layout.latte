@@ -27,14 +27,14 @@
 		<% if (mo.data.note !== null) { %>				
 			<% _.each(mo.data.note, function(item) { %> 
 				<div class="cellBar note highlight">	
-					<%- item %>
+					<%- item.note %>
 				</div>
 			<% }); %>	
 		<% } %>
 		<% if (mo.data.sysNote !== null) { %>				
 			<% _.each(mo.data.sysNote, function(item) { %> 
 				<div class="cellBar sysNote highlight">	
-					<%- item %>
+					<%- item.note %>
 				</div>
 			<% }); %>	
 		<% } %>

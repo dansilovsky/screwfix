@@ -19,7 +19,20 @@ class HolidayRepository extends Repository {
 	}
 	
 	/**
-	 * Fetch array of holidays between given dates
+	 * Fetch selection for given date and user id
+	 * 
+	 * @param string $date
+	 * @param integer $user_id
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getByDateUser($date, $user_id)
+	{
+		return $this->where('date', $date)
+			->where('user_id', $user_id);
+	}
+	
+	/**
+	 * Fetch selection of holidays between given dates
 	 *
 	 * @param    integer  $user_id   user id
 	 * @param    string   $from      date format yyyy-mm-dd
@@ -32,6 +45,25 @@ class HolidayRepository extends Repository {
 			->where('date >= ?', $from)
 			->where('date <= ?', $to)
 			->order('date');
+	}
+	
+	/**
+	 * Inserts new holiday.
+	 * 
+	 * @param string $date
+	 * @param integer $halfday
+	 * @param integer $user_id
+	 * @return \Nette\Database\IRow  inserted row
+	 */
+	public function save($date, $halfday, $user_id)
+	{
+		$data = array(
+			'date' => $date,
+			'halfday' => (string) $halfday,
+			'user_id' => $user_id
+		);
+		
+		return $this->insert($data);
 	}
 	
 }

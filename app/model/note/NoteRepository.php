@@ -33,4 +33,34 @@ class NoteRepository extends Repository {
 			->where('date <= ?', $to)
 			->order('date');
 	}
+	
+	/**
+	 * Get selection by user id and date.
+	 * 
+	 * @param integer $user_id
+	 * @param string  $date
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getByUserDate($user_id, $date)
+	{
+		return $this->where('user_id', $user_id)
+			->where('date', $date);
+	}
+	
+	/**
+	 * Inserts one new note.
+	 * 
+	 * @param string $note note value
+	 * @return \Nette\Database\IRow  inserted row
+	 */
+	public function save($user_id, $date, $note)
+	{
+		$data = array(
+			'user_id' => $user_id, 
+			'date' => $date, 
+			'note' => $note
+		);
+		
+		return $this->insert($data);
+	}
 }

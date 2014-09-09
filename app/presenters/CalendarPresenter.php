@@ -108,12 +108,12 @@ abstract class CalendarPresenter extends BasePresenter {
 	
 	protected function getNoteFilter()
 	{
-		return new \Screwfix\NoteFilter($this->noteFacade->notes($this->identity->id, $this->from, $this->to));
+		return new \Screwfix\NoteFilter($this->noteFacade->getNotesBetween($this->identity->id, $this->from, $this->to));
 	}
 	
 	protected function getSysNoteFilter()
 	{
-		return new \Screwfix\SysNoteFilter($this->sysNoteFacade->notes($this->from, $this->to));
+		return new \Screwfix\SysNoteFilter($this->sysNoteFacade->getNotesBetween($this->from, $this->to));
 	}
 
 }
